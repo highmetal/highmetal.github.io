@@ -9,12 +9,15 @@ function c() {
   const minut = time.getMinutes();
   const sec = time.getSeconds();
 
+  
+  const monthStr = String(month).padStart(2, "0");
+  const dayStr = String(day).padStart(2, "0");
   const hoursStr = String(hour).padStart(2, "0");
   const minutesStr = String(minut).padStart(2, "0");
   const secondsStr = String(sec).padStart(2, "0");
 
   const d = document.getElementById("q");
-  let str = `${year}/${month}/${day} ${hoursStr}:${minutesStr}:${secondsStr}`;
+  let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
 
   d.textContent = str;
 }
