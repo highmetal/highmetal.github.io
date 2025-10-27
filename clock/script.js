@@ -24,3 +24,51 @@ function c() {
 
 setInterval(c, 1000);
 c();
+
+
+function countdown(due) {
+			const now = new Date();
+			const rest = due.getTime() - now.getTime();
+			if (rest <= 0) return [0, 0, 0, 0];
+			const sec = Math.floor(rest / 1000) % 60;
+			const min = Math.floor(rest / 1000 / 60) % 60;
+			const hours = Math.floor(rest / 1000 / 60 / 60) % 24;
+			const days = Math.floor(rest / 1000 / 60 / 60 / 24);
+			return [days, hours, min, sec];
+		}
+
+		let goal = new Date();
+
+		document.getElementById("form").onsubmit = function (event) {
+			event.preventDefault();
+			
+			const h = parseInt(document.getElementById('hours').value, 10);
+			const m = parseInt(document.getElementById('minutes').value, 10);
+
+			const now = new Date();
+			goal = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+
+			if (goal.getTime() <= now.getTime()) {
+				goal.setDate(goal.getDate() + 1);
+			}
+
+			document.getElementById("setTime").textContent =`${goal.getMonth() + 1}月${goal.getDate()}日 ${h}時${m}分まで`;
+		};
+
+		function recalc() {
+			const counter = countdown(goal);
+			const time = `あと${counter[1]}時間${counter[2]}分${counter[3]}秒`;
+			document.getElementById('timer').textContent = time;
+
+			if (counter[1] === 0 && counter[2] === 0 && counter[3] === 0){
+				document.getElementById('setTime').textContent = "目標時刻になりました";
+				document.getElementById('timer').textContent = "";
+			}
+			refresh();
+		}
+
+		function refresh() {
+			setTimeout(recalc, 1000);
+		}
+
+		recalc();
