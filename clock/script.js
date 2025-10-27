@@ -17,7 +17,7 @@ function c() {
   const secondsStr = String(sec).padStart(2, "0");
 
   const d = document.getElementById("q");
-  let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
+  let str = `現在時刻:${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
 
   d.textContent = str;
 }
