@@ -16,7 +16,7 @@ document.getElementById("form").onsubmit = function (event) {
   }
   if (Number.isNaN(amount)) {
     document.getElementById("message").textContent =
-      "金額が入力されていません。";
+      "価格が入力されていません。";
     return;
   }
   if (Number.isNaN(quantity)) {
