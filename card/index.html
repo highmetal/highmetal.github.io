@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>カード金額計算フォーム</title>
+    <style>
+      #name {
+        width: 250px;
+        font-size: 20px;
+      }
+
+      #amount {
+        width: 70px;
+        font-size: 20px;
+      }
+      #quantity {
+        width: 200px;
+        font-size: 20px;
+        background-color: rgb(242, 242, 242);
+      }
+
+      button {
+        margin-top: 7px;
+      }
+      form {
+        display: flex;
+      }
+      .sa {
+        margin-right: 1cqh;
+      }
+
+      #button {
+        font: 55px;
+      }
+
+      #message {
+        font-size: 20px;
+        font-weight: bold;
+        color: red;
+      }
+
+      .table,
+      .li {
+        display: flex;
+      }
+
+      #tableName {
+        width: 400px;
+      }
+
+      #tableAmount,
+      #tableQuantity {
+        width: 70px;
+      }
+
+      #sumAmount {
+        margin-left: 10px;
+      }
+
+      table,
+      th,
+      td {
+        border-collapse: collapse;
+        border: #000 solid 1px;
+      }
+
+      td {
+        text-align: center;
+      }
+
+      .left {
+        text-align: left;
+      }
+
+      .right {
+        text-align: right;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <div class="sa">
+        <label>カード名: <input type="text" id="name" /></label><br />
+        <label>値段　　: <input type="number" id="amount" min="0" /></label
+        ><br />
+
+        <label
+          >個数　　:
+          <select id="quantity">
+            <option value="">選択してください</option>
+          </select>
+        </label>
+      </div>
+      <button type="submit">リストに追加</button>
+    </form>
+
+    <p id="message"></p>
+
+    <div class="li">
+      <table id="table">
+        <tr>
+          <th>カード名</th>
+          <th>値段</th>
+          <th>個数</th>
+          <th>合計金額</th>
+          <th>含めるか</th>
+          <th></th>
+        </tr>
+      </table>
+      <p id="sumAmount">合計金額: 0円</p>
+    </div>
+    <script>
+      "use strict";
+
+      const table = document.getElementById("table");
+      const quantitySelect = document.getElementById("quantity");
+
+      for (let i = 1; i <= 4; i++) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        quantitySelect.appendChild(option);
+      }
+
+      function updateSum() {
+        let sum = 0;
+        const rows = table.querySelectorAll("tr[data-amount]");
+        rows.forEach((row) => {
+          const checkbox = row.querySelector("input[type='checkbox']");
+          if (checkbox.checked) {
+            sum += Number(row.dataset.amount);
+          }
+        });
+        document.getElementById(
+          "sumAmount"
+        ).textContent = `合計金額: ${sum.toLocaleString()}円`;
+      }
+
+      document.getElementById("form").onsubmit = function (event) {
+        event.preventDefault();
+
+        const name = document.getElementById("name").value.trim();
+        const amount = Number(document.getElementById("amount").value);
+        const quantity = Number(document.getElementById("quantity").value);
+
+        if (name === "") {
+          document.getElementById("message").textContent =
+            "カード名が入力されていません。";
+          return;
+        }
+        if (document.getElementById("amount").value.trim() === "") {
+          document.getElementById("message").textContent =
+            "値段が入力されていません。";
+          return;
+        }
+
+        if (Number.isNaN(quantity) || quantity === 0) {
+          document.getElementById("message").textContent =
+            "個数が選択されていません。";
+          return;
+        }
+
+        document.getElementById("message").textContent = "";
+
+        const subtotal = amount * quantity;
+
+        const newRow = table.insertRow();
+        newRow.dataset.amount = subtotal;
+
+        newRow.insertCell().textContent = name;
+        newRow.insertCell().textContent = amount.toLocaleString();
+        newRow.insertCell().textContent = quantity;
+        newRow.insertCell().textContent = subtotal.toLocaleString();
+
+        const checkCell = newRow.insertCell();
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = true;
+        checkbox.addEventListener("change", updateSum);
+        checkCell.appendChild(checkbox);
+
+        const deleteCell = newRow.insertCell();
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "×";
+        delBtn.addEventListener("click", function () {
+          if (
+            window.confirm(`リストから”${name}”を削除してもよろしいですか？`)
+          ) {
+            newRow.remove();
+          }
+
+          updateSum();
+        });
+        deleteCell.appendChild(delBtn);
+
+        updateSum();
+
+        event.target.reset();
+      };
+    </script>
+  </body>
+</html>
