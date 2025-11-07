@@ -3,24 +3,129 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sample</title>
+    <title>文字数カウンター</title>
+    <style>
+      html {
+        background-color: rgb(52, 161, 161);
+        font-size: 26px;
+        color: aliceblue;
+        height: 100%;
+        width: 100%;
+        min-width: 375px;
+      }
+      h3 {
+        background: linear-gradient(aliceblue, rgb(138, 251, 151));
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      #countText {
+        max-width: 700px;
+        max-height: 300px;
+        min-width: 700px;
+        min-height: 300px;
+      }
+
+      #notCountText {
+        max-width: 160px;
+        max-height: 25px;
+        min-width: 160px;
+        min-height: 25px;
+      }
+
+      .line {
+        border: 1px solid aliceblue;
+      }
+
+      form {
+        padding-bottom: 80px;
+      }
+
+      a {
+        margin-top: 15%;
+        display: inline-block;
+        transition: 0.1s;
+      }
+      a:hover {
+        color: aqua;
+        transform: rotate(360deg);
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgb(28, 75, 27);
+        padding: 5px;
+        text-align: center;
+      }
+
+      @media (max-width: 735px) {
+        label {
+          font-size: 20px;
+        }
+        #countText {
+          max-width: 320px;
+          max-height: 200px;
+          min-width: 320px;
+          min-height: 200px;
+        }
+
+        a {
+          font-size: 12px;
+        }
+        footer {
+          font-size: 12px;
+        }
+      }
+    </style>
   </head>
   <body>
+    <h3>文字数カウンター</h3>
     <form>
-      <label>カウントしたい文字列を入力</label><br />
-      <textarea id="countText" rows="10" cols="50"></textarea><br />
-      <p id="textLength">文字数: 0</p>
+      <div>
+        <label>・カウントしたい文字列を入力（100,000文字まで）</label><br />
+        <textarea id="countText" maxlength="100000"></textarea><br />
+      </div>
+      <div class="line"></div>
+      <div>
+        <label class="nct">・除外したい文字を入力（任意/10文字まで）</label
+        ><br />
+        <textarea id="notCountText" maxlength="10"></textarea>
+      </div>
+
+      <div class="line"></div>
+      <p id="outTextLength">除外前文字数: 0</p>
+
+      <p id="textLength">除外適用文字数: 0</p>
+      <div class="line"></div>
+      <a href="https://highmetal.github.io">https://highmetal.github.io</a>
     </form>
 
+    <footer>
+      <small>&copy; 2025 highmetal or Organization. All rights reserved.</small>
+    </footer>
     <script>
       "use strict";
       const ct = document.getElementById("countText");
       const tl = document.getElementById("textLength");
+      const oTl = document.getElementById("outTextLength");
+      const ec = document.getElementById("notCountText");
 
-      // 入力があるたびに文字数を更新
-      ct.addEventListener("input", function () {
-        tl.textContent = `文字数: ${ct.value.length}`;
-      });
+      function updateCount() {
+        const exclude = ec.value;
+        const text = ct.value;
+        const filteredText = text
+          .split("")
+          .filter((char) => !exclude.includes(char))
+          .join("");
+        tl.textContent = `除外適用文字数: ${filteredText.length}`;
+        oTl.textContent = `除外前文字数: ${text.length}`;
+      }
+
+      ct.addEventListener("input", updateCount);
+      ec.addEventListener("input", updateCount);
     </script>
   </body>
 </html>
