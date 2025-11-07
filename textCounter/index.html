@@ -3,18 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sample</title></title>
-    <link rel="stylesheet" href="style.css" />
+    <title>sample</title>
   </head>
   <body>
-    <main>
-      <form>
-        <label>カウントしたい文字列を入力</label>
-        <textare id=countText rows=10 cols=30></textare>
-        <p id=textLength></p>
-        
-      </form>
-    </main>
-    <script src="script.js"></script>
+    <form>
+      <label>カウントしたい文字列を入力</label><br />
+      <textarea id="countText" rows="10" cols="50"></textarea><br />
+      <p id="textLength">文字数: 0</p>
+    </form>
+
+    <script>
+      "use strict";
+      const ct = document.getElementById("countText");
+      const tl = document.getElementById("textLength");
+
+      // 入力があるたびに文字数を更新
+      ct.addEventListener("input", function () {
+        tl.textContent = `文字数: ${ct.value.length}`;
+      });
+    </script>
   </body>
 </html>
