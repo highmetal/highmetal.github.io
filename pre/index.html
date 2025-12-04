@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .page,
+      .log {
+        position: fixed;
+        bottom: 25px;
+      }
+      .log {
+        right: 20px;
+      }
+      .button-container {
+        position: fixed;
+        bottom: 20px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .button-container button {
+        margin: 0 0px;
+        padding: 10px 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="content"></div>
+    <div class="page"></div>
+    <div class="log">ログ</div>
+    <div class="button-container">
+      <button class="prev">戻る</button>
+      <button class="next">次へ</button>
+    </div>
+  </body>
+   
+  <script>
+    "use strict";
+    const content = document.querySelector(".content");
+    const btnPrev = document.querySelector(".prev");
+    const btnNext = document.querySelector(".next");
+    const pageText = document.querySelector(".page");
+    const log = document.querySelector(".log");
+    let currentPage = 0;
+    let maxPage = 3;
+    const minPage = 0;
+    let pages = [
+      "ページ0の内容",
+      "ページ1の内容",
+      "ページ2の内容",
+      "ページ3の内容",
+    ];
+
+    henka(content);
+    btnPrev.addEventListener("click", function () {
+      modo(content);
+    });
+    btnNext.addEventListener("click", function () {
+      tugi(content);
+    });
+    function modo(el) {
+      if (currentPage > minPage) {
+        log.textContent = "ログ：ページを-1";
+        currentPage--;
+      } else {
+        log.textContent = "ログ：最小ページ";
+      }
+      henka(el);
+    }
+    function tugi(el) {
+      if (currentPage < maxPage) {
+        log.textContent = "ログ：ページを+1";
+        currentPage++;
+      } else {
+        log.textContent = "ログ：最大ページ";
+      }
+      henka(el);
+    }
+    function henka(el) {
+      pageText.textContent = "ページ：" + currentPage;
+      el.innerHTML = pages[currentPage];
+    }
+  </script>
+</html>
