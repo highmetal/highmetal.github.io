@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>memoryGame</title>
     <style>
+      html {
+        font-size: 18px;
+        h1 {
+          -webkit-text-stroke: 0.3px #ffbfbf;
+        }
+      }
       .game {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -13,91 +19,90 @@
       .card {
         background-color: black;
         color: white;
+        font-size: 20px;
+        height: 30px;
+        width: 30px;
         padding: 20px;
+        margin: auto;
         text-align: center;
       }
       .button {
         margin-top: 3%;
+        font-size: 16px;
       }
     </style>
   </head>
 
   <body>
-    <h4>神経衰弱</h4>
-    <div class="game">
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-      <div class="card">c</div>
-    </div>
-    <button class="button">リトライ</button>
+    <h1>神経衰弱</h1>
+    <select class="select">
+      <option>カード枚数を選択</option>
+      <option value="8">8</option>
+      <option value="16">16</option>
+      <option value="32">32</option>
+    </select>
+    <button class="start">start</button>
+    <div class="game"></div>
+    <div class="point">0pt</div>
+    <button class="retry" style="visibility: hidden">続ける</button>
 
     <script>
       "use strict";
 
-      let pairCard = [
-        "pair1",
-        "pair1",
-        "pair2",
-        "pair2",
-        "pair3",
-        "pair3",
-        "pair4",
-        "pair4",
-      ]; //カードの種類
-
-      shuffleArray(pairCard); //カードシャッフル
-
-      const card = document.querySelectorAll(".card"); //htmlのカード取得
-
-      card.forEach(function (element, i) {
-        //カードに種類ごとのクラスとクリック時イベントを追加
-        card[i].classList.add(pairCard[i]);
-        element.addEventListener("click", check);
-        //console.log(card[i]);
-      });
-
-      const button = document.querySelector(".button"); //リトライボタン
-      button.addEventListener("click", retry);
-
-      function retry() {
-        isStop = false;
-        isFirstUp = false;
-        firstUp = null;
-        secondUp = null;
-        shuffleArray(pairCard);
-        card.forEach(function (element, i) {
-          element.textContent = "c";
-          element.style.color = "white";
-          element.classList.remove("match");
-          element.classList.remove("pair1", "pair2", "pair3", "pair4");
-          element.classList.add(pairCard[i]);
-        });
-      }
-
+      let pairCard = []; //カードの種類
+      let card;
+      const retryButton = document.querySelector(".retry"); //リトライボタン
+      const point = document.querySelector(".point");
       let isStop = false; //カードを表にする処理をさせるかどうか
       let isFirstUp = false; //カードを表向きにするのが１枚目かどうか
       let firstUp = null; //１枚目の表向きにしたカードを記憶
       let secondUp = null; //２枚目の表向きにしたカードを記憶
+      let pt = 0;
+
+      const game = document.querySelector(".game");
+
+      const startButton = document.querySelector(".start");
+      const select = document.querySelector(".select");
+
+      retryButton.addEventListener("click", retry);
+
+      startButton.addEventListener("click", function () {
+        startButton.style.visibility = "hidden";
+        generatCard(select.value);
+        generatpairCard(select.value / 2);
+        select.style.visibility = "hidden";
+
+        card = document.querySelectorAll(".card"); //htmlのカード取得
+
+        shuffleArray(pairCard); //カードシャッフル
+        card.forEach(function (element, i) {
+          //カードに種類ごとのクラスとクリック時イベントを追加
+          card[i].classList.add(pairCard[i]);
+          element.addEventListener("click", check);
+          //console.log(card[i]);
+        });
+      });
 
       function check(el) {
         if (isStop) return;
-        if (el.currentTarget.classList[2] === "match") return;
-        console.log(el.currentTarget.classList[1]);
+        if (el.currentTarget.classList.contains("match")) return;
+        // console.log(el.currentTarget.classList[1]);
         if (!isFirstUp) {
           //表にしたカードが１枚目の場合の処理
           isFirstUp = true;
           firstUp = el.currentTarget;
-          firstUp.textContent = el.currentTarget.classList[1].charAt(4); //数字が二桁になるとバグる
+          firstUp.textContent = el.currentTarget.classList[1].replace(
+            "pair",
+            ""
+          );
         } else {
           //表にしたカードが２枚目の場合の処理
           if (firstUp === el.currentTarget) return;
           secondUp = el.currentTarget;
-          secondUp.textContent = el.currentTarget.classList[1].charAt(4); //数字が二桁になるとバグる
+          secondUp.textContent = el.currentTarget.classList[1].replace(
+            "pair",
+            ""
+          );
 
           if (firstUp.classList[1] === secondUp.classList[1]) {
             //正解の処理
@@ -108,18 +113,49 @@
             setTimeout(function () {
               firstUp.style.color = "red";
               secondUp.style.color = "red";
+              pt++;
+              point.textContent = pt + "pt";
               isStop = false;
             }, 1000);
+            setTimeout(clearCheck, 1030);
           } else {
             //不正解の処理
             isStop = true;
             setTimeout(function () {
-              firstUp.textContent = "c";
-              secondUp.textContent = "c";
+              firstUp.textContent = "";
+              secondUp.textContent = "";
               isStop = false;
             }, 1000);
           }
           isFirstUp = false;
+        }
+      }
+
+      function generatCard(num) {
+        let text = "";
+        while (num > 0) {
+          text += `      <div class="card"></div>`;
+          num--;
+        }
+        game.innerHTML = text;
+      }
+
+      function generatpairCard(num) {
+        while (num > 0) {
+          pairCard.push("pair" + num);
+          pairCard.push("pair" + num);
+          num--;
+        }
+      }
+
+      function clearCheck() {
+        if (document.querySelectorAll(".match").length === card.length) {
+          alert("クリア！");
+          if (confirm("続けますか？")) {
+            retry();
+          } else {
+            retryButton.style.visibility = "visible";
+          }
         }
       }
 
@@ -128,6 +164,26 @@
           const j = Math.floor(Math.random() * (i + 1));
           [array[i], array[j]] = [array[j], array[i]];
         }
+      }
+
+      function retry() {
+        isStop = false;
+        isFirstUp = false;
+        firstUp = null;
+        secondUp = null;
+        retryButton.style.visibility = "hidden";
+        shuffleArray(pairCard);
+        card.forEach(function (element, i) {
+          element.textContent = "";
+          element.style.color = "white";
+          element.classList.remove("match");
+          element.classList.forEach(function (kurasu) {
+            if (kurasu.startsWith("pair")) {
+              element.classList.remove(kurasu);
+            }
+          });
+          element.classList.add(pairCard[i]);
+        });
       }
     </script>
   </body>
