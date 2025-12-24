@@ -6,23 +6,25 @@
     <title>memoryGame</title>
     <style>
       html {
-        font-size: 18px;
         h1 {
           -webkit-text-stroke: 0.3px #ffbfbf;
+        }
+        .point {
+          font-weight: bold;
         }
       }
       .game {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(8, 1fr);
         gap: 10px;
       }
       .card {
-        background-color: black;
+        background-color: rgb(0, 0, 0);
         color: white;
         font-size: 20px;
         height: 30px;
         width: 30px;
-        padding: 20px;
+        padding: 10px;
         margin: auto;
         text-align: center;
       }
@@ -30,20 +32,28 @@
         margin-top: 3%;
         font-size: 16px;
       }
+      .point {
+        text-align: right;
+      }
+      @media (max-width: 735px) {
+        .game {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
     </style>
   </head>
 
   <body>
     <h1>神経衰弱</h1>
     <select class="select">
-      <option>カード枚数を選択</option>
+      <option value="n">カード枚数を選択</option>
       <option value="8">8</option>
       <option value="16">16</option>
       <option value="32">32</option>
     </select>
     <button class="start">start</button>
     <div class="game"></div>
-    <div class="point">0pt</div>
+    <div class="point" style="visibility: hidden">0pt</div>
     <button class="retry" style="visibility: hidden">続ける</button>
 
     <script>
@@ -67,10 +77,15 @@
       retryButton.addEventListener("click", retry);
 
       startButton.addEventListener("click", function () {
+        if (select.value === "n") {
+          alert("カード枚数が選択されていないため、開始できませんでした。");
+          return;
+        }
         startButton.style.visibility = "hidden";
         generatCard(select.value);
         generatpairCard(select.value / 2);
         select.style.visibility = "hidden";
+        point.style.visibility = "visible";
 
         card = document.querySelectorAll(".card"); //htmlのカード取得
 
