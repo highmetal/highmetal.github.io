@@ -7,7 +7,6 @@
 1. [clock&timer](http://highmetal.github.io/clock)
    このサイトは目標時間までの残り時間を計測してくれるサイトです。
 1. [カード金額計算フォーム](https://highmetal.github.io/card/)
-   このサイトはカードを買いたいときの金額の予定を立てるときに使います。買い物全般に汎化させればもっと使いやすくなると思うのでアップデートを予定。
 1. [文字数カウンター](https://highmetal.github.io/textCounter/)
    このサイトはテキストボックスに入力された文字数をカウントします。
 1. coming soon...
