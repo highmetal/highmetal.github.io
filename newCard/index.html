@@ -366,10 +366,11 @@
           items: "tr:not(tr:first-child)",
           axis: "y",
           stop: function (e, ui) {
+            const oldList = [...cardList];
             const newList = [];
             $("#table tr[data-id]").each(function () {
               const id = Number(this.dataset.id);
-              const card = cardList.find((c) => c.id === id);
+              const card = oldList.find((c) => c.id === id);
               if (card) newList.push(card);
             });
             cardList = newList;
