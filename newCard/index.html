@@ -44,6 +44,7 @@
         background-color: #fff;
         color: #000;
         button {
+          border: 0.05px solid #000;
           font-weight: unset;
           background-color: unset;
           color: #000;
@@ -74,6 +75,18 @@
       td:nth-child(1) {
         /*カード名セルの調整*/
         max-width: 300px;
+      }
+      
+      td:nth-child(7) {
+        button {
+          background-color: rgb(84, 204, 255);
+        }
+      }
+
+      td:nth-child(8) {
+        button {
+          background-color: rgb(255, 84, 84);
+        }
       }
 
       /* 編集モード*/
@@ -143,6 +156,10 @@
     <button id="capture">リストのダウンロード</button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
     <script>
       "use strict";
 
@@ -338,9 +355,27 @@
             link.download = `${fileName}.png`;
             link.href = canvas.toDataURL();
             link.click();
-            alert(`”${link.download}”をダウンロードしました`);
+            // alert(`”${link.download}”をダウンロードしました`);
           });
         }
+      });
+
+      //並び替え
+      $(function () {
+        $("#table").sortable({
+          items: "tr:not(tr:first-child)",
+          axis: "y",
+          stop: function (e, ui) {
+            const newList = [];
+            $("#table tr[data-id]").each(function () {
+              const id = Number(this.dataset.id);
+              const card = cardList.find((c) => c.id === id);
+              if (card) newList.push(card);
+            });
+            cardList = newList;
+            saveToLocalStorage();
+          },
+        });
       });
     </script>
   </body>
