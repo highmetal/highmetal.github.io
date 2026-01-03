@@ -106,6 +106,10 @@
       input.quantity {
         width: 20px;
       }
+      .handle {
+        padding: 5px;
+        font-size: medium;
+      }
     </style>
   </head>
 
@@ -146,6 +150,7 @@
           <th>小計</th>
           <th>含む</th>
           <th>備考</th>
+          <th></th>
           <th></th>
           <th></th>
         </tr>
@@ -198,6 +203,7 @@
         const bikouCell = row.insertCell();
         const editCell = row.insertCell();
         const deleteCell = row.insertCell();
+        const handleCell = row.insertCell();
 
         nameCell.textContent = card.name;
         amountCell.textContent = card.amount.toLocaleString();
@@ -225,6 +231,10 @@
         const delBtn = document.createElement("button");
         delBtn.textContent = "×";
         deleteCell.appendChild(delBtn);
+
+        //並び替えバー
+        handleCell.textContent = "≡";
+        handleCell.className = "handle";
 
         // 編集機能
         let editing = false;
@@ -364,15 +374,18 @@
       $(function () {
         $("#table").sortable({
           items: "tr:not(tr:first-child)",
+          handle: ".handle",
           axis: "y",
-          stop: function (e, ui) {
+          stop: function () {
             const oldList = [...cardList];
             const newList = [];
+
             $("#table tr[data-id]").each(function () {
               const id = Number(this.dataset.id);
               const card = oldList.find((c) => c.id === id);
               if (card) newList.push(card);
             });
+
             cardList = newList;
             saveToLocalStorage();
           },
