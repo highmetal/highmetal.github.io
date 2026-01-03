@@ -193,6 +193,7 @@
       // テーブルにカードを表示する
       function addCardToTable(card) {
         const row = table.insertRow();
+        row.dataset.id = card.id; 
         row.dataset.amount = card.amount * card.quantity;
 
         const nameCell = row.insertCell();
