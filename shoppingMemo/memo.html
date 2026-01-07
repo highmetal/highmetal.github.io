@@ -6,28 +6,25 @@
     <title>買い物メモ</title>
     <style>
 
-
 		table {
   			width: 100%;
   			border-collapse: collapse;
   			white-space: nowrap;
-
 		}
+
 		
 		table th,
 		table td {
   			border: 2px solid #ccc;
-  			padding: 15px 10px;
+  			padding: 2px 10px;
 		}
 
-
 		table td {
-		  height: 48px;
-  			max-height: 48px;
+			height: 48px;
+ 	 		max-height: 48px;
   			vertical-align: middle;
   			overflow: hidden;
 		}
-
 
 		table input {
   			height: 30px;
@@ -35,23 +32,34 @@
   			font-size: inherit;
   			box-sizing: border-box;
   			margin: 0;
-  			padding: 0 4px;
-			background-color: "blue";
+  			padding: 0;
 		}
+
 
 		.editing td {
   			position: relative;
 		}
 
+		
 		.editing input {
-  			position: absolute;
+  			//position: absolute;
   			inset: 0;
   			width: 100%;
   			height: 100%;
 		}
 
+
 		input{
-			font-size: 18px;
+			font-size: 20px;
+		}
+
+		input[type=checkbox]{
+			transform: scale(1.4);
+			accent-color: #336633;
+		}
+
+		#message{
+			color:red;
 		}
 
 
@@ -75,7 +83,7 @@
           </label>
           <br />
           <label
-            >　個数 : <input type="number" id="quantity" min="0" />枚
+            >　個数 : <input type="number" id="quantity" min="0" />個
           </label>
           <br />
           <label>　備考 : <input type="text" id="kari" /> </label>
@@ -90,15 +98,15 @@
     <div id="target">
       <table id="table">
         <tr>
-          <th></th>
+          <th>☑️</th>
           <th>商品名　　　</th>
           <th>値段</th>
           <th>個数</th>
           <th>小計</th>
           <th>備考</th>
-          <th></th>
+          <th>編集</th>
           <th><button id="sakujo">一括削除</button></th>
-          <th></th>
+          <th>移動</th>
         </tr>
       </table>
 
@@ -118,7 +126,7 @@
       const form = document.getElementById("form");
       const capture = document.getElementById("capture");
 
-      // ローカルストレージから読み込み
+      //ローカルストレージから読み込み
       let cardList = JSON.parse(localStorage.getItem("cardList") || "[]");
 
       function saveToLocalStorage() {
@@ -136,7 +144,7 @@
         ).textContent = `総計: ${sum.toLocaleString()}円`;
       }
 
-      // テーブルにカードを表示する
+      //テーブルに商品を表示する
       function addCardToTable(card) {
         const row = table.insertRow();
         row.dataset.id = card.id;
@@ -152,11 +160,6 @@
         const deleteCell = row.insertCell();
         const handleCell = row.insertCell();
 
-// チェックボックス
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = true;
-        checkbox.addEventListener("change", updateSum);
 
         nameCell.textContent = card.name;
         amountCell.textContent = card.amount.toLocaleString();
@@ -165,13 +168,20 @@
           card.amount * card.quantity
         ).toLocaleString();
 
+			//チェックボックス
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = false;
+        checkbox.addEventListener("change", updateSum);
+
+
         
         checkCell.appendChild(checkbox);
 
-        // 備考
+        //備考
         bikouCell.textContent = card.bikou;
 
-        // 編集ボタン
+        //編集ボタン
         const editBtn = document.createElement("button");
         editBtn.textContent = "編集";
         editCell.appendChild(editBtn);
@@ -185,7 +195,7 @@
         handleCell.textContent = "≡";
         handleCell.className = "handle";
         
-        // 編集機能
+        //編集機能
         let editing = false;
         editBtn.addEventListener("click", () => {
           if (!editing) {
@@ -201,7 +211,7 @@
             editing = true;
           } else {
             const newName = nameCell.querySelector("input").value.trim();
-            const newAmountStr = amountCell.querySelector("input").value.trim(); // ←これが必要
+            const newAmountStr = amountCell.querySelector("input").value.trim();
             const newQuantityStr = quantityCell
               .querySelector("input")
               .value.trim();
@@ -250,7 +260,7 @@
           }
         });
 
-        // 削除
+        //削除
         delBtn.addEventListener("click", () => {
           if (confirm(`リストから”${card.name}”を削除してもよろしいですか？`)) {
             row.remove();
@@ -263,10 +273,10 @@
         updateSum();
       }
 
-      // ページ再読み込み
+      //ページ再読み込み
       cardList.forEach(addCardToTable);
 
-      // フォーム送信時の処理
+      //フォーム送信時の処理
       form.onsubmit = (event) => {
         event.preventDefault();
 
@@ -341,26 +351,25 @@
         });
       });
 
+
+		//一括削除
 		const sakujo = document.getElementById("sakujo");
+		sakujo.addEventListener("click", allClear);
 
-function allClear() {
-  if (!confirm("リストをすべて削除しますか？")) return;
+		function allClear() {
+  			if (!confirm("リストから商品をすべて削除しますか？")) return;
 
-  // データ削除
-  localStorage.removeItem("cardList");
-  cardList = [];
+  			//データ削除
+  			localStorage.removeItem("cardList");
+  			cardList = [];
 
-  // テーブルの行を削除（1行目はヘッダーなので残す）
-  while (table.rows.length > 1) {
-    table.deleteRow(1);
-  }
+  			//テーブルの行を削除
+  			while (table.rows.length > 1) {
+    			table.deleteRow(1);
+  			}
 
-  updateSum();
-}
-
-sakujo.addEventListener("click", allClear);
-
-
+  			updateSum();
+		}
 		
     </script>
   </body>
