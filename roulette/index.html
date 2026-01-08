@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webルーレット</title>
+    <style>
+      @charset "UTF-8";
+      html {
+        background-color: #e2f6e4;
+      }
+      /* 使い方 */
+      #manual {
+        color: green;
+        border-style: dotted none;
+        font-size: 1.8rem;
+      }
+
+      /* 結果表示 */
+      #result {
+        .result {
+          border-style: solid;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin: 10 0;
+          padding: 1rem;
+        }
+
+        .archiveArea {
+          visibility: hidden;
+        }
+
+        .archive {
+          margin-top: -10px;
+        }
+
+        .archiveRemove {
+          color: #fff;
+          background-color: #329500;
+          border-radius: 8px;
+          padding: 8px 18px;
+          font-size: 1rem;
+          transition: background-color 0.3s ease;
+        }
+
+        p {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* 項目入力用テキストエリア */
+      #textarea {
+        font-size: 1.5rem;
+        textarea {
+          margin-top: -10px;
+          font-size: 26px;
+        }
+      }
+
+      /* 抽選開始ボタン */
+      #button {
+        button {
+          color: #fff;
+          background-color: #329500;
+          border-radius: 8px;
+          padding: 10px 20px;
+          font-size: 1.5rem;
+          transition: background-color 0.3s ease;
+        }
+        button:hover {
+          scale: 1.05;
+          background: #00aa11;
+        }
+      }
+
+      /*  アニメーションの有無のラジオボタン */
+      #aniCheck {
+        font-size: 1.5rem;
+        p {
+          margin-bottom: 0px;
+        }
+      }
+
+      /* -----動作用----- */
+      /* 実行時のボタンの透明化 */
+      .active {
+        visibility: hidden;
+      }
+
+      /* 抽選結果演出 */
+      .confirm {
+        color: rgb(232, 56, 56);
+      }
+
+      /* -----レスポンシブ対応----- */
+      @media (max-width: 768px) {
+        /* 使い方 */
+        #manual {
+          font-size: 0.95rem;
+        }
+
+        /* 結果表示 */
+        #result {
+          .result {
+            font-size: 1.3rem;
+            padding: 0.5rem;
+          }
+
+          .archiveRemove {
+            padding: 4px 9px;
+            font-size: 0.8rem;
+          }
+
+          p {
+            font-size: 1.2rem;
+          }
+        }
+
+        /* 項目入力用テキストエリア */
+        #textarea {
+          font-size: 1.2rem;
+          textarea {
+            margin-top: -10px;
+            font-size: 18px;
+          }
+        }
+
+        /* 抽選開始ボタン */
+        #button {
+          button {
+            padding: 5px 10px;
+            font-size: 1.3rem;
+          }
+          button:hover {
+            scale: 1.01;
+          }
+        }
+
+        /*  アニメーションの有無のラジオボタン */
+        #aniCheck {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 見出し -->
+    <h1>Webルーレット</h1>
+
+    <!-- 使い方 -->
+    <details id="manual">
+      <summary>使い方</summary>
+      <ol>
+        <li>テキストエリアに、抽選したい項目を1行ずつ入力します。</li>
+        <li>入力が終わったら「抽選開始」ボタンを押します。</li>
+        <li>ルーレットが回り、赤い文字で結果が表示されます。</li>
+      </ol>
+    </details>
+
+    <!-- 結果表示 -->
+    <div id="result">
+      <p class="result">ここに結果が表示されます</p>
+      <div class="archiveArea">
+        <p>●履歴</p>
+        <p class="archive"></p>
+        <button class="archiveRemove">履歴を削除</button>
+      </div>
+    </div>
+    <br />
+
+    <!-- 項目入力用テキストエリア -->
+    <div id="textarea">
+      <p>●項目</p>
+      <textarea class="select" style="height: 150px">
+A
+B
+C
+</textarea
+      >
+    </div>
+    <br />
+
+    <!-- 抽選開始ボタン -->
+    <div id="button">
+      <button class="startButton">抽選開始</button>
+    </div>
+    <br />
+
+    <!-- アニメーション有無確認用チェックボックス -->
+    <form id="aniCheck">
+      <p>●ルーレット実行時のアニメーション</p>
+      <input type="radio" name="ani" value="yes" id="yes" checked />
+      <label for="yes">あり</label><br />
+      <input type="radio" name="ani" value="no" id="no" />
+      <label for="no">なし</label>
+    </form>
+  </body>
+  <script>
+    "use strict";
+    const result = document.querySelector(".result");
+    const startButton = document.querySelector(".startButton");
+    const select = document.querySelector(".select");
+
+    const archiveArea = document.querySelector(".archiveArea");
+    const archive = document.querySelector(".archive");
+    const archiveRemove = document.querySelector(".archiveRemove");
+
+    let aniCheck = true;
+
+    //ラジオボタン動作時
+    document.getElementById("yes").addEventListener("change", function () {
+      aniCheck = true;
+    });
+    document.getElementById("no").addEventListener("change", function () {
+      aniCheck = false;
+    });
+
+    //履歴削除クリックイベント
+    archiveRemove.addEventListener("click", function () {
+      if (window.confirm("履歴を削除しますか？")) {
+        startButton.textContent = "抽選開始";
+        archive.textContent = "";
+        archiveArea.classList.add("archiveArea");
+        result.textContent = "ここに結果が表示されます";
+        result.classList.remove("confirm");
+      }
+    });
+
+    //抽選開始クリックイベント
+    startButton.addEventListener("click", function () {
+      const items = select.value
+        .split("\n")
+        .map((v) => v.trim())
+        .filter((v) => v !== "");
+
+      if (items.length === 0) {
+        result.textContent = "要素が入力されていません。";
+        return;
+      }
+
+      if (aniCheck) {
+        //アニメーションありの場合
+        let count = 0;
+        startButton.classList.add("active");
+        result.classList.remove("confirm");
+        archiveRemove.classList.add("archiveArea");
+        const timer = setInterval(() => {
+          const n = Math.floor(Math.random() * items.length);
+          result.textContent = items[n];
+          count++;
+
+          if (count > 18) {
+            startButton.classList.remove("active");
+            startButton.textContent = `もう一度抽選`;
+            result.classList.add("confirm");
+            result.textContent = `"${items[n]}"`;
+            archiveAdd(items[n]);
+            clearInterval(timer);
+          }
+        }, 100);
+      } else {
+        //アニメーションなしの場合
+        startButton.textContent = `もう一度抽選`;
+        result.classList.add("confirm");
+        result.textContent = `"${
+          items[Math.floor(Math.random() * items.length)]
+        }"`;
+        archiveAdd(result.textContent.replaceAll(/["]/g, ""));
+      }
+    });
+
+    //履歴表示メソッド
+    function archiveAdd(item) {
+      archiveArea.classList.remove("archiveArea");
+      archiveRemove.classList.remove("archiveArea");
+      archive.textContent === ""
+        ? (archive.textContent += item) //1回目
+        : (archive.textContent += `, ${item}`); //2回目以降は,を先頭につける
+    }
+  </script>
+</html>
