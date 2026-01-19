@@ -24,11 +24,20 @@ body {
   background: white;
   cursor: grab;
   user-select: none;
-
-  
   touch-action: none;
+  box-sizing: border-box;   
+  overflow: hidden;
 }
 
+.card.text {
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
 
 .card.selected {
   border-color: orange;
@@ -101,6 +110,14 @@ body {
   pointer-events: none;
 }
 
+.card.text {
+  padding: 6px;
+  text-align: center;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+
 </style>
 </head>
 <body>
@@ -118,6 +135,27 @@ body {
   <button onclick="confirmShuffle()">シャッフル</button>
 
 </div>
+
+<div id="textModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>テキストカード追加</span>
+      <button onclick="closeTextModal()">✕</button>
+    </div>
+
+    <div style="padding:10px">
+      <input id="textInput" type="text" placeholder="テキストを入力" style="width:100%">
+      <div style="margin-top:10px; text-align:right">
+        <button onclick="closeTextModal()">キャンセル</button>
+        <button onclick="addTextCard()">追加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<button onclick="openTextModal()">テキストカード追加</button>
+
 
 <input type="file" multiple accept="image/*" onchange="addImages(this.files)">
 
@@ -146,6 +184,8 @@ function createCard({ image = null, text = null }) {
   const el = document.createElement("div");
   el.className = "card";
 
+  if (text) el.classList.add("text");
+
   const card = {
     id: crypto.randomUUID(),
     el,
@@ -153,8 +193,8 @@ function createCard({ image = null, text = null }) {
     text,
     isFaceUp: false,
     rotation: 0,
-    x: 50,
-    y: 0
+    x: 550,
+    y: 250
   };
 
   updateCardView(card);
@@ -170,7 +210,7 @@ function updateCardView(card) {
 
   if (card.image) {
     const img = document.createElement("img");
-    img.src = card.isFaceUp ? card.image : "cardBack.PNG";
+    img.src = card.isFaceUp ? card.image : "cardBack.png";
     card.el.appendChild(img);
   } else {
     card.el.textContent = card.isFaceUp ? card.text : "";
@@ -334,6 +374,24 @@ function openDeckList() {
 function closeDeckList() {
   document.getElementById("deckModal").classList.add("hidden");
 }
+
+function openTextModal() {
+  document.getElementById("textInput").value = "";
+  document.getElementById("textModal").classList.remove("hidden");
+}
+
+function closeTextModal() {
+  document.getElementById("textModal").classList.add("hidden");
+}
+
+function addTextCard() {
+  const text = document.getElementById("textInput").value.trim();
+  if (!text) return;
+
+  createCard({ text });
+  closeTextModal();
+}
+
 
 </script>
 </body>
