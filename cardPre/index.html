@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>Card Deck</title>
+<style>
+body {
+  background: #ccc;
+  font-family: sans-serif;
+}
+
+#board {
+  position: relative;
+  width: 100%;
+  height: 550px;
+  background: #eee;
+}
+
+.card {
+  position: absolute;
+  width: 100px;
+  height: 140px;
+  border: 3px solid black;
+  background: white;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  box-sizing: border-box;   
+  overflow: hidden;
+}
+
+.card.text {
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.card.selected {
+  border-color: orange;
+}
+
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 900px;
+  max-height: 80%;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  font-weight: bold;
+}
+
+.grid {
+  padding: 10px;
+  overflow: auto;
+
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+}
+
+.deck-card {
+  border: 2px solid black;
+  background: white;
+  aspect-ratio: 63 / 88;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.deck-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.card.text {
+  padding: 6px;
+  text-align: center;
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+
+</style>
+</head>
+<body>
+
+<div id="board"></div>
+
+<div class="controls">
+  <button onclick="rotateSelected(180)">+180°回転</button>
+  <button onclick="rotateSelected(90)">+90°回転</button>
+  <button onclick="rotateSelected(-90)">-90°回転</button>
+  <button onclick="toggleFace()">表裏切替</button>
+  <button onclick="bringFront()">最前面</button>
+  <button onclick="sendBack()">最背面</button>
+  <button onclick="deselect()">選択解除</button>
+  <button onclick="confirmShuffle()">シャッフル</button>
+
+</div>
+
+<div id="textModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>テキストカード追加</span>
+      <button onclick="closeTextModal()">✕</button>
+    </div>
+
+    <div style="padding:10px">
+      <input id="textInput" type="text" placeholder="テキストを入力" style="width:100%">
+      <div style="margin-top:10px; text-align:right">
+        <button onclick="closeTextModal()">キャンセル</button>
+        <button onclick="addTextCard()">追加</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<button onclick="openTextModal()">テキストカード追加</button>
+
+<div>json</div><input type="file" accept=".json" onchange="loadJsonDeck(this.files[0])">
+
+
+<div>image</div><input type="file" multiple accept="image/*" onchange="addImages(this.files)">
+
+<button onclick="openDeckList()">デッキリスト表示</button>
+
+<div id="deckModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>デッキ一覧</span>
+      <button onclick="closeDeckList()">✕</button>
+    </div>
+
+    <div id="deckGrid" class="grid"></div>
+  </div>
+</div>
+
+
+<script>
+const board = document.getElementById("board");
+
+let cards = [];
+let selectedCard = null;
+let dragOffset = { x: 0, y: 0 };
+
+function createCard({ image = null, text = null }) {
+  const el = document.createElement("div");
+  el.className = "card";
+
+  if (text) el.classList.add("text");
+
+  const card = {
+    id: crypto.randomUUID(),
+    el,
+    image,
+    text,
+    isFaceUp: false,
+    rotation: 0,
+    x: 550,
+    y: 250
+  };
+
+  updateCardView(card);
+  enableDrag(card);
+  enableSelect(card);
+
+  board.appendChild(el);
+  cards.push(card);
+}
+
+function updateCardView(card) {
+  card.el.innerHTML = "";
+
+  if (card.image) {
+    const img = document.createElement("img");
+    img.src = card.isFaceUp ? card.image : "cardBack.png";
+    card.el.appendChild(img);
+  } else {
+    card.el.textContent = card.isFaceUp ? card.text : "";
+    card.el.style.padding = "5px";
+    card.el.style.textAlign = "center";
+  }
+
+  card.el.style.transform =
+    `translate(${card.x}px, ${card.y}px) rotate(${card.rotation}deg)`;
+}
+
+function enableSelect(card) {
+  const select = (e) => {
+    e.preventDefault();
+    deselect();
+    selectedCard = card;
+    card.el.classList.add("selected");
+  };
+
+  card.el.addEventListener("click", select);
+  card.el.addEventListener("touchstart", select, { passive: false });
+}
+
+function deselect() {
+  if (selectedCard) {
+    selectedCard.el.classList.remove("selected");
+    selectedCard = null;
+  }
+}
+
+function enableDrag(card) {
+  const startDrag = (e) => {
+    e.preventDefault();
+
+    deselect();
+    selectedCard = card;
+    card.el.classList.add("selected");
+
+    const p = getPoint(e);
+    dragOffset.x = p.x - card.x - board.offsetLeft;
+    dragOffset.y = p.y - card.y - board.offsetTop;
+
+    document.addEventListener("mousemove", moveDrag);
+    document.addEventListener("mouseup", endDrag);
+
+    document.addEventListener("touchmove", moveDrag, { passive: false });
+    document.addEventListener("touchend", endDrag);
+  };
+
+  const moveDrag = (e) => {
+    if (selectedCard !== card) return;
+    e.preventDefault();
+
+    const p = getPoint(e);
+    card.x = p.x - board.offsetLeft - dragOffset.x;
+    card.y = p.y - board.offsetTop - dragOffset.y;
+    updateCardView(card);
+  };
+
+  const endDrag = () => {
+    document.removeEventListener("mousemove", moveDrag);
+    document.removeEventListener("mouseup", endDrag);
+    document.removeEventListener("touchmove", moveDrag);
+    document.removeEventListener("touchend", endDrag);
+  };
+
+  card.el.addEventListener("mousedown", startDrag);
+  card.el.addEventListener("touchstart", startDrag, { passive: false });
+}
+
+
+function rotateSelected(amount) {
+  if (!selectedCard) return;
+  selectedCard.rotation += amount;
+  updateCardView(selectedCard);
+}
+
+function toggleFace() {
+  if (!selectedCard) return;
+  selectedCard.isFaceUp = !selectedCard.isFaceUp;
+  updateCardView(selectedCard);
+  bringFront();
+}
+
+function bringFront() {
+  if (!selectedCard) return;
+  board.appendChild(selectedCard.el);
+}
+
+function sendBack() {
+  if (!selectedCard) return;
+  board.prepend(selectedCard.el);
+}
+
+function addImages(files) {
+  [...files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      createCard({ image: reader.result });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function getPoint(e) {
+  if (e.touches) {
+    return {
+      x: e.touches[0].pageX,
+      y: e.touches[0].pageY
+    };
+  } else {
+    return {
+      x: e.pageX,
+      y: e.pageY
+    };
+  }
+}
+
+function shuffleCards() {
+  for (let i = cards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [cards[i], cards[j]] = [cards[j], cards[i]];
+  }
+
+  // DOM の重なり順を更新
+  cards.forEach(card => board.appendChild(card.el));
+
+  deselect();
+}
+
+function confirmShuffle() {
+  if (confirm("本当にシャッフルしますか？")) {
+    shuffleCards();
+  }
+}
+
+function openDeckList() {
+  const grid = document.getElementById("deckGrid");
+  grid.innerHTML = "";
+
+  cards.forEach(card => {
+    const item = document.createElement("div");
+    item.className = "deck-card";
+
+    if (card.image) {
+      const img = document.createElement("img");
+      img.src = card.image;
+      item.appendChild(img);
+    } else {
+      item.textContent = card.text ?? "";
+      item.style.padding = "4px";
+      item.style.textAlign = "center";
+    }
+
+    grid.appendChild(item);
+  });
+
+  document.getElementById("deckModal").classList.remove("hidden");
+}
+
+function closeDeckList() {
+  document.getElementById("deckModal").classList.add("hidden");
+}
+
+function openTextModal() {
+  document.getElementById("textInput").value = "";
+  document.getElementById("textModal").classList.remove("hidden");
+}
+
+function closeTextModal() {
+  document.getElementById("textModal").classList.add("hidden");
+}
+
+function addTextCard() {
+  const text = document.getElementById("textInput").value.trim();
+  if (!text) return;
+
+  createCard({ text });
+  closeTextModal();
+}
+
+function loadJsonDeck(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+
+      if (!Array.isArray(data)) {
+        alert("JSONの形式が正しくありません");
+        return;
+      }
+
+      data.forEach(item => {
+        if (!item.name || !item.count) return;
+
+        for (let i = 0; i < item.count; i++) {
+          createCard({ text: item.name });
+        }
+      });
+
+    } catch (e) {
+      alert("JSONの読み込みに失敗しました");
+      console.error(e);
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+
+</script>
+</body>
+</html>
