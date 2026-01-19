@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ファイル作成</title>
+  </head>
+  <body>
+    <input
+      type="text"
+      id="filename"
+      placeholder="ファイル名（拡張子なし）"
+    /><br /><br />
+
+    <select id="filetype">
+      <option value="txt">txt</option>
+      <option value="json">json</option>
+      <option value="csv">csv</option>
+      <option value="md">md</option>
+      <!-- <option value="html">HTML</option>
+      <option value="js">JavaScript</option> -->
+    </select>
+    <br /><br />
+
+    <textarea
+      id="content"
+      rows="5"
+      cols="40"
+      placeholder="内容を入力"
+    ></textarea>
+    <br /><br />
+
+    <button onclick="download()">ファイルを作成</button>
+
+    <script>
+      function download() {
+        const filename = document.getElementById("filename").value;
+        const filetype = document.getElementById("filetype").value;
+        const content = document.getElementById("content").value;
+
+        if (!filename) {
+          alert("ファイル名を入力してください");
+          return;
+        }
+
+        const mimeTypes = {
+          txt: "text/plain;charset=utf-8",
+          json: "application/json;charset=utf-8",
+          html: "text/html;charset=utf-8",
+          js: "text/javascript;charset=utf-8",
+          csv: "text/csv;charset=utf-8",
+          md: "text/markdown;charset=utf-8",
+        };
+
+        const blob = new Blob([content], {
+          type: mimeTypes[filetype] || "text/plain;charset=utf-8",
+        });
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${filename}.${filetype}`;
+        a.click();
+
+        URL.revokeObjectURL(url);
+      }
+    </script>
+  </body>
+</html>
