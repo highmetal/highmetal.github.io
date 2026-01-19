@@ -1,430 +1,709 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
-<meta charset="UTF-8">
-<title>Card Deck</title>
-<style>
-body {
-  background: #ccc;
-  font-family: sans-serif;
-}
-
-#board {
-  position: relative;
-  width: 100%;
-  height: 550px;
-  background: #eee;
-}
-
-.card {
-  position: absolute;
-  width: 100px;
-  height: 140px;
-  border: 3px solid black;
-  background: white;
-  cursor: grab;
-  user-select: none;
-  touch-action: none;
-  box-sizing: border-box;   
-  overflow: hidden;
-}
-
-.card.text {
-  padding: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.2;
-}
-
-.card.selected {
-  border-color: orange;
-}
-
-
-.card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-
-  pointer-events: none;
-}
-
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.hidden {
-  display: none;
-}
-
-.modal-content {
-  background: white;
-  width: 90%;
-  max-width: 900px;
-  max-height: 80%;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #ccc;
-  font-weight: bold;
-}
-
-.grid {
-  padding: 10px;
-  overflow: auto;
-
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 6px;
-}
-
-.deck-card {
-  border: 2px solid black;
-  background: white;
-  aspect-ratio: 63 / 88;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-}
-
-.deck-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-.card.text {
-  padding: 6px;
-  text-align: center;
-  font-size: 14px;
-  white-space: pre-wrap;
-}
-
-
-</style>
-</head>
-<body>
-
-<div id="board"></div>
-
-<div class="controls">
-  <button onclick="rotateSelected(180)">+180°回転</button>
-  <button onclick="rotateSelected(90)">+90°回転</button>
-  <button onclick="rotateSelected(-90)">-90°回転</button>
-  <button onclick="toggleFace()">表裏切替</button>
-  <button onclick="bringFront()">最前面</button>
-  <button onclick="sendBack()">最背面</button>
-  <button onclick="deselect()">選択解除</button>
-  <button onclick="confirmShuffle()">シャッフル</button>
-
-</div>
-
-<div id="textModal" class="modal hidden">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>テキストカード追加</span>
-      <button onclick="closeTextModal()">✕</button>
-    </div>
-
-    <div style="padding:10px">
-      <input id="textInput" type="text" placeholder="テキストを入力" style="width:100%">
-      <div style="margin-top:10px; text-align:right">
-        <button onclick="closeTextModal()">キャンセル</button>
-        <button onclick="addTextCard()">追加</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<button onclick="openTextModal()">テキストカード追加</button>
-
-<div>json</div><input type="file" accept=".json" onchange="loadJsonDeck(this.files[0])">
-
-
-<div>image</div><input type="file" multiple accept="image/*" onchange="addImages(this.files)">
-
-<button onclick="openDeckList()">デッキリスト表示</button>
-
-<div id="deckModal" class="modal hidden">
-  <div class="modal-content">
-    <div class="modal-header">
-      <span>デッキ一覧</span>
-      <button onclick="closeDeckList()">✕</button>
-    </div>
-
-    <div id="deckGrid" class="grid"></div>
-  </div>
-</div>
-
-
-<script>
-const board = document.getElementById("board");
-
-let cards = [];
-let selectedCard = null;
-let dragOffset = { x: 0, y: 0 };
-
-function createCard({ image = null, text = null }) {
-  const el = document.createElement("div");
-  el.className = "card";
-
-  if (text) el.classList.add("text");
-
-  const card = {
-    id: crypto.randomUUID(),
-    el,
-    image,
-    text,
-    isFaceUp: false,
-    rotation: 0,
-    x: 550,
-    y: 250
-  };
-
-  updateCardView(card);
-  enableDrag(card);
-  enableSelect(card);
-
-  board.appendChild(el);
-  cards.push(card);
-}
-
-function updateCardView(card) {
-  card.el.innerHTML = "";
-
-  if (card.image) {
-    const img = document.createElement("img");
-    img.src = card.isFaceUp ? card.image : "cardBack.png";
-    card.el.appendChild(img);
-  } else {
-    card.el.textContent = card.isFaceUp ? card.text : "";
-    card.el.style.padding = "5px";
-    card.el.style.textAlign = "center";
-  }
-
-  card.el.style.transform =
-    `translate(${card.x}px, ${card.y}px) rotate(${card.rotation}deg)`;
-}
-
-function enableSelect(card) {
-  const select = (e) => {
-    e.preventDefault();
-    deselect();
-    selectedCard = card;
-    card.el.classList.add("selected");
-  };
-
-  card.el.addEventListener("click", select);
-  card.el.addEventListener("touchstart", select, { passive: false });
-}
-
-function deselect() {
-  if (selectedCard) {
-    selectedCard.el.classList.remove("selected");
-    selectedCard = null;
-  }
-}
-
-function enableDrag(card) {
-  const startDrag = (e) => {
-    e.preventDefault();
-
-    deselect();
-    selectedCard = card;
-    card.el.classList.add("selected");
-
-    const p = getPoint(e);
-    dragOffset.x = p.x - card.x - board.offsetLeft;
-    dragOffset.y = p.y - card.y - board.offsetTop;
-
-    document.addEventListener("mousemove", moveDrag);
-    document.addEventListener("mouseup", endDrag);
-
-    document.addEventListener("touchmove", moveDrag, { passive: false });
-    document.addEventListener("touchend", endDrag);
-  };
-
-  const moveDrag = (e) => {
-    if (selectedCard !== card) return;
-    e.preventDefault();
-
-    const p = getPoint(e);
-    card.x = p.x - board.offsetLeft - dragOffset.x;
-    card.y = p.y - board.offsetTop - dragOffset.y;
-    updateCardView(card);
-  };
-
-  const endDrag = () => {
-    document.removeEventListener("mousemove", moveDrag);
-    document.removeEventListener("mouseup", endDrag);
-    document.removeEventListener("touchmove", moveDrag);
-    document.removeEventListener("touchend", endDrag);
-  };
-
-  card.el.addEventListener("mousedown", startDrag);
-  card.el.addEventListener("touchstart", startDrag, { passive: false });
-}
-
-
-function rotateSelected(amount) {
-  if (!selectedCard) return;
-  selectedCard.rotation += amount;
-  updateCardView(selectedCard);
-}
-
-function toggleFace() {
-  if (!selectedCard) return;
-  selectedCard.isFaceUp = !selectedCard.isFaceUp;
-  updateCardView(selectedCard);
-  bringFront();
-}
-
-function bringFront() {
-  if (!selectedCard) return;
-  board.appendChild(selectedCard.el);
-}
-
-function sendBack() {
-  if (!selectedCard) return;
-  board.prepend(selectedCard.el);
-}
-
-function addImages(files) {
-  [...files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      createCard({ image: reader.result });
-    };
-    reader.readAsDataURL(file);
-  });
-}
-
-function getPoint(e) {
-  if (e.touches) {
-    return {
-      x: e.touches[0].pageX,
-      y: e.touches[0].pageY
-    };
-  } else {
-    return {
-      x: e.pageX,
-      y: e.pageY
-    };
-  }
-}
-
-function shuffleCards() {
-  for (let i = cards.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [cards[i], cards[j]] = [cards[j], cards[i]];
-  }
-
-  // DOM の重なり順を更新
-  cards.forEach(card => board.appendChild(card.el));
-
-  deselect();
-}
-
-function confirmShuffle() {
-  if (confirm("本当にシャッフルしますか？")) {
-    shuffleCards();
-  }
-}
-
-function openDeckList() {
-  const grid = document.getElementById("deckGrid");
-  grid.innerHTML = "";
-
-  cards.forEach(card => {
-    const item = document.createElement("div");
-    item.className = "deck-card";
-
-    if (card.image) {
-      const img = document.createElement("img");
-      img.src = card.image;
-      item.appendChild(img);
-    } else {
-      item.textContent = card.text ?? "";
-      item.style.padding = "4px";
-      item.style.textAlign = "center";
-    }
-
-    grid.appendChild(item);
-  });
-
-  document.getElementById("deckModal").classList.remove("hidden");
-}
-
-function closeDeckList() {
-  document.getElementById("deckModal").classList.add("hidden");
-}
-
-function openTextModal() {
-  document.getElementById("textInput").value = "";
-  document.getElementById("textModal").classList.remove("hidden");
-}
-
-function closeTextModal() {
-  document.getElementById("textModal").classList.add("hidden");
-}
-
-function addTextCard() {
-  const text = document.getElementById("textInput").value.trim();
-  if (!text) return;
-
-  createCard({ text });
-  closeTextModal();
-}
-
-function loadJsonDeck(file) {
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-
-      if (!Array.isArray(data)) {
-        alert("JSONの形式が正しくありません");
-        return;
+  <head>
+    <meta charset="UTF-8" />
+    <title>cardPre</title>
+    <style>
+      body {
+        background: #ccc;
+        font-family: sans-serif;
       }
 
-      data.forEach(item => {
-        if (!item.name || !item.count) return;
+      #board {
+        position: relative;
+        width: 100%;
+        height: 550px;
+        background: #eee;
+      }
 
-        for (let i = 0; i < item.count; i++) {
-          createCard({ text: item.name });
+      .card {
+        position: absolute;
+        width: 100px;
+        height: 140px;
+        border: 3px solid black;
+        background: white;
+        cursor: grab;
+        user-select: none;
+        touch-action: none;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+
+      .card.text {
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
+      .card.selected {
+        border-color: orange;
+      }
+
+      .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+
+        pointer-events: none;
+      }
+
+      .modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      .modal-content {
+        background: white;
+        width: 90%;
+        max-width: 900px;
+        max-height: 80%;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        font-weight: bold;
+      }
+
+      .grid {
+        padding: 10px;
+        overflow: auto;
+
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 6px;
+      }
+
+      .deck-card {
+        border: 2px solid black;
+        background: white;
+        aspect-ratio: 63 / 88;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+      }
+
+      .deck-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        pointer-events: none;
+      }
+
+      .card.text {
+        padding: 6px;
+        text-align: center;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      /* デッキ作成 */
+      table {
+        border-collapse: collapse;
+        margin-top: 10px;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 4px 8px;
+        text-align: center;
+      }
+      .handle {
+        cursor: grab;
+      }
+      .total {
+        margin-top: 8px;
+        font-weight: bold;
+      }
+      td[contenteditable] {
+        background-color: #f9f9f9;
+      }
+      label,
+      button {
+        color: #000000;
+        background-color: #dbdbdb;
+        border: solid 1px #000000;
+        border-radius: 3px;
+        font-size: 22px;
+      }
+      input[type="file"] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>デッキ回し</h3>
+    <div id="board"></div>
+
+    <div class="controls">
+      <button onclick="rotateSelected(180)">+180°回転</button>
+      <button onclick="rotateSelected(90)">+90°回転</button>
+      <button onclick="rotateSelected(-90)">-90°回転</button>
+      <button onclick="toggleFace()">表裏切替</button>
+      <button onclick="bringFront()">最前面</button>
+      <button onclick="sendBack()">最背面</button>
+      <button onclick="deselect()">選択解除</button>
+      <button onclick="confirmShuffle()">シャッフル</button>
+    </div>
+
+    <label
+      >デッキ読み込み
+      <input
+        type="file"
+        accept=".json"
+        onchange="loadJsonDeck(this.files[0])"
+      />
+    </label>
+    <button onclick="openDeckList()">デッキリスト表示</button>
+
+    <div id="deckModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span>デッキ一覧</span>
+          <button onclick="closeDeckList()">✕</button>
+        </div>
+
+        <div id="deckGrid" class="grid"></div>
+      </div>
+    </div>
+
+    <br /><br />
+    <h3>デッキ作成</h3>
+    <div>デッキ名</div>
+    <input type="text" id="deckName" placeholder="デッキ名を入力" />
+    <br /><br />
+    <div>カード名</div>
+    <input type="text" id="cardName" />
+    <div>枚数</div>
+    <input type="number" id="cardCount" value="1" min="1" max="4" />
+    <br /><br />
+    <button onclick="addCard()">追加</button>
+
+    <table id="table">
+      <thead>
+        <tr>
+          <th>カード名</th>
+          <th>枚数</th>
+          <th><button id="sakujo">一括削除</button></th>
+          <th>並び替え</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="total">合計枚数：<span id="totalCount">0</span> / 40</div>
+    <button onclick="downloadJson()">jsonデータのダウンロード</button>
+    <br />
+    <label
+      >既存のデッキ（json）を読み込む
+      <input
+        type="file"
+        accept=".json"
+        id="jsonFile"
+        style="margin-left: 20px"
+      />
+    </label>
+    <pre id="output"></pre>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    <script>
+      const board = document.getElementById("board");
+
+      let cards = [];
+      let selectedCard = null;
+      let dragOffset = { x: 0, y: 0 };
+      let deckOrder = [];
+
+      function createCard({ image = null, text = null }) {
+        const el = document.createElement("div");
+        el.className = "card";
+
+        if (text) el.classList.add("text");
+
+        const card = {
+          id: crypto.randomUUID(),
+          el,
+          image,
+          text,
+          isFaceUp: false,
+          rotation: 0,
+          x: 550,
+          y: 250,
+        };
+
+        updateCardView(card);
+        enableDrag(card);
+        enableSelect(card);
+
+        board.appendChild(el);
+        cards.push(card);
+      }
+
+      function updateCardView(card) {
+        card.el.innerHTML = "";
+
+        if (card.image) {
+          const img = document.createElement("img");
+          img.src = card.isFaceUp ? card.image : "cardBack.png";
+          card.el.appendChild(img);
+        } else {
+          card.el.textContent = card.isFaceUp ? card.text : "";
+          card.el.style.padding = "5px";
+          card.el.style.textAlign = "center";
         }
+
+        card.el.style.transform = `translate(${card.x}px, ${card.y}px) rotate(${card.rotation}deg)`;
+      }
+
+      function enableSelect(card) {
+        const select = (e) => {
+          e.preventDefault();
+          deselect();
+          selectedCard = card;
+          card.el.classList.add("selected");
+        };
+
+        card.el.addEventListener("click", select);
+        card.el.addEventListener("touchstart", select, { passive: false });
+      }
+
+      function deselect() {
+        if (selectedCard) {
+          selectedCard.el.classList.remove("selected");
+          selectedCard = null;
+        }
+      }
+
+      function enableDrag(card) {
+        const startDrag = (e) => {
+          e.preventDefault();
+
+          deselect();
+          selectedCard = card;
+          card.el.classList.add("selected");
+
+          const p = getPoint(e);
+          dragOffset.x = p.x - card.x - board.offsetLeft;
+          dragOffset.y = p.y - card.y - board.offsetTop;
+
+          document.addEventListener("mousemove", moveDrag);
+          document.addEventListener("mouseup", endDrag);
+
+          document.addEventListener("touchmove", moveDrag, { passive: false });
+          document.addEventListener("touchend", endDrag);
+        };
+
+        const moveDrag = (e) => {
+          if (selectedCard !== card) return;
+          e.preventDefault();
+
+          const p = getPoint(e);
+          card.x = p.x - board.offsetLeft - dragOffset.x;
+          card.y = p.y - board.offsetTop - dragOffset.y;
+          updateCardView(card);
+        };
+
+        const endDrag = () => {
+          document.removeEventListener("mousemove", moveDrag);
+          document.removeEventListener("mouseup", endDrag);
+          document.removeEventListener("touchmove", moveDrag);
+          document.removeEventListener("touchend", endDrag);
+        };
+
+        card.el.addEventListener("mousedown", startDrag);
+        card.el.addEventListener("touchstart", startDrag, { passive: false });
+      }
+
+      function rotateSelected(amount) {
+        if (!selectedCard) return;
+        selectedCard.rotation += amount;
+        updateCardView(selectedCard);
+      }
+
+      function toggleFace() {
+        if (!selectedCard) return;
+        selectedCard.isFaceUp = !selectedCard.isFaceUp;
+        updateCardView(selectedCard);
+        bringFront();
+      }
+
+      function bringFront() {
+        if (!selectedCard) return;
+        board.appendChild(selectedCard.el);
+      }
+
+      function sendBack() {
+        if (!selectedCard) return;
+        board.prepend(selectedCard.el);
+      }
+
+      function getPoint(e) {
+        if (e.touches) {
+          return {
+            x: e.touches[0].pageX,
+            y: e.touches[0].pageY,
+          };
+        } else {
+          return {
+            x: e.pageX,
+            y: e.pageY,
+          };
+        }
+      }
+
+      function shuffleCards() {
+        for (let i = cards.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [cards[i], cards[j]] = [cards[j], cards[i]];
+        }
+
+        // DOM の重なり順を更新
+        cards.forEach((card) => board.appendChild(card.el));
+
+        deselect();
+      }
+
+      function confirmShuffle() {
+        if (confirm("本当にシャッフルしますか？")) {
+          shuffleCards();
+        }
+      }
+
+      function openDeckList() {
+        const grid = document.getElementById("deckGrid");
+        grid.innerHTML = "";
+
+        deckOrder.forEach((entry) => {
+          for (let i = 0; i < entry.count; i++) {
+            const item = document.createElement("div");
+            item.className = "deck-card";
+
+            if (entry.image) {
+              const img = document.createElement("img");
+              img.src = entry.image;
+              item.appendChild(img);
+            } else {
+              item.textContent = entry.name;
+              item.style.padding = "4px";
+              item.style.textAlign = "center";
+            }
+
+            grid.appendChild(item);
+          }
+        });
+
+        document.getElementById("deckModal").classList.remove("hidden");
+      }
+
+      function closeDeckList() {
+        document.getElementById("deckModal").classList.add("hidden");
+      }
+
+      function openTextModal() {
+        document.getElementById("textInput").value = "";
+        document.getElementById("textModal").classList.remove("hidden");
+      }
+
+      function closeTextModal() {
+        document.getElementById("textModal").classList.add("hidden");
+      }
+
+      function loadJsonDeck(file) {
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            createDeckFromJson(data);
+          } catch (err) {
+            alert("JSON の読み込みに失敗しました");
+            console.error(err);
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      function createDeckFromJson(data) {
+        if (!data.cards || !Array.isArray(data.cards)) {
+          alert("不正なデッキデータです");
+          return;
+        }
+
+        deckOrder = [];
+        cards = [];
+        board.innerHTML = "";
+
+        data.cards.forEach((entry) => {
+          const name = entry.name;
+          const image = entry.image ?? null;
+          const count = entry.count ?? 1;
+
+          deckOrder.push({ name, image, count });
+
+          for (let i = 0; i < count; i++) {
+            createCard({
+              text: name,
+              image: image,
+            });
+          }
+        });
+
+        shuffleCards();
+      }
+    </script>
+    <script>
+      const STORAGE_KEY = "deck_builder_cards";
+      const STORAGE_NAME_KEY = "deck_builder_name";
+      const tableBody = document.querySelector("#table tbody");
+      const totalCountEl = document.getElementById("totalCount");
+      const deckNameInput = document.getElementById("deckName");
+
+      /* ---------- 共通 ---------- */
+      function getDeckFromTable() {
+        const cards = [];
+        for (const row of tableBody.rows) {
+          cards.push({
+            name: row.cells[0].textContent.trim(),
+            count: Number(row.cells[1].textContent),
+          });
+        }
+        return cards;
+      }
+
+      function saveToLocalStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(getDeckFromTable()));
+        localStorage.setItem(STORAGE_NAME_KEY, deckNameInput.value.trim());
+      }
+
+      function getTotal() {
+        return getDeckFromTable().reduce((a, c) => a + c.count, 0);
+      }
+
+      function updateTotal() {
+        totalCountEl.textContent = getTotal();
+      }
+
+      function clearInputs() {
+        document.getElementById("cardName").value = "";
+        document.getElementById("cardCount").value = 1;
+      }
+
+      /* ---------- 行生成 ---------- */
+      function createRow(name, count) {
+        const row = tableBody.insertRow();
+        const nameCell = row.insertCell();
+        nameCell.textContent = name;
+        nameCell.contentEditable = true;
+
+        const countCell = row.insertCell();
+        countCell.textContent = count;
+        countCell.contentEditable = true;
+
+        // 編集時制限
+        nameCell.addEventListener("input", () => {
+          const val = nameCell.textContent.trim();
+          if (!val) nameCell.textContent = "";
+          saveToLocalStorage();
+        });
+
+        countCell.addEventListener("input", () => {
+          let val = Number(countCell.textContent);
+          if (isNaN(val) || val < 1) val = 1;
+          if (val > 4) val = 4;
+          // 同名カードの合計制限
+          const sameCount = [...tableBody.rows]
+            .filter(
+              (r) =>
+                r !== row &&
+                r.cells[0].textContent.trim() === nameCell.textContent.trim()
+            )
+            .reduce((a, r) => a + Number(r.cells[1].textContent), 0);
+          if (val + sameCount > 4) {
+            val = 4 - sameCount;
+            if (val < 1) val = 1;
+          }
+          // 合計40枚チェック
+          const otherTotal = [...tableBody.rows]
+            .filter((r) => r !== row)
+            .reduce((a, r) => a + Number(r.cells[1].textContent), 0);
+          if (val + otherTotal > 40) val = 40 - otherTotal;
+          countCell.textContent = val;
+          updateTotal();
+          saveToLocalStorage();
+        });
+
+        // 操作セル
+        const opCell = row.insertCell();
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "削除";
+        delBtn.onclick = () => {
+          if (confirm("本当に削除しますか？")) {
+            row.remove();
+            updateTotal();
+            saveToLocalStorage();
+          }
+        };
+        opCell.appendChild(delBtn);
+
+        // 並び替えハンドルセル
+        const handleCell = row.insertCell();
+        const handle = document.createElement("span");
+        handle.textContent = "☰";
+        handle.className = "handle";
+        handleCell.appendChild(handle);
+      }
+
+      /* ---------- 追加 ---------- */
+      function addCard() {
+        const name = document.getElementById("cardName").value.trim();
+        const addCount = Number(document.getElementById("cardCount").value);
+        if (!name || addCount <= 0) return;
+        if (getTotal() + addCount > 40) {
+          alert("合計40枚までです");
+          return;
+        }
+
+        for (const row of tableBody.rows) {
+          if (row.cells[0].textContent.trim() === name) {
+            const current = Number(row.cells[1].textContent);
+            if (current + addCount > 4) {
+              alert("同じカードは4枚までです");
+              return;
+            }
+            row.cells[1].textContent = current + addCount;
+            updateTotal();
+            saveToLocalStorage();
+            clearInputs();
+            return;
+          }
+        }
+
+        if (addCount > 4) {
+          alert("同じカードは4枚までです");
+          return;
+        }
+
+        createRow(name, addCount);
+        updateTotal();
+        saveToLocalStorage();
+        clearInputs();
+      }
+
+      /* ---------- JSON ---------- */
+      function exportJson() {
+        const deckJson = {
+          name: deckNameInput.value.trim(),
+          cards: getDeckFromTable(),
+        };
+        document.getElementById("output").textContent = JSON.stringify(
+          deckJson,
+          null,
+          2
+        );
+        return deckJson;
+      }
+
+      function downloadJson() {
+        const data = JSON.stringify(exportJson(), null, 2);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = (deckNameInput.value.trim() || "deck") + ".json";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      /* ---------- JSON読み込み ---------- */
+      document.getElementById("jsonFile").addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            const obj = JSON.parse(ev.target.result);
+            if (!obj.cards || !Array.isArray(obj.cards))
+              throw new Error("無効なJSON");
+            tableBody.innerHTML = "";
+            if (obj.name) deckNameInput.value = obj.name;
+            obj.cards.forEach((c) => createRow(c.name, c.count));
+            updateTotal();
+            saveToLocalStorage();
+          } catch (err) {
+            alert("JSON読み込みに失敗しました");
+          }
+        };
+        reader.readAsText(file);
       });
 
-    } catch (e) {
-      alert("JSONの読み込みに失敗しました");
-      console.error(e);
-    }
-  };
+      /* ---------- 並び替え ---------- */
+      $(function () {
+        $("#table tbody").sortable({
+          handle: ".handle",
+          axis: "y",
+          stop: function () {
+            saveToLocalStorage();
+          },
+        });
+      });
 
-  reader.readAsText(file);
-}
+      /* ---------- 初期復元 ---------- */
+      (function restoreFromLocalStorage() {
+        const savedCards = localStorage.getItem(STORAGE_KEY);
+        const savedName = localStorage.getItem(STORAGE_NAME_KEY);
+        if (savedName) deckNameInput.value = savedName;
+        if (!savedCards) return;
+        const cards = JSON.parse(savedCards);
+        cards.forEach((c) => createRow(c.name, c.count));
+        updateTotal();
+      })();
 
+      // デッキ名変更時も保存
+      deckNameInput.addEventListener("input", saveToLocalStorage);
 
-</script>
-</body>
+      //一括削除
+      const sakujo = document.getElementById("sakujo");
+      sakujo.addEventListener("click", allClear);
+
+      function allClear() {
+        if (!confirm("リストからカードをすべて削除しますか？")) return;
+
+        //データ削除
+        localStorage.removeItem("deck_builder_cards");
+        localStorage.removeItem("deck_builder_name");
+
+        cardList = [];
+
+        //テーブルの行を削除
+        while (table.rows.length > 1) {
+          table.deleteRow(1);
+        }
+
+        updateSum();
+      }
+    </script>
+  </body>
 </html>
