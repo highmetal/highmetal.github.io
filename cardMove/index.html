@@ -170,7 +170,7 @@ function updateCardView(card) {
 
   if (card.image) {
     const img = document.createElement("img");
-    img.src = card.isFaceUp ? card.image : "cardBack.png";
+    img.src = card.isFaceUp ? card.image : "cardBack.PNG";
     card.el.appendChild(img);
   } else {
     card.el.textContent = card.isFaceUp ? card.text : "";
