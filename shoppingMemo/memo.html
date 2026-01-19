@@ -1,69 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>買い物メモ</title>
     <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+      }
 
-		table {
-  			width: 100%;
-  			border-collapse: collapse;
-  			white-space: nowrap;
-		}
+      table th,
+      table td {
+        border: 2px solid #ccc;
+        padding: 2px 10px;
+      }
 
-		
-		table th,
-		table td {
-  			border: 2px solid #ccc;
-  			padding: 2px 10px;
-		}
+      table td {
+        height: 48px;
+        max-height: 48px;
+        vertical-align: middle;
+        overflow: hidden;
+      }
 
-		table td {
-			height: 48px;
- 	 		max-height: 48px;
-  			vertical-align: middle;
-  			overflow: hidden;
-		}
+      table input {
+        height: 30px;
+        line-height: 30px;
+        font-size: inherit;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-		table input {
-  			height: 30px;
-  			line-height: 30px;
-  			font-size: inherit;
-  			box-sizing: border-box;
-  			margin: 0;
-  			padding: 0;
-		}
+      .editing td {
+        position: relative;
+      }
 
+      .editing input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
 
-		.editing td {
-  			position: relative;
-		}
+      input {
+        font-size: 20px;
+      }
 
-		
-		.editing input {
-  			//position: absolute;
-  			inset: 0;
-  			width: 100%;
-  			height: 100%;
-		}
+      input[type="checkbox"] {
+        transform: scale(1.4);
+        accent-color: #336633;
+      }
 
-
-		input{
-			font-size: 20px;
-		}
-
-		input[type=checkbox]{
-			transform: scale(1.4);
-			accent-color: #336633;
-		}
-
-		#message{
-			color:red;
-		}
-
-
-
+      #message {
+        color: red;
+      }
     </style>
   </head>
 
@@ -78,9 +70,7 @@
             <input type="text" id="name" />
           </label>
           <br />
-          <label
-            >　値段 : <input type="number" id="amount" min="0" />円
-          </label>
+          <label>　値段 : <input type="number" id="amount" min="0" />円 </label>
           <br />
           <label
             >　個数 : <input type="number" id="quantity" min="0" />個
@@ -127,10 +117,10 @@
       const capture = document.getElementById("capture");
 
       //ローカルストレージから読み込み
-      let cardList = JSON.parse(localStorage.getItem("cardList") || "[]");
+      let shopingList = JSON.parse(localStorage.getItem("shopingList") || "[]");
 
       function saveToLocalStorage() {
-        localStorage.setItem("cardList", JSON.stringify(cardList));
+        localStorage.setItem("shopingList", JSON.stringify(shopingList));
       }
 
       function updateSum() {
@@ -139,9 +129,8 @@
           const checkbox = row.querySelector("input[type='checkbox']");
           if (checkbox.checked) sum += Number(row.dataset.amount);
         });
-        document.getElementById(
-          "sumAmount"
-        ).textContent = `総計: ${sum.toLocaleString()}円`;
+        document.getElementById("sumAmount").textContent =
+          `総計: ${sum.toLocaleString()}円`;
       }
 
       //テーブルに商品を表示する
@@ -150,7 +139,7 @@
         row.dataset.id = card.id;
         row.dataset.amount = card.amount * card.quantity;
 
-			const checkCell = row.insertCell();
+        const checkCell = row.insertCell();
         const nameCell = row.insertCell();
         const amountCell = row.insertCell();
         const quantityCell = row.insertCell();
@@ -160,7 +149,6 @@
         const deleteCell = row.insertCell();
         const handleCell = row.insertCell();
 
-
         nameCell.textContent = card.name;
         amountCell.textContent = card.amount.toLocaleString();
         quantityCell.textContent = card.quantity;
@@ -168,14 +156,12 @@
           card.amount * card.quantity
         ).toLocaleString();
 
-			//チェックボックス
+        //チェックボックス
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = false;
         checkbox.addEventListener("change", updateSum);
 
-
-        
         checkCell.appendChild(checkbox);
 
         //備考
@@ -194,7 +180,7 @@
         //並び替えバー
         handleCell.textContent = "≡";
         handleCell.className = "handle";
-        
+
         //編集機能
         let editing = false;
         editBtn.addEventListener("click", () => {
@@ -203,7 +189,7 @@
             nameCell.innerHTML = `<input type="text" value="${nameCell.textContent}">`;
             amountCell.innerHTML = `<input type="number" min="0" value="${amountCell.textContent.replace(
               /,/g,
-              ""
+              "",
             )}" class="amount">`;
             quantityCell.innerHTML = `<input type="number" min="1" value="${quantityCell.textContent}" class="quantity">`;
             bikouCell.innerHTML = `<input type="text" value="${bikouCell.textContent}">`;
@@ -242,8 +228,8 @@
             bikouCell.textContent = newBikou;
 
             // 配列の更新
-            const index = cardList.findIndex((c) => c.id === card.id);
-            cardList[index] = {
+            const index = shopingList.findIndex((c) => c.id === card.id);
+            shopingList[index] = {
               id: card.id,
               name: newName,
               amount: newAmount,
@@ -264,7 +250,7 @@
         delBtn.addEventListener("click", () => {
           if (confirm(`リストから”${card.name}”を削除してもよろしいですか？`)) {
             row.remove();
-            cardList = cardList.filter((c) => c.id !== card.id);
+            shopingList = shopingList.filter((c) => c.id !== card.id);
             saveToLocalStorage();
             updateSum();
           }
@@ -274,7 +260,7 @@
       }
 
       //ページ再読み込み
-      cardList.forEach(addCardToTable);
+      shopingList.forEach(addCardToTable);
 
       //フォーム送信時の処理
       form.onsubmit = (event) => {
@@ -307,7 +293,7 @@
         message.textContent = "";
 
         const newCard = { id: Date.now(), name, amount, quantity, bikou };
-        cardList.push(newCard);
+        shopingList.push(newCard);
         saveToLocalStorage();
         addCardToTable(newCard);
         form.reset();
@@ -336,7 +322,7 @@
           handle: ".handle",
           axis: "y",
           stop: function () {
-            const oldList = [...cardList];
+            const oldList = [...shopingList];
             const newList = [];
 
             $("#table tr[data-id]").each(function () {
@@ -345,32 +331,30 @@
               if (card) newList.push(card);
             });
 
-            cardList = newList;
+            shopingList = newList;
             saveToLocalStorage();
           },
         });
       });
 
+      //一括削除
+      const sakujo = document.getElementById("sakujo");
+      sakujo.addEventListener("click", allClear);
 
-		//一括削除
-		const sakujo = document.getElementById("sakujo");
-		sakujo.addEventListener("click", allClear);
+      function allClear() {
+        if (!confirm("リストから商品をすべて削除しますか？")) return;
 
-		function allClear() {
-  			if (!confirm("リストから商品をすべて削除しますか？")) return;
+        //データ削除
+        localStorage.removeItem("shopingList");
+        shopingList = [];
 
-  			//データ削除
-  			localStorage.removeItem("cardList");
-  			cardList = [];
+        //テーブルの行を削除
+        while (table.rows.length > 1) {
+          table.deleteRow(1);
+        }
 
-  			//テーブルの行を削除
-  			while (table.rows.length > 1) {
-    			table.deleteRow(1);
-  			}
-
-  			updateSum();
-		}
-		
+        updateSum();
+      }
     </script>
   </body>
 </html>
