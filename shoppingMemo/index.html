@@ -4,20 +4,49 @@
     <meta charset="UTF-8">
     <title>shoppingMemo</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
-            margin-top: 20px;
+    /* 全体のフォントサイズ */
+    body {
+        font-size: 16px; /* PC基準 */
+        font-family: sans-serif;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 600px;
+        margin-top: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+        font-size: 1rem;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    /* チェックボックスを1.5倍 */
+    input[type="checkbox"] {
+        transform: scale(1.5);
+        cursor: pointer;
+    }
+
+    /* スマホ向け調整 */
+    @media (max-width: 600px) {
+        body {
+            font-size: 18px; /* スマホでちょうどいいサイズ */
         }
+
         th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
+            padding: 14px;
+            font-size: 1.1rem;
         }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+    }
+</style>
+
 </head>
 <body>
     <h1>テキストファイルから表を作成</h1>
@@ -25,8 +54,8 @@
     <table id="dataTable">
         <thead>
             <tr>
-                <th>選択</th>
-                <th>データ</th>
+                <th>チェック</th>
+                <th>名前</th>
             </tr>
         </thead>
         <tbody>
