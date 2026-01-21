@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>「祝え！この物語の終幕を！」というカードについて</title>
+    <style>
+      body {
+        font-family: "メイリオ", sans-serif;
+        font-size: 18px;
+      }
+      .title {
+        border-bottom: solid #c1c1c1;
+      }
+
+      /* カード全体 */
+      .card {
+        width: 260px;
+        aspect-ratio: 63/88;
+        background: white;
+        border: 3px solid black;
+        border-radius: 12px;
+        padding: 8px;
+        position: relative;
+      }
+
+      /* 上部 */
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cost {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        color: white;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+      .vividro {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      /* ビビッドロー文字 */
+      .vividro-title {
+        background-color: #000;
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 6px;
+        font-weight: bold;
+        letter-spacing: -0.05em;
+      }
+
+      /* 三角共通 */
+      .vividro-arrow {
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+      }
+
+      /* 左三角 */
+      .vividro-arrow.left {
+        border-right: 8px solid black;
+      }
+
+      /* 右三角 */
+      .vividro-arrow.right {
+        border-left: 8px solid black;
+      }
+
+      /* コスト */
+      .vividro-cost {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        color: white;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+      }
+
+      .name {
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      /* 文明 */
+      .race {
+        text-align: center;
+        font-size: 10px;
+        margin: 4px 0;
+      }
+
+      /* 画像 */
+      .image {
+        height: 40%;
+        background: aqua;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+
+      /* 種類 */
+      .type {
+        width: 22%;
+        padding: 2px 8px;
+        font-size: 10px;
+        color: white;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        border: 1px solid black;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* 効果 */
+      .effect {
+        font-size: 11px;
+        line-height: 1.4;
+        padding-top: 6px;
+      }
+      .card-bottom-number {
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%) rotate(180deg);
+        font-size: 12px;
+        font-weight: bold;
+        color: #ffffff;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+      }
+
+      .card-name {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>《「祝え！この物語の終幕を！」》というカードについて</h2>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="cost">6</div>
+        <div class="name">
+          「<ruby>祝<rt>いわ</rt></ruby
+          >え！この <ruby>物語<rt>ものがたり</rt></ruby
+          >の <ruby>終幕<rt>しゅうまく</rt></ruby
+          >を！」
+        </div>
+      </div>
+
+      <div class="race">美孔麗王国</div>
+
+      <div class="image">no image</div>
+
+      <div class="type">呪文</div>
+
+      <div class="effect">
+        <div class="vividro">
+          <span class="vividro-arrow left"></span>
+          <span class="vividro-title">ビビッドロー</span>
+          <span class="vividro-arrow right"></span>
+          <span class="vividro-cost">4</span>
+        </div>
+        ■カードを1枚引く。その後、水または火の、コスト7以下のクリーチャーを1体、自分の手札から出す。そのクリーチャーに「スピードアタッカー」を与える。このターンの終わりに、そのクリーチャーを山札の上に置く。<br /><br /><br />
+      </div>
+      <div class="card-bottom-number">1</div>
+    </div>
+    <section>
+      <br />
+      <h3 class="title">概要</h3>
+      <p>
+        このカードは2020年9月19日発売のDMRP-15 「十王篇 第3弾 幻龍×凶襲
+        ゲンムエンペラー!!!」にて収録された美孔麗王国の呪文。<br /><br />
+        ビビッドロー4（水/火）を持ち、手札から水か火の7以下のクリーチャーを踏み倒し、SAを与える効果を持つ。<br /><br />
+        《ブレイン・ストーム》や《ロスト・ウォーターゲイト》でトップに仕込むことでビビッドローで早い段階から大型クリーチャーを展開し、攻め込むことができる。<br /><br />
+        しかし、ターンの終わりに出したクリーチャーはトップに戻ってしまうため、その点を考慮したプレイングが必要。<br />
+      </p>
+    </section>
+    <section>
+      <h3 class="title">踏み倒し先で相性のいいカード</h3>
+      <ol>
+        <li class="card-name">《龍素記号Sr スペルサイクリカ》</li>
+        <p>
+          踏み倒したらもう一度このカードが使える。<br />
+          さらに《未来の法皇ミラダンテSF》に革命チェンジすれば手札に戻ったこのカードをファイナル革命でもう一度使うことができる。
+        </p>
+        <br />
+        <li class="card-name">
+          《D-Jealousy-灰撫／♪五本まで 集めて林 森ジャングル》
+        </li>
+        <p>
+          JDとアタックトリガーを持っているため、SAを与えると最強の生物になる。アタックトリガーでは呪文面を使うことができるため、最大5ドローしたりエレメントバウンスなど柔軟に立ち回ることができる。<br />
+          エレメントバウンスで自身を選べば、アタックキャンセルも可能。<br />
+          《音卿の精霊龍ラフルル・ラブ》に革命チェンジすれば呪文面の《「未来から来る、だからミラクル」》を使うことも可能。
+        </p>
+        <br />
+        <li class="card-name">
+          《音卿の精霊龍ラフルル・ラブ／「未来から来る、だからミラクル」》
+        </li>
+        <p>
+          上記1、2のクリーチャーから革命チェンジすることもできるが、このカードから直接踏み倒す出すこともできる。<br />
+          ターン終了時のトップに戻る効果をうまく使えば継続した呪文ロックが可能。
+        </p>
+        <br />
+        <li class="card-name">《芸魔龍馬 バルバトチェス》</li>
+        <p>
+          上記1、2のクリーチャーから革命チェンジすることもできるが、このカードから直接踏み倒す出すこともできる。part2<br />
+          地味に2ドローが偉い。
+        </p>
+      </ol>
+    </section>
+
+    <section>
+      <h3 class="title">デッキ</h3>
+      <a href="deck1.html">赤青t白 祝えサイクリカSF</a>
+    </section>
+  </body>
+</html>
