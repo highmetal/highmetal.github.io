@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>memoryGame</title>
+    <style>
+      html {
+        background-image: url("backgroundImage.jpg");
+        background-size: cover;
+        color: white;
+      }
+
+      html h1 {
+        color: #000000;
+        -webkit-text-stroke: 0.1rem #ffbfbf;
+        font-size: 5rem;
+      }
+
+      body {
+        text-align: center;
+      }
+
+      .game {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 10px;
+      }
+
+      .card {
+        background-color: rgb(0, 0, 0);
+        font-size: 3rem;
+        height: 5rem;
+        width: 5rem;
+        padding: 10px;
+        margin: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: default;
+      }
+
+      .card:hover {
+        scale: 1.03;
+      }
+
+      select {
+        background-color: rgb(168, 168, 168);
+        margin-bottom: 20%;
+        width: 45%;
+        height: 58px;
+        font-size: 34px;
+        border-radius: 10px;
+      }
+
+      select .n {
+        background-color: grey;
+      }
+
+      select optgroup {
+        background-color: rgb(193, 193, 193);
+      }
+      optgroup option {
+        background-color: rgb(255, 255, 255);
+      }
+
+      button {
+        font-size: 3rem;
+        background-color: rgb(96, 161, 58);
+        color: rgb(255, 255, 255);
+        border-radius: 10px;
+      }
+      button:hover {
+        scale: 1.03;
+      }
+
+      .turn,
+      .point {
+        font-size: 2.5rem;
+        -webkit-text-stroke: 0.1rem #000000;
+        font-weight: bold;
+        margin-top: 1%;
+      }
+
+      .ui {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .match {
+        color: rgb(255, 255, 105);
+      }
+
+      .timer {
+        -webkit-text-stroke: 0.1rem #000000;
+        font-size: 2.5rem;
+        margin-bottom: 1%;
+        font-weight: bold;
+      }
+
+      @media (max-width: 768px) {
+        html h1 {
+          -webkit-text-stroke: 0.1rem #ffbfbf;
+          font-size: 3rem;
+        }
+
+        .game {
+          grid-template-columns: repeat(4, 1fr);
+        }
+
+        select {
+          font-size: 20px;
+          width: 55%;
+        }
+
+        button {
+          font-size: 1.5rem;
+        }
+
+        .card {
+          font-size: 1.8rem;
+          height: 2rem;
+          width: 2rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>神経衰弱</h1>
+    <div class="timer" style="visibility: hidden">9:99</div>
+    <div class="game"></div>
+    <div class="ui">
+      <div class="turn" style="visibility: hidden">ターン1</div>
+      <div class="point" style="visibility: hidden">0pt</div>
+    </div>
+    <button class="retry" style="visibility: hidden">続ける</button><br />
+
+    <select class="select">
+      <option value="n" class="n">難易度を選択</option>
+      <optgroup label="2枚一致モード" class="m">
+        <option value="8">EASY(8枚、20秒)</option>
+        <option value="16">NOMAL(16枚、40秒)</option>
+        <option value="32">HARD(32枚、90秒)</option>
+      </optgroup>
+
+      <optgroup label="3枚一致モード" class="m">
+        <option value="12">EASY（12枚・30秒）</option>
+        <option value="18">NORMAL（18枚・50秒）</option>
+        <option value="30">HARD（30枚・120秒）</option>
+      </optgroup></select
+    ><br />
+
+    <button class="startButton">START</button>
+
+    <script>
+      "use strict";
+
+      let pairCard = []; //カードの種類
+      let card;
+      let upCards = []; //表向きにしたカードを記憶
+      let turn = 1;
+      let score = 0;
+      let isLocked = false; //カードを表にする処理をさせるかどうか
+      let mode;
+
+      const game = document.querySelector(".game");
+      const select = document.querySelector(".select");
+      const timer = document.querySelector(".timer");
+      const turnCount = document.querySelector(".turn");
+      const point = document.querySelector(".point");
+      const retryButton = document.querySelector(".retry"); //リトライボタン
+      const startButton = document.querySelector(".startButton");
+
+      let goalTime = null; //制限時間
+      let targetTime = null;
+      let timerId = null;
+
+      retryButton.addEventListener("click", retry);
+
+      startButton.addEventListener("click", function () {
+        if (select.value === "n") {
+          alert("カード枚数が選択されていないため、開始できませんでした。");
+          return;
+        }
+
+        //難易度毎の秒数決定
+        switch (select.value) {
+          case "8":
+            goalTime = 20000;
+            mode = 2;
+            break;
+          case "16":
+            goalTime = 40000;
+            mode = 2;
+            break;
+          case "32":
+            goalTime = 90000;
+            mode = 2;
+            break;
+          case "12":
+            goalTime = 30000;
+            mode = 3;
+            break;
+          case "18":
+            goalTime = 50000;
+            mode = 3;
+            break;
+          case "30":
+            goalTime = 120000;
+            mode = 3;
+            break;
+        }
+
+        generateCards(select.value); //カードをページに生成
+        generatePairs(select.value / mode); //ペアとなる組み合わせを用意
+        shuffleArray(pairCard); //カードシャッフル
+
+        card = document.querySelectorAll(".card"); //htmlのカード取得
+
+        card.forEach(function (element, i) {
+          //カードに種類ごとのクラスとクリック時イベントを追加
+          card[i].classList.add(pairCard[i]);
+          element.addEventListener("click", check);
+        });
+
+        startTimer();
+        startButton.style.visibility = "hidden";
+        select.style.visibility = "hidden";
+        turnCount.style.visibility = "visible";
+        point.style.visibility = "visible";
+      });
+
+      //判定
+      function check(e) {
+        if (isLocked) return;
+        const el = e.currentTarget;
+        if (el.classList.contains("match")) return;
+        if (upCards.includes(el)) return;
+
+        el.textContent = el.classList[1].replace("pair", "");
+
+        upCards.push(el);
+
+        if (upCards.length === mode) {
+          //ペアの枚数分表向きにしたら
+          isLocked = true;
+          setTimeout(function () {
+            if (
+              (mode === 2 &&
+                upCards[0].classList[1] === upCards[1].classList[1]) ||
+              (mode === 3 &&
+                upCards[0].classList[1] === upCards[1].classList[1] &&
+                upCards[0].classList[1] === upCards[2].classList[1])
+            ) {
+              upCards.forEach(function (c) {
+                c.classList.add("match");
+              });
+
+              score++;
+              point.textContent = score + "pt";
+            } else {
+              upCards.forEach(function (c) {
+                c.textContent = "";
+              });
+            }
+            resetUpCards();
+          }, 750);
+        }
+      }
+
+      //カードを裏に戻す
+      function resetUpCards() {
+        upCards = [];
+        isLocked = false;
+        clearCheck();
+      }
+
+      //指定枚数のカードをページに生成
+      function generateCards(num) {
+        let text = "";
+        while (num > 0) {
+          text += `      <div class="card"></div>`;
+          num--;
+        }
+        game.innerHTML = text;
+      }
+
+      //カードの組み合わせを配列に格納
+      function generatePairs(num) {
+        while (num > 0) {
+          if (mode === 3) {
+            pairCard.push("pair" + num);
+          }
+          pairCard.push("pair" + num);
+          pairCard.push("pair" + num);
+          num--;
+        }
+      }
+
+      //クリア判定
+      function clearCheck() {
+        if (document.querySelectorAll(".match").length === card.length) {
+          clearTimeout(timerId);
+          setTimeout(function () {
+            alert("クリア！");
+          }, 10);
+          retryButton.style.visibility = "visible";
+        }
+      }
+
+      //カードシャッフル
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+      }
+
+      //リトライ
+      function retry() {
+        //状態初期化
+        isLocked = false;
+        retryButton.style.visibility = "hidden";
+        targetTime = null;
+        timerId = null;
+
+        //再シャッフル
+        shuffleArray(pairCard);
+
+        //カード初期化・カードの数字を変更
+        card.forEach(function (element, i) {
+          element.textContent = "";
+
+          element.classList.remove("match");
+          element.classList.forEach(function (c) {
+            if (c.startsWith("pair")) {
+              element.classList.remove(c);
+            }
+          });
+          element.classList.add(pairCard[i]);
+        });
+        turn++;
+        turnCount.textContent = "ターン" + turn;
+        startTimer();
+      }
+
+      //カウントダウン開始
+      function startTimer() {
+        timer.style.visibility = "visible";
+        targetTime = new Date(Date.now() + goalTime);
+        recalc();
+      }
+
+      //カウントダウン処理
+      function countdown(due) {
+        const now = Date.now();
+        const rest = due - now;
+        const totalSec = Math.ceil(rest / 1000);
+        const sec = totalSec % 60;
+        const min = Math.floor(totalSec / 60);
+        const count = [min, sec, rest];
+        return count;
+      }
+
+      //カウントダウン
+      function recalc() {
+        const counter = countdown(targetTime);
+        if (counter[2] <= -1000) {
+          clearTimeout(timerId);
+          timer.textContent = "0:00";
+          alert("TIME UP!");
+          return;
+        }
+
+        timer.textContent =
+          `TIME:` +
+          String(counter[0]).padStart(2) +
+          ":" +
+          String(counter[1]).padStart(2, "0");
+
+        timerId = setTimeout(recalc, 1000);
+      }
+    </script>
+  </body>
+</html>
