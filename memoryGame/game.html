@@ -46,6 +46,7 @@
 
       select {
         background-color: rgb(168, 168, 168);
+        margin-top: -10%;
         margin-bottom: 20%;
         width: 45%;
         height: 58px;
@@ -101,16 +102,22 @@
       @media (max-width: 768px) {
         html h1 {
           -webkit-text-stroke: 0.1rem #ffbfbf;
-          font-size: 3rem;
+          font-size: 2.8rem;
+          margin-top: -3%;
         }
 
         .game {
           grid-template-columns: repeat(4, 1fr);
         }
 
+        .timer {
+          margin-top: -10%;
+        }
+
         select {
-          font-size: 20px;
-          width: 55%;
+          margin-top: -10%;
+          font-size: 18px;
+          width: 62%;
         }
 
         button {
@@ -128,26 +135,27 @@
 
   <body>
     <h1>神経衰弱</h1>
-    <div class="timer" style="visibility: hidden">9:99</div>
+    <div class="timer" style="visibility: hidden">TIME:9:99</div>
     <div class="game"></div>
     <div class="ui">
       <div class="turn" style="visibility: hidden">ターン1</div>
       <div class="point" style="visibility: hidden">0pt</div>
     </div>
-    <button class="retry" style="visibility: hidden">続ける</button><br />
-
+    <button class="next" style="visibility: hidden">続ける</button><br />
+    <button class="back" style="visibility: hidden">タイトルに戻る</button
+    ><br />
     <select class="select">
       <option value="n" class="n">難易度を選択</option>
       <optgroup label="2枚一致モード" class="m">
-        <option value="8">EASY(8枚、20秒)</option>
+        <option value="8">EASY(8枚、15秒)</option>
         <option value="16">NOMAL(16枚、40秒)</option>
         <option value="32">HARD(32枚、90秒)</option>
       </optgroup>
 
       <optgroup label="3枚一致モード" class="m">
-        <option value="12">EASY（12枚・30秒）</option>
+        <option value="12">EASY（12枚・25秒）</option>
         <option value="18">NORMAL（18枚・50秒）</option>
-        <option value="30">HARD（30枚・120秒）</option>
+        <option value="30">HARD（30枚・80秒）</option>
       </optgroup></select
     ><br />
 
@@ -169,14 +177,16 @@
       const timer = document.querySelector(".timer");
       const turnCount = document.querySelector(".turn");
       const point = document.querySelector(".point");
-      const retryButton = document.querySelector(".retry"); //リトライボタン
+      const nextButton = document.querySelector(".next");
+      const backButton = document.querySelector(".back");
       const startButton = document.querySelector(".startButton");
 
       let goalTime = null; //制限時間
       let targetTime = null;
       let timerId = null;
 
-      retryButton.addEventListener("click", retry);
+      nextButton.addEventListener("click", next);
+      backButton.addEventListener("click", titleBack);
 
       startButton.addEventListener("click", function () {
         if (select.value === "n") {
@@ -187,7 +197,7 @@
         //難易度毎の秒数決定
         switch (select.value) {
           case "8":
-            goalTime = 20000;
+            goalTime = 15000;
             mode = 2;
             break;
           case "16":
@@ -199,7 +209,7 @@
             mode = 2;
             break;
           case "12":
-            goalTime = 30000;
+            goalTime = 25000;
             mode = 3;
             break;
           case "18":
@@ -207,7 +217,7 @@
             mode = 3;
             break;
           case "30":
-            goalTime = 120000;
+            goalTime = 80000;
             mode = 3;
             break;
         }
@@ -225,10 +235,10 @@
         });
 
         startTimer();
-        startButton.style.visibility = "hidden";
-        select.style.visibility = "hidden";
-        turnCount.style.visibility = "visible";
-        point.style.visibility = "visible";
+        hidden(startButton);
+        hidden(select);
+        visible(turnCount);
+        visible(point);
       });
 
       //判定
@@ -265,7 +275,7 @@
               });
             }
             resetUpCards();
-          }, 750);
+          }, 550);
         }
       }
 
@@ -289,9 +299,7 @@
       //カードの組み合わせを配列に格納
       function generatePairs(num) {
         while (num > 0) {
-          if (mode === 3) {
-            pairCard.push("pair" + num);
-          }
+          if (mode === 3) pairCard.push("pair" + num);
           pairCard.push("pair" + num);
           pairCard.push("pair" + num);
           num--;
@@ -305,7 +313,7 @@
           setTimeout(function () {
             alert("クリア！");
           }, 10);
-          retryButton.style.visibility = "visible";
+          visible(nextButton);
         }
       }
 
@@ -317,11 +325,11 @@
         }
       }
 
-      //リトライ
-      function retry() {
+      //続ける
+      function next() {
         //状態初期化
         isLocked = false;
-        retryButton.style.visibility = "hidden";
+        hidden(nextButton);
         targetTime = null;
         timerId = null;
 
@@ -341,7 +349,8 @@
           element.classList.add(pairCard[i]);
         });
         turn++;
-        turnCount.textContent = "ターン" + turn;
+        turnCount.textContent = `ターン ${turn}`;
+        clearTimeout(timerId);
         startTimer();
       }
 
@@ -367,9 +376,7 @@
       function recalc() {
         const counter = countdown(targetTime);
         if (counter[2] <= -1000) {
-          clearTimeout(timerId);
-          timer.textContent = "0:00";
-          alert("TIME UP!");
+          timeUp();
           return;
         }
 
@@ -380,6 +387,45 @@
           String(counter[1]).padStart(2, "0");
 
         timerId = setTimeout(recalc, 1000);
+      }
+
+      function timeUp() {
+        isLocked = true;
+        clearTimeout(timerId);
+        timer.textContent = "TIME UP!";
+        timer.style.color = "red";
+        visible(backButton);
+      }
+
+      function titleBack() {
+        isLocked = false;
+        turn = 1;
+        score = 0;
+        targetTime = null;
+        timerId = null;
+        upCards = [];
+        pairCard = [];
+        turnCount.textContent = `ターン ${turn}`;
+        point.textContent = "0pt";
+        timer.style.color = "white";
+
+        visible(startButton);
+        visible(select);
+
+        hidden(turnCount);
+        hidden(point);
+        hidden(backButton);
+        hidden(nextButton);
+        hidden(timer);
+
+        game.innerHTML = "";
+      }
+
+      function hidden(e) {
+        e.style.visibility = "hidden";
+      }
+      function visible(e) {
+        e.style.visibility = "visible";
       }
     </script>
   </body>
