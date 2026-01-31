@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="highmetal" />
     <title>「祝え！この物語の終幕を！」というカードについて</title>
     <style>
       body {
@@ -10,11 +11,21 @@
         font-size: 18px;
       }
       .title {
+        margin-top: 5%;
         border-bottom: solid #c1c1c1;
+      }
+      .writeday,
+      .write {
+        text-align: right;
+      }
+
+      .card-ol {
+        display: flex;
       }
 
       /* カード全体 */
       .card {
+        margin-left: 2%;
         width: 260px;
         aspect-ratio: 63/88;
         background: white;
@@ -163,10 +174,10 @@
         color: #ffffff;
         background: linear-gradient(
           45deg,
-          #439cd8 0%,
-          #439cd8 50%,
+          #c3122f 0%,
           #c3122f 50%,
-          #c3122f 100%
+          #439cd8 50%,
+          #439cd8 100%
         );
         width: 22px;
         height: 22px;
@@ -180,87 +191,146 @@
       .card-name {
         font-weight: bold;
       }
+
+      ul {
+        list-style-type: square;
+      }
     </style>
   </head>
   <body>
-    <h2>《「祝え！この物語の終幕を！」》というカードについて</h2>
+    <h2 id="about">《「祝え！この物語の終幕を！」》というカードについて</h2>
+    <address class="writeday">作成日:2026/mm/dd</address>
+    <address class="write">作者:highmetal</address>
 
-    <div class="card">
-      <div class="card-header">
-        <div class="cost">6</div>
-        <div class="name">
-          「<ruby>祝<rt>いわ</rt></ruby
-          >え！この <ruby>物語<rt>ものがたり</rt></ruby
-          >の <ruby>終幕<rt>しゅうまく</rt></ruby
-          >を！」
+    <h3 class="title"></h3>
+
+    <div class="card-ol">
+      <div class="card">
+        <div class="card-header">
+          <div class="cost">6</div>
+          <div class="name">
+            「<ruby>祝<rt>いわ</rt></ruby
+            >え！この <ruby>物語<rt>ものがたり</rt></ruby
+            >の <ruby>終幕<rt>しゅうまく</rt></ruby
+            >を！」
+          </div>
         </div>
+
+        <div class="race">美孔麗王国</div>
+
+        <div class="image">no image</div>
+
+        <div class="type">呪文</div>
+
+        <div class="effect">
+          <div class="vividro">
+            <span class="vividro-arrow left"></span>
+            <span class="vividro-title">ビビッドロー</span>
+            <span class="vividro-arrow right"></span>
+            <span class="vividro-cost">4</span>
+          </div>
+          <p>
+            ■カードを1枚引く。その後、水または火の、コスト7以下のクリーチャーを1体、自分の手札から出す。そのクリーチャーに「スピードアタッカー」を与える。このターンの終わりに、そのクリーチャーを山札の上に置く。
+          </p>
+          <br />
+        </div>
+        <div class="card-bottom-number">1</div>
       </div>
 
-      <div class="race">美孔麗王国</div>
-
-      <div class="image">no image</div>
-
-      <div class="type">呪文</div>
-
-      <div class="effect">
-        <div class="vividro">
-          <span class="vividro-arrow left"></span>
-          <span class="vividro-title">ビビッドロー</span>
-          <span class="vividro-arrow right"></span>
-          <span class="vividro-cost">4</span>
+      <div class="card">
+        <div class="card-header">
+          <div class="cost">目次</div>
+          <div class="name">index</div>
         </div>
-        ■カードを1枚引く。その後、水または火の、コスト7以下のクリーチャーを1体、自分の手札から出す。そのクリーチャーに「スピードアタッカー」を与える。このターンの終わりに、そのクリーチャーを山札の上に置く。<br /><br /><br />
+
+        <ul>
+          <div class="card-header">
+            <li class="vividro-cost">1</li>
+            <a href="#overview">概要</a>
+          </div>
+          <div class="card-header">
+            <li class="vividro-cost">2</li>
+            <a href="#good-match-cards">相性のいい踏み倒し先</a>
+          </div>
+          <div class="card-header">
+            <li class="vividro-cost">3</li>
+            <a href="#author's-deck">作者のデッキ</a>
+          </div>
+        </ul>
       </div>
-      <div class="card-bottom-number">1</div>
     </div>
+
     <section>
       <br />
-      <h3 class="title">概要</h3>
+      <h3 class="title" id="overview">概要</h3>
       <p>
         このカードは2020年9月19日発売のDMRP-15 「十王篇 第3弾 幻龍×凶襲
         ゲンムエンペラー!!!」にて収録された美孔麗王国の呪文。<br /><br />
         ビビッドロー4（水/火）を持ち、手札から水か火の7以下のクリーチャーを踏み倒し、SAを与える効果を持つ。<br /><br />
-        《ブレイン・ストーム》や《ロスト・ウォーターゲイト》でトップに仕込むことでビビッドローで早い段階から大型クリーチャーを展開し、攻め込むことができる。<br /><br />
-        しかし、ターンの終わりに出したクリーチャーはトップに戻ってしまうため、その点を考慮したプレイングが必要。<br />
+        踏み倒し範囲が緩いため、これからの新規カードに相性のいいカードが出て、強化が約束されているといっても過言ではない。<br /><br />
+        《ブレイン・ストーム》や《ロスト・ウォーターゲイト》でトップに仕込むことで確実にビビッドローを行い、早い段階から大型クリーチャーを展開し、攻め込むことができる。<br /><br />
+        しかし、ターンの終わりに出したクリーチャーはトップに戻ってしまうため、革命チェンジでデメリットを消したり、ワンショットし損ねた時の5ターン目の動きを考慮する必要がある。<br /><br />
+        メタを出されると、トップに仕込む工程が遅れたり、ビビッドローのタイミングを狂わされてしまうためその点も考慮する必要がある。
+        <del>無理だろ</del>
       </p>
     </section>
     <section>
-      <h3 class="title">踏み倒し先で相性のいいカード</h3>
+      <h3 class="title" id="good-match-cards">相性のいい踏み倒し先</h3>
       <ol>
-        <li class="card-name">《龍素記号Sr スペルサイクリカ》</li>
+        <a
+          href="https://dmwiki.net/《龍素記号Sr+スペルサイクリカ》"
+          target="_blank"
+          ><li class="card-name">《龍素記号Sr スペルサイクリカ》</li>
+        </a>
         <p>
-          踏み倒したらもう一度このカードが使える。<br />
-          さらに《未来の法皇ミラダンテSF》に革命チェンジすれば手札に戻ったこのカードをファイナル革命でもう一度使うことができる。
+          踏み倒したらもう一度《「祝え！この物語の終幕を！」》が使える。<br />
+          さらに《未来の法皇ミラダンテSF》に革命チェンジすれば自身の効果で手札に戻った《「祝え！この物語の終幕を！」》をファイナル革命でもう一度使うことができる。
         </p>
         <br />
         <li class="card-name">
-          《D-Jealousy-灰撫／♪五本まで 集めて林 森ジャングル》
+          《D-Jealousy-灰撫/♪五本まで 集めて林 森ジャングル》
         </li>
         <p>
-          JDとアタックトリガーを持っているため、SAを与えると最強の生物になる。アタックトリガーでは呪文面を使うことができるため、最大5ドローしたりエレメントバウンスなど柔軟に立ち回ることができる。<br />
-          エレメントバウンスで自身を選べば、アタックキャンセルも可能。<br />
+          ジャストダイバーとアタックトリガーを持っているため、踏み倒したら<ruby
+            >最強生物<rt>ジャストダイバーのSA</rt></ruby
+          >になる。アタックトリガーで呪文面を使うことができるため、最大5ドローしたりエレメントバウンスなど柔軟に立ち回ることができる。<br />
+          また、エレメントバウンスで自身を選べばアタックキャンセルも可能。<br />
           《音卿の精霊龍ラフルル・ラブ》に革命チェンジすれば呪文面の《「未来から来る、だからミラクル」》を使うことも可能。
         </p>
         <br />
         <li class="card-name">
-          《音卿の精霊龍ラフルル・ラブ／「未来から来る、だからミラクル」》
+          《音卿の精霊龍ラフルル・ラブ/「未来から来る、だからミラクル」》
         </li>
         <p>
-          上記1、2のクリーチャーから革命チェンジすることもできるが、このカードから直接踏み倒す出すこともできる。<br />
-          ターン終了時のトップに戻る効果をうまく使えば継続した呪文ロックが可能。
+          上記1、2のクリーチャーから革命チェンジすることもできるが、踏み倒して出すこともできる。<br />
+          ターン終了時のトップに戻る効果をうまく使えば何度も呪文ロックが可能。
         </p>
         <br />
         <li class="card-name">《芸魔龍馬 バルバトチェス》</li>
         <p>
-          上記1、2のクリーチャーから革命チェンジすることもできるが、このカードから直接踏み倒す出すこともできる。part2<br />
-          地味に2ドローが偉い。
+          上記2のクリーチャーや《マジック・A・セミプーロ》から革命チェンジすることもできるが、踏み倒して出すこともできる（part2）。<br />
+          cipの1000以下破壊と2ドローが地味に偉い。<br />
+          4キルできなかった場合、5マナ以上の時に終極宣言（マジックを使うコストを4軽減、マジック使用時に1ドロー）を使うと《マジック・A・セミプーロ/♪閑かさや
+          とにかくブレイン
+          蝉ミンミン》の呪文面を1マナで使って《「祝え！この物語の終幕を！」》をトップに仕込みながらすぐに1ドロー効果でビビッドローを使うことができる。
         </p>
       </ol>
     </section>
 
     <section>
-      <h3 class="title">デッキ</h3>
-      <a href="deck1.html">赤青t白 祝えサイクリカSF</a>
+      <h3>Coming Soon...</h3>
     </section>
+    <!-- <section>
+      <h3 class="title" id="author's-deck">
+        作者の《「祝え！この物語の終幕を！」》デッキ
+      </h3>
+      <p><a href="deck1.html">赤青t白 祝えサイクリカSF</a></p>
+      <p><a href="deck2.html">ラッカ 祝えサイクリカSF</a></p>
+      <p><a href="deck3.html">ラッカ 庵野祝えバイク</a></p>
+      <p><a href="deck4.html">赤青 祝え春咲天</a></p>
+      <p><a href="deck5.html">赤青 祝えマジック</a></p>
+      <p><a href="deck6.html">シータ 祝えドギラディス</a></p>
+      <p><a href="deck7.html">ラッカ ボルロマ入り祝え</a></p>
+    </section> -->
   </body>
 </html>
