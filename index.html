@@ -47,6 +47,7 @@
     </button>
   <h3>Welcome to My Page!</h3>
   <p></p>
+  <div id="clock"></div>
   
   <a href="https://highmetal.github.io/clock/">clock&timer</a><br>
   
@@ -86,5 +87,27 @@
         ha.classList.add("onc");
       }
     });
+      function clock() {
+        const time = new Date();
+        const year = time.getFullYear();
+        const month = time.getMonth() + 1;
+        const day = time.getDate();
+        const hour = time.getHours();
+        const minut = time.getMinutes();
+        const sec = time.getSeconds();
+
+        const monthStr = String(month).padStart(2, "0");
+        const dayStr = String(day).padStart(2, "0");
+        const hoursStr = String(hour).padStart(2, "0");
+        const minutesStr = String(minut).padStart(2, "0");
+        const secondsStr = String(sec).padStart(2, "0");
+
+        const clock = document.getElementById("clock");
+        let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
+        clock.textContent = str;
+      }
+
+      setInterval(clock, 1000);
+      clock();
   </script>
 </html>
