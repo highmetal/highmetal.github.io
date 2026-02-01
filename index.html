@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title> highmetalgithubpage</title>
-  <link rel="apple-touch-icon" href="high_ati.png">
-  <link rel="icon" href="high.ico">
-  <style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>highmetal github page</title>
+    <link rel="apple-touch-icon" href="high_ati.png" />
+    <link rel="icon" href="high.ico" />
+    <style>
       .hamburger {
         width: 40px;
         height: 40px;
@@ -38,76 +38,94 @@
         transform: translate(0px, -13.3px) rotate(-45deg);
       }
     </style>
-</head>
-<body>
-  <button class="hamburger">
+  </head>
+  <body>
+    <button class="hamburger">
       <span class="line"></span>
       <span class="line"></span>
       <span class="line"></span>
     </button>
-  <h3>Welcome to My Page!</h3>
-  <p></p>
-  <div id="clock"></div>
-  
-  <a href="https://highmetal.github.io/clock/">clock&timer</a><br>
-  
-  <a href="https://highmetal.github.io/newCard/">カード金額計算フォームv2</a><br>
+    <h3>Welcome to My Page!</h3>
+    <p class="secret"></p>
+    <div id="clock"></div>
+    <br />
 
-  <a href="https://highmetal.github.io/shoppingMemo/memo">買い物メモ</a><br>
-  
-  <a href="https://highmetal.github.io/textCounter/">文字数カウンター</a><br>
+    <!-- <a href="https://highmetal.github.io/clock/">clock&timer</a><br> -->
 
-  <a href="https://highmetal.github.io/memoryGame/game.html">神経衰弱</a><br>
+    <a href="https://highmetal.github.io/newCard/">カード金額計算フォームv2</a
+    ><br />
 
-  <a href="https://highmetal.github.io/roulette/index.html">ルーレット</a><br>
+    <a href="https://highmetal.github.io/shoppingMemo/memo">買い物メモ</a><br />
 
-  <a href="https://highmetal.github.io/roulette/newRoulette.html">newルーレット</a><br>
+    <a href="https://highmetal.github.io/textCounter/">文字数カウンター</a
+    ><br />
 
-  <!-- <a href="https://highmetal.github.io/shoppingMemo/tx">テキストファイル作成</a><br> -->
-  
-  <a href="https://highmetal.github.io/shoppingMemo/">テキストファイル読み込み（買い物メモ?）</a><br>
+    <a href="https://highmetal.github.io/memoryGame/game.html">神経衰弱</a
+    ><br />
 
-  <!-- <a href="https://highmetal.github.io/cardMove/">カード動かせる</a><br> -->
+    <!-- <a href="https://highmetal.github.io/roulette/index.html">ルーレット</a><br> -->
 
-  <a href="https://highmetal.github.io/cardPre/">デッキ回し</a><br>
+    <a href="https://highmetal.github.io/roulette/newRoulette.html"
+      >ルーレット</a
+    ><br />
 
-  <a href="https://highmetal.github.io/createFile/">ファイル作成</a><br>
+    <!-- <a href="https://highmetal.github.io/shoppingMemo/tx">テキストファイル作成</a><br> -->
 
-  <a href="https://highmetal.github.io/codePre/">コードデモ</a><br>
-  
-  
-</body>
-    <script>
+    <a href="https://highmetal.github.io/shoppingMemo/"
+      >ファイルからチェックリスト作成</a
+    ><br />
+
+    <!-- <a href="https://highmetal.github.io/cardMove/">カード動かせる</a><br> -->
+
+    <a href="https://highmetal.github.io/cardPre/">デッキ回し</a><br />
+
+    <a href="https://highmetal.github.io/createFile/">ファイル作成</a><br />
+
+    <a href="https://highmetal.github.io/codePre/">コードデモ</a><br />
+  </body>
+  <script>
     "use strict";
     const ha = document.querySelector(".hamburger");
+    const secret = document.querySelector(".secret");
+    let clickCount = 0;
     ha.addEventListener("click", function () {
+      clickCount++;
+      if (clickCount > 30) {
+        if (prompt("please password") === "8888") {
+          document.body.style.color = "red";
+          secret.innerHTML = `<a href="https://highmetal.github.io/duelMasters/iwae.html">iwae</a><br>
+        <a href="https://highmetal.github.io/cardMove/">cardMove</a><br>`;
+        } else {
+          clickCount = 0;
+        }
+      }
       if (ha.classList.contains("onc")) {
         ha.classList.remove("onc");
       } else {
         ha.classList.add("onc");
       }
     });
-      function clock() {
-        const time = new Date();
-        const year = time.getFullYear();
-        const month = time.getMonth() + 1;
-        const day = time.getDate();
-        const hour = time.getHours();
-        const minut = time.getMinutes();
-        const sec = time.getSeconds();
+    function clock() {
+      const time = new Date();
+      const year = time.getFullYear();
+      const month = time.getMonth() + 1;
+      const day = time.getDate();
+      const hour = time.getHours();
+      const minut = time.getMinutes();
+      const sec = time.getSeconds();
 
-        const monthStr = String(month).padStart(2, "0");
-        const dayStr = String(day).padStart(2, "0");
-        const hoursStr = String(hour).padStart(2, "0");
-        const minutesStr = String(minut).padStart(2, "0");
-        const secondsStr = String(sec).padStart(2, "0");
+      const monthStr = String(month).padStart(2, "0");
+      const dayStr = String(day).padStart(2, "0");
+      const hoursStr = String(hour).padStart(2, "0");
+      const minutesStr = String(minut).padStart(2, "0");
+      const secondsStr = String(sec).padStart(2, "0");
 
-        const clock = document.getElementById("clock");
-        let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
-        clock.textContent = str;
-      }
+      const clock = document.getElementById("clock");
+      let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
+      clock.textContent = str;
+    }
 
-      setInterval(clock, 1000);
-      clock();
+    setInterval(clock, 1000);
+    clock();
   </script>
 </html>
