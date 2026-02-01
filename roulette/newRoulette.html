@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="ati.PNG" />
+    <title>Webルーレット</title>
+    <style>
+      @charset "UTF-8";
+      html {
+        background-color: #e2f6e4;
+      }
+      /* 使い方 */
+      #manual {
+        color: green;
+        border-style: dotted none;
+        font-size: 1.8rem;
+      }
+
+      /* 結果表示 */
+      #result {
+        .result {
+          border-style: solid;
+          text-align: center;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin: 10 0;
+          padding: 1rem;
+        }
+
+        .archiveArea {
+          visibility: hidden;
+        }
+
+        .archive {
+          margin-top: -10px;
+        }
+
+        .archiveRemove {
+          color: #fff;
+          background-color: #329500;
+          border-radius: 8px;
+          padding: 8px 18px;
+          font-size: 1rem;
+          transition: background-color 0.3s ease;
+        }
+
+        p {
+          font-size: 1.5rem;
+        }
+      }
+
+      /* 項目入力用テキストエリア */
+      #textarea {
+        font-size: 1.5rem;
+        textarea {
+          margin-top: -10px;
+          font-size: 26px;
+        }
+      }
+
+      /* 抽選開始ボタン */
+      #button {
+        button {
+          color: #fff;
+          background-color: #329500;
+          border-radius: 8px;
+          padding: 10px 20px;
+          font-size: 1.5rem;
+          transition: background-color 0.3s ease;
+        }
+        button:hover {
+          scale: 1.05;
+          background: #00aa11;
+        }
+      }
+
+      /*  アニメーションの有無のラジオボタン */
+      #aniCheck {
+        font-size: 1.5rem;
+        p {
+          margin-bottom: 0px;
+        }
+      }
+
+      /* -----動作用----- */
+      /* 実行時のボタンの透明化 */
+      .active {
+        visibility: hidden;
+      }
+
+      /* 抽選結果演出 */
+      .confirm {
+        color: rgb(232, 56, 56);
+      }
+
+      .modal {
+        display: none;
+        position: fixed; /* 画面に固定 */
+        z-index: 1; /* 他の要素の上に表示 */
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4); /* 透過 */
+      }
+
+      /* モーダルコンテンツ */
+      .modalContent {
+        background-color: #f1ffea;
+        margin: 55% auto;
+        padding: 3%;
+        border: 2px solid #000000;
+        width: 80%;
+      }
+      .close {
+        float: right;
+        cursor: pointer;
+      }
+      .close:hover {
+        color: #ff7936;
+        scale: 1.2;
+      }
+      #attentionModal {
+        button {
+          color: #fff;
+          background-color: #329500;
+          border-radius: 8px;
+          padding: 10px 20px;
+          font-size: 1rem;
+          transition: background-color 0.3s ease;
+        }
+        button:hover {
+          scale: 1.05;
+          background: #00aa11;
+        }
+      }
+
+      /* -----レスポンシブ対応----- */
+      @media (max-width: 768px) {
+        /* 使い方 */
+        #manual {
+          font-size: 0.95rem;
+        }
+
+        /* 結果表示 */
+        #result {
+          .result {
+            font-size: 1.3rem;
+            padding: 0.5rem;
+          }
+
+          .archiveRemove {
+            padding: 4px 9px;
+            font-size: 0.8rem;
+          }
+
+          p {
+            font-size: 1.2rem;
+          }
+        }
+
+        /* 項目入力用テキストエリア */
+        #textarea {
+          font-size: 1.2rem;
+          textarea {
+            margin-top: -10px;
+            font-size: 18px;
+          }
+        }
+
+        /* 抽選開始ボタン */
+        #button {
+          button {
+            padding: 5px 10px;
+            font-size: 1.3rem;
+          }
+          button:hover {
+            scale: 1.01;
+          }
+        }
+
+        /*  アニメーションの有無のラジオボタン */
+        #aniCheck {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 見出し -->
+    <h1>Webルーレット</h1>
+
+    <!-- 使い方 -->
+    <details id="manual">
+      <summary>使い方</summary>
+      <ol>
+        <li>テキストエリアに、抽選したい項目を1行ずつ入力します。</li>
+        <li>入力が終わったら「抽選開始」ボタンを押します。</li>
+        <li>ルーレットが回り、赤い文字で結果が表示されます。</li>
+      </ol>
+    </details>
+
+    <!-- 結果表示 -->
+    <div id="result">
+      <p class="result">ここに結果が表示されます</p>
+    </div>
+    <br />
+
+    <!-- 項目入力用テキストエリア -->
+    <div id="textarea">
+      <p>●項目</p>
+      <textarea class="select" style="height: 150px">
+A
+B
+C
+</textarea
+      >
+    </div>
+    <br />
+
+    <!-- 抽選開始ボタン -->
+    <div id="button">
+      <button class="startButton">抽選開始</button>
+    </div>
+    <br />
+    <div id="result">
+      <div class="archiveArea">
+        <p>●履歴</p>
+        <p class="archive"></p>
+        <button class="archiveRemove">履歴を削除</button>
+      </div>
+    </div>
+
+    <!-- アニメーション有無確認用チェックボックス -->
+    <form id="aniCheck">
+      <p>●ルーレット実行時のアニメーション</p>
+      <input type="radio" name="ani" value="yes" id="yes" checked />
+      <label for="yes">あり</label><br />
+      <input type="radio" name="ani" value="no" id="no" />
+      <label for="no">なし</label>
+    </form>
+
+    <!-- モーダル（デフォルトは非表示） -->
+    <div id="errorModal" class="modal">
+      <div class="modalContent">
+        <span class="close">✖︎</span>
+        <h4>エラー</h4>
+        <p>項目を入力してください。</p>
+      </div>
+    </div>
+
+    <div id="attentionModal" class="modal">
+      <div class="modalContent">
+        <span class="close">✖︎</span>
+        <h4>確認</h4>
+        <p>履歴を削除しますか？</p>
+        <button id="modalYes">はい</button>
+        <button id="modalNo">いいえ</button>
+      </div>
+    </div>
+  </body>
+  <script>
+    "use strict";
+    const result = document.querySelector(".result");
+    const startButton = document.querySelector(".startButton");
+    const select = document.querySelector(".select");
+
+    const archiveArea = document.querySelector(".archiveArea");
+    const archive = document.querySelector(".archive");
+    const archiveRemove = document.querySelector(".archiveRemove");
+
+    let isFirstFocus = true;
+    select.addEventListener("focus", function () {
+      if (isFirstFocus) {
+        select.value = "";
+        isFirstFocus = false;
+      }
+    });
+
+    let aniCheck = true;
+
+    //ラジオボタン動作時
+    document.getElementById("yes").addEventListener("change", function () {
+      aniCheck = true;
+    });
+    document.getElementById("no").addEventListener("change", function () {
+      aniCheck = false;
+    });
+
+    //履歴削除クリックイベント
+    archiveRemove.addEventListener("click", function () {
+      attentionModalOpen();
+      // if (window.confirm("履歴を削除しますか？")) {
+      //   startButton.textContent = "抽選開始";
+      //   archive.textContent = "";
+      //   archiveArea.classList.add("archiveArea");
+      //   result.textContent = "ここに結果が表示されます";
+      //   result.classList.remove("confirm");
+      // }
+    });
+
+    function drawRandomItem(items) {
+      return items[Math.floor(Math.random() * items.length)];
+    }
+
+    //抽選開始クリックイベント
+    startButton.addEventListener("click", function () {
+      const items = select.value
+        .split("\n")
+        .map((v) => v.trim())
+        .filter((v) => v !== "");
+
+      if (items.length === 0) {
+        // alert("項目を入力してください。");
+        errorModalOpen();
+        return;
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (aniCheck) {
+        // アニメーションあり
+        startButton.classList.add("active");
+        result.classList.remove("confirm");
+        archiveRemove.classList.add("archiveArea");
+
+        let animationCount = 0;
+        const MAX_COUNT = 18;
+        const ANIMATION_INTERVAL = 100;
+
+        const timer = setInterval(() => {
+          const selected = drawRandomItem(items);
+          result.textContent = selected;
+          animationCount++;
+
+          if (animationCount > MAX_COUNT) {
+            clearInterval(timer);
+            finishDraw(selected);
+          }
+        }, ANIMATION_INTERVAL);
+      } else {
+        // アニメーションなし
+        const selected = drawRandomItem(items);
+        finishDraw(selected);
+      }
+    });
+
+    // 抽選終了処理
+    function finishDraw(item) {
+      startButton.classList.remove("active");
+      startButton.textContent = "もう一度抽選";
+      result.classList.add("confirm");
+      result.textContent = item;
+      archiveAdd(item);
+      archiveRemove.classList.remove("archiveArea");
+    }
+
+    //履歴表示メソッド
+    function archiveAdd(item) {
+      archiveArea.classList.remove("archiveArea");
+      archiveRemove.classList.remove("archiveArea");
+      archive.textContent === ""
+        ? (archive.textContent += item) //1回目
+        : (archive.textContent += `, ${item}`); //2回目以降は,を先頭につける
+    }
+
+    // モーダル要素取得
+    const errorModal = document.getElementById("errorModal");
+    const span = document.getElementsByClassName("close")[0];
+    const span2 = document.getElementsByClassName("close")[1];
+
+    const attentionModal = document.getElementById("attentionModal");
+    const modalYes = document.getElementById("modalYes");
+    const modalNo = document.getElementById("modalNo");
+
+    // モーダル起動
+    function errorModalOpen() {
+      errorModal.style.display = "block";
+    }
+    function attentionModalOpen() {
+      attentionModal.style.display = "block";
+    }
+
+    // ×をクリックでモーダルを閉じる
+    span.onclick = function () {
+      errorModal.style.display = "none";
+    };
+    span2.onclick = function () {
+      attentionModal.style.display = "none";
+    };
+
+    // 外側をクリックでモーダルを閉じる
+    window.onclick = function (event) {
+      if (event.target === errorModal) {
+        errorModal.style.display = "none";
+      }
+      if (event.target === attentionModal) {
+        attentionModal.style.display = "none";
+      }
+    };
+    modalNo.onclick = function () {
+      attentionModal.style.display = "none";
+    };
+
+    modalYes.addEventListener("click", function () {
+      startButton.textContent = "抽選開始";
+      archive.textContent = "";
+      archiveArea.classList.add("archiveArea");
+      result.textContent = "ここに結果が表示されます";
+      result.classList.remove("confirm");
+      attentionModal.style.display = "none";
+    });
+  </script>
+</html>
