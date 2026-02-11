@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="ati.PNG" />
+    <title>チェックリスト</title>
+    <style>
+      html {
+        background-color: rgb(141, 141, 141);
+      }
+      input[type="checkbox"] {
+        transform: scale(1.3);
+      }
+      .operation,
+      .new {
+        display: inline-flex;
+        margin-bottom: 0.5rem;
+      }
+      .operation > button {
+        margin-left: 0.5rem;
+      }
+      button {
+        border-radius: 0.5rem;
+        color: white;
+      }
+      .setButton {
+        background-color: rgb(18, 212, 8);
+      }
+      .allDelButton {
+        background-color: rgb(160, 12, 193);
+      }
+      .delButton {
+        background-color: rgb(193, 12, 72);
+      }
+      .manual {
+        font-size: 0.95rem;
+        border-style: dotted none;
+        color: rgb(30, 54, 10);
+      }
+    </style>
+  </head>
+  <body>
+    <h3>チェックリスト</h3>
+    <details class="manual">
+      <summary>使い方・仕様</summary>
+      <p>
+        入力欄に追加したい項目を入力して追加ボタンを押すと項目が追加できます。<br />
+        項目を1行ずつ入力することで同時に複数の項目を追加できます。
+      </p>
+      <p>追加した項目名は変更が可能です。</p>
+      <p>リストの最後尾にチェックされていない項目数が表示されます。</p>
+      <details>
+        <summary>オールデリートボタン</summary>
+        <p>追加した項目をすべて削除します。</p>
+      </details>
+      <details>
+        <summary>削除ボタン</summary>
+        <p>その項目のみを削除します。</p>
+      </details>
+    </details>
+    <div class="operation">
+      <textarea
+        class="textarea"
+        placeholder="追加したい項目名を入力　（改行で複数の入力可能）"
+        cols="25"
+      ></textarea>
+      <button class="setButton">追加</button>
+      <button class="allDelButton">オールデリート</button>
+    </div>
+    <hr />
+    <div class="table"></div>
+    <p class="message"></p>
+  </body>
+  <script>
+    "use strict";
+    //各要素の取得
+    const textarea = document.querySelector(".textarea");
+    const setButton = document.querySelector(".setButton");
+    const allDelButton = document.querySelector(".allDelButton");
+    const table = document.querySelector(".table");
+    const message = document.querySelector(".message");
+
+    //追加ボタンを押したときの処理
+    setButton.addEventListener("click", function () {
+      //テキストエリアになにも書かれていない場合の処理
+      if (textarea.value === "") {
+        //エラーメッセージの表示
+        messageChenge("テキストボックスに文字が入力されていません", "darkred");
+        return;
+      }
+
+      //入力を改行区切りで配列化してから一行ずつリストに追加
+      const inputs = textarea.value.split("\n");
+      inputs.forEach((element) => {
+        add(element);
+      });
+    });
+
+    //リストに追加
+    function add(text) {
+      //各要素を作成
+      //div
+      const new_div = document.createElement("div");
+      new_div.className = "new";
+
+      //チェックボックス
+      const new_check = document.createElement("input");
+      new_check.type = "checkbox";
+      new_check.className = "newCheck";
+      new_check.addEventListener("click", function () {
+        check();
+      });
+
+      //テキストボックス
+      const new_name = document.createElement("input");
+      new_name.type = "text";
+      new_name.value = text;
+      new_name.size = 25;
+
+      //削除ボタン
+      const new_delButton = document.createElement("button");
+      new_delButton.textContent = "削除";
+      new_delButton.className = "delButton";
+      new_delButton.addEventListener("click", function () {
+        new_div.remove();
+        check();
+      });
+
+      //各要素を親要素に追加
+      new_div.appendChild(new_check);
+      new_div.appendChild(new_name);
+      new_div.appendChild(new_delButton);
+
+      //作成した要素をページに追加
+      table.insertAdjacentElement("beforeend", new_div);
+
+      //テキストボックスの内容を消す
+      textarea.value = "";
+
+      check();
+    }
+
+    //全削除ボタンを押したときの処理
+    allDelButton.addEventListener("click", function () {
+      //追加した要素をすべて取得
+      const del = document.querySelectorAll(".new");
+
+      //なにも追加していない場合の処理
+      if (del.length === 0) {
+        //エラーメッセージの表示
+        messageChenge("削除する要素がありません", "darkred");
+        return;
+      }
+      //すべて削除
+      del.forEach((element) => {
+        element.remove();
+      });
+      messageChenge("すべての項目を削除しました", "darkred");
+    });
+
+    //チェック数確認
+    function check() {
+      //全項目を取得
+      const allDiv = document.querySelectorAll(".newCheck");
+
+      //項目がない場合の処理
+      if (allDiv.length === 0) {
+        messageChenge("", "");
+        return;
+      }
+
+      //チェック数を数える
+      let allchecked = 0;
+      allDiv.forEach((element, i) => {
+        if (allDiv[i].checked) allchecked++;
+        if (!allDiv[i].checked) allchecked--;
+      });
+
+      //チェック数ごとのメッセージ
+      if (allchecked === allDiv.length) {
+        messageChenge("すべての項目がチェックされました", "greenyellow");
+      } else {
+        messageChenge(
+          `あと${(allDiv.length - allchecked) / 2}項目が未チェック`,
+          "yellow",
+        );
+      }
+    }
+
+    //メッセージ表示
+    function messageChenge(text, color) {
+      message.textContent = text;
+      message.style.color = color;
+    }
+  </script>
+</html>
