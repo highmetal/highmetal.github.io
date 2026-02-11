@@ -1,0 +1,20 @@
+クリップボードの内容をテキストエリアに張り付けるコード
+<button id="pasteBtn">貼り付け</button>
+
+<textarea id="outbox"></textarea>
+
+<script>
+  document.getElementById("pasteBtn").addEventListener("click", () => {
+    navigator.clipboard
+      .readText()
+      .then((clipText) => {
+        document.getElementById("outbox").textContent = clipText;
+      })
+      .catch((err) => {
+        console.error("クリップボードの読み取り失敗:", err);
+      });
+  });
+</script>
+
+
+スマホでコーディング
