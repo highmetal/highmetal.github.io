@@ -65,5 +65,73 @@
     function show(el) {
       el.style.display = "block";
     }
+
+    const snippets = {
+      // テキスト系
+      qp: "<p>|</p>",
+      qspan: "<span>|</span>",
+
+      // レイアウト
+      qdiv: "<div>|</div>",
+
+      // リスト
+      qul: "<ul>\n  |\n</ul>",
+      qol: "<ol>\n  |\n</ol>",
+      qli: "<li>|</li>",
+
+      // 見出し
+      qh1: "<h1>|</h1>",
+      qh2: "<h2>|</h2>",
+      qh3: "<h3>|</h3>",
+      qh4: "<h4>|</h4>",
+      qh5: "<h5>|</h5>",
+      qh6: "<h6>|</h6>",
+
+      // テーブル
+      qtable: "<table>\n  |\n</table>",
+      qtr: "<tr>\n  |\n</tr>",
+      qth: "<th>|</th>",
+      qtd: "<td>|</td>",
+
+      // フォーム
+      qform: "<form>|</form>",
+      qlabel: '<label for="">|</label>',
+      qtextarea: "<textarea>|</textarea>",
+      qselect: "<select>\n  |\n</select>",
+      qoption: '<option value="">|</option>',
+      qbutton: "<button>|</button>",
+
+      qa: '<a href="|"></a>',
+      qimg: '<img src="|" alt="">',
+      qinput: '<input type="|" />',
+    };
+
+    textarea.addEventListener("input", function () {
+      const value = textarea.value;
+      const cursorPos = textarea.selectionStart;
+      const beforeCursor = value.slice(0, cursorPos);
+
+      // 末尾の単語を取得
+      const match = beforeCursor.match(/q[a-zA-Z0-9]+$/);
+      if (!match) return;
+
+      const key = match[0];
+      const snippet = snippets[key];
+      if (!snippet) return;
+
+      const startPos = cursorPos - key.length;
+
+      // カーソル位置計算用
+      const cursorMarkerIndex = snippet.indexOf("|");
+      const cleanSnippet = snippet.replace("|", "");
+
+      const newValue =
+        value.slice(0, startPos) + cleanSnippet + value.slice(cursorPos);
+
+      textarea.value = newValue;
+
+      const newCursor = startPos + cursorMarkerIndex;
+      textarea.selectionStart = textarea.selectionEnd = newCursor;
+    });
   </script>
 </html>
