@@ -7,7 +7,7 @@
     <title>チェックリスト</title>
     <style>
       html {
-        background-color: rgb(141, 141, 141);
+        background-color: rgb(197, 197, 197);
       }
       input[type="checkbox"] {
         transform: scale(1.3);
@@ -33,10 +33,36 @@
       .delButton {
         background-color: rgb(193, 12, 72);
       }
+      .pasteButton {
+        background-color: rgb(255, 136, 0);
+      }
       .manual {
         font-size: 0.95rem;
         border-style: dotted none;
-        color: rgb(30, 54, 10);
+        color: rgb(0, 0, 0);
+      }
+      .modal {
+        background-color: rgba(0, 0, 0, 0.4);
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        display: none;
+      }
+      .modalContent {
+        background-color: rgba(255, 117, 117);
+        border: solid 0.15rem black;
+        margin: 55% auto;
+        padding: 3%;
+        width: 80%;
+      }
+      .wbutton {
+        margin-left: 65%;
+      }
+      .modalContent button {
+        background-color: black;
+        margin: 3%;
       }
     </style>
   </head>
@@ -46,7 +72,7 @@
       <summary>使い方・仕様</summary>
       <p>
         入力欄に追加したい項目を入力して追加ボタンを押すと項目が追加できます。<br />
-        項目を1行ずつ入力することで同時に複数の項目を追加できます。
+        複数行入力することで同時にすべての項目を追加できます。
       </p>
       <p>追加した項目名は変更が可能です。</p>
       <p>リストの最後尾にチェックされていない項目数が表示されます。</p>
@@ -62,24 +88,47 @@
     <div class="operation">
       <textarea
         class="textarea"
-        placeholder="追加したい項目名を入力　（改行で複数の入力可能）"
+        placeholder="追加したい項目名を入力（改行で複数の入力可能）"
         cols="25"
       ></textarea>
+      <button class="pasteButton">ペースト</button>
       <button class="setButton">追加</button>
-      <button class="allDelButton">オールデリート</button>
+      <button class="allDelButton">ｵｰﾙﾃﾞﾘｰﾄ</button>
     </div>
     <hr />
     <div class="table"></div>
     <p class="message"></p>
+    <div class="modal">
+      <div class="modalContent">
+        <h3>確認</h3>
+        <p class="modalMessage"></p>
+        <div class="wbutton">
+          <button class="modalButtonF">いいえ</button
+          ><button class="modalButtonT">はい</button>
+        </div>
+      </div>
+    </div>
   </body>
   <script>
     "use strict";
     //各要素の取得
     const textarea = document.querySelector(".textarea");
+    const pasteButton = document.querySelector(".pasteButton");
     const setButton = document.querySelector(".setButton");
     const allDelButton = document.querySelector(".allDelButton");
     const table = document.querySelector(".table");
     const message = document.querySelector(".message");
+    const modal = document.querySelector(".modal");
+    const modalMessage = document.querySelector(".modalMessage");
+    const modalButtonF = document.querySelector(".modalButtonF");
+    const modalButtonT = document.querySelector(".modalButtonT");
+
+    //ペーストボタンを押したときの処理
+    pasteButton.addEventListener("click", function () {
+      navigator.clipboard
+        .readText()
+        .then((clipText) => (textarea.value = clipText));
+    });
 
     //追加ボタンを押したときの処理
     setButton.addEventListener("click", function () {
@@ -117,13 +166,28 @@
       new_name.type = "text";
       new_name.value = text;
       new_name.size = 25;
+      new_name.name = " ";
 
       //削除ボタン
       const new_delButton = document.createElement("button");
       new_delButton.textContent = "削除";
       new_delButton.className = "delButton";
       new_delButton.addEventListener("click", function () {
-        new_div.remove();
+        //モーダルを表示
+        modalView(`項目"${new_name.value}"を削除してもよろしいですか？`);
+
+        //「いいえ」が押された時の処理
+        modalButtonF.addEventListener("click", function () {
+          modal.style.display = "none";
+        });
+
+        //「はい」が押された時の処理
+        modalButtonT.addEventListener("click", function () {
+          new_div.remove();
+          messageChenge(`項目"${new_name.value}"を削除しました`, "darkred");
+          modal.style.display = "none";
+        });
+
         check();
       });
 
@@ -152,11 +216,24 @@
         messageChenge("削除する要素がありません", "darkred");
         return;
       }
-      //すべて削除
-      del.forEach((element) => {
-        element.remove();
+
+      //モーダルを表示
+      modalView("オールデリートを発動してもよろしいですか？");
+
+      //「いいえ」が押された時の処理
+      modalButtonF.addEventListener("click", function () {
+        modal.style.display = "none";
       });
-      messageChenge("すべての項目を削除しました", "darkred");
+
+      //「はい」が押された時の処理
+      modalButtonT.addEventListener("click", function () {
+        //すべて削除
+        del.forEach((element) => {
+          element.remove();
+        });
+        messageChenge("すべての項目を削除しました", "darkred");
+        modal.style.display = "none";
+      });
     });
 
     //チェック数確認
@@ -179,11 +256,11 @@
 
       //チェック数ごとのメッセージ
       if (allchecked === allDiv.length) {
-        messageChenge("すべての項目がチェックされました", "greenyellow");
+        messageChenge("すべての項目がチェックされました", "forestgreen");
       } else {
         messageChenge(
           `あと${(allDiv.length - allchecked) / 2}項目が未チェック`,
-          "yellow",
+          "orangered",
         );
       }
     }
@@ -192,6 +269,12 @@
     function messageChenge(text, color) {
       message.textContent = text;
       message.style.color = color;
+    }
+
+    //モーダル表示
+    function modalView(text) {
+      modal.style.display = "block";
+      modalMessage.textContent = text;
     }
   </script>
 </html>
