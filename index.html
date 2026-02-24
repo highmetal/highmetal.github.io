@@ -55,24 +55,14 @@
     <a href="https://highmetal.github.io/cardAmountCalculation/">カード金額計算</a
     ><br />
 
-    <a href="https://highmetal.github.io/shoppingMemo/memo">買い物メモ</a><br />
-
     <a href="https://highmetal.github.io/textCounter/">文字数カウンター</a
     ><br />
 
     <a href="https://highmetal.github.io/memoryGame/game.html">神経衰弱</a
     ><br />
 
-    <!-- <a href="https://highmetal.github.io/roulette/index.html">ルーレット</a><br> -->
-
     <a href="https://highmetal.github.io/roulette/newRoulette.html"
       >ルーレット</a
-    ><br />
-
-    <!-- <a href="https://highmetal.github.io/shoppingMemo/tx">テキストファイル作成</a><br> -->
-
-    <a href="https://highmetal.github.io/shoppingMemo/"
-      >ファイルからチェックリスト作成</a
     ><br />
 
     <a href="https://highmetal.github.io/checkList/">チェックリスト</a><br />
@@ -84,38 +74,6 @@
     <a href="https://highmetal.github.io/codePre/">コードデモ</a><br />
   </body>
   <script>
-    "use strict";
-    const ha = document.querySelector(".hamburger");
-    const secret = document.querySelector(".secret");
-    let clickCount = 0;ha.addEventListener("click", function () {clickCount++;if (clickCount > 30) {if (prompt("please password") === "8888") {document.body.style.color = "red";secret.innerHTML = `<a href="https://highmetal.github.io/duelMasters/iwae.html">iwae</a><br><a href="https://highmetal.github.io/cardMove/">cardMove</a><br>`;} else {clickCount = 0;}
-      }
-      if (ha.classList.contains("onc")) {
-        ha.classList.remove("onc");
-      } else {
-        ha.classList.add("onc");
-      }
-    });
-    function clock() {
-      const time = new Date();
-      const year = time.getFullYear();
-      const month = time.getMonth() + 1;
-      const day = time.getDate();
-      const hour = time.getHours();
-      const minut = time.getMinutes();
-      const sec = time.getSeconds();
-
-      const monthStr = String(month).padStart(2, "0");
-      const dayStr = String(day).padStart(2, "0");
-      const hoursStr = String(hour).padStart(2, "0");
-      const minutesStr = String(minut).padStart(2, "0");
-      const secondsStr = String(sec).padStart(2, "0");
-
-      const clock = document.getElementById("clock");
-      let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;
-      clock.textContent = str;
-    }
-
-    setInterval(clock, 1000);
-    clock();
+    "use strict";    const ha = document.querySelector(".hamburger");    const secret = document.querySelector(".secret");    let clickCount = 0;ha.addEventListener("click", function () {clickCount++;if (clickCount > 30) {if (prompt("please password") === "8888") {document.body.style.color = "red";secret.innerHTML = `<a href="https://highmetal.github.io/duelMasters/iwae.html">iwae</a><br><a href="https://highmetal.github.io/cardMove/">cardMove</a><br>`;} else {clickCount = 0;}      }      if (ha.classList.contains("onc")) {        ha.classList.remove("onc");      } else {        ha.classList.add("onc");      }    });    function clock() {      const time = new Date();      const year = time.getFullYear();      const month = time.getMonth() + 1;      const day = time.getDate();      const hour = time.getHours();      const minut = time.getMinutes();      const sec = time.getSeconds();      const monthStr = String(month).padStart(2, "0");      const dayStr = String(day).padStart(2, "0");      const hoursStr = String(hour).padStart(2, "0");      const minutesStr = String(minut).padStart(2, "0");      const secondsStr = String(sec).padStart(2, "0");      const clock = document.getElementById("clock");      let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;      clock.textContent = str;    }    setInterval(clock, 1000);    clock();
   </script>
 </html>
