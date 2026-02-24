@@ -300,7 +300,7 @@
           <th>値段</th>
           <th>枚数</th>
           <th>小計</th>
-          <th class="no-shot">総計に含む</th>
+          <th>総計に含む</th>
           <th>備考</th>
           <th class="no-shot">編集</th>
           <th class="no-shot">削除</th>
@@ -368,8 +368,6 @@
         const editCell = row.insertCell();
         const deleteCell = row.insertCell();
         const handleCell = row.insertCell();
-
-        checkCell.classList.add("no-shot");
 
         editCell.classList.add("no-shot");
         deleteCell.classList.add("delete-cell", "no-shot");
