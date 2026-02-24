@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>カード金額計算</title>
     <link rel="icon" href="high.ico" />
-    <link rel="apple-touch-icon" href="ati.PNG" />
+    <link
+      rel="apple-touch-icon"
+      href="ati.PNG"
+    />
     <style>
       html {
         background-color: rgb(188, 232, 185);
@@ -574,6 +577,15 @@
           });
           return;
         }
+        if (cardList.length === 0) {
+          await showModal({
+            title: "注意",
+            message:
+              "リストにカードがありません。リストにカードを追加してください。",
+            type: "close",
+          });
+          return;
+        }
 
         const ok = await showModal({
           title: "確認",
@@ -646,6 +658,14 @@
       //   }
 
       function allClear() {
+        if (cardList.length === 0) {
+          showModal({
+            title: "注意",
+            message: "削除するカードがありません。",
+            type: "close",
+          });
+          return;
+        }
         showModal({
           title: "一括削除確認",
           message: "リストからカードをすべて削除しますか？",
