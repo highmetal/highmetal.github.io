@@ -24,12 +24,23 @@
         max-height: 100%;
         touch-action: none;
       }
+      .titleButton {
+        margin-top: 5%;
+        margin-left: 62%;
+      }
     </style>
   </head>
   <body>
-    <canvas id="canvas" width="480" height="320"></canvas>
-
+    <div>
+      <canvas id="canvas" width="480" height="320"></canvas>
+      <button class="titleButton">タイトルに戻る</button>
+    </div>
     <script>
+      const titleButton = document.querySelector(".titleButton");
+      titleButton.addEventListener("click", function () {
+        location.href = "index.html";
+      });
+
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
 
@@ -37,7 +48,7 @@
       const RECHARGE_SPEED = 0.6;
       let score = 0;
 
-      // 時間管理用の変数 
+      // 時間管理用の変数
       let timeLeft = 60; // 制限時間（秒）
       let isGameOver = false;
       let lastTime = performance.now();
@@ -209,7 +220,7 @@
 
         drawUI();
 
-        // ゲームオーバー表示 
+        // ゲームオーバー表示
         if (isGameOver) {
           ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -235,7 +246,7 @@
         ctx.textAlign = "right";
         ctx.fillText("SCORE: " + score, canvas.width - 20, 30);
 
-        // 残り時間表示 
+        // 残り時間表示
         ctx.textAlign = "left";
         ctx.fillText("TIME: " + Math.ceil(timeLeft), 20, 30);
 
