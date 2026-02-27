@@ -37,6 +37,12 @@
       .onc span:nth-of-type(3) {
         transform: translate(0px, -13.3px) rotate(-45deg);
       }
+
+  body {
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-family: sans-serif;
+    padding: 20px;
+  }
     </style>
   </head>
   <body>
@@ -72,8 +78,109 @@
     <a href="https://highmetal.github.io/createFile/">ファイル作成</a><br />
 
     <a href="https://highmetal.github.io/codePre/">コードデモ</a><br />
+
+
+
+
+
+<br /><br />
+<input type="color" id="color-picker">
+<input type="text" id="color-text" placeholder="#ff0000">
+
   </body>
   <script>
-    "use strict";    const ha = document.querySelector(".hamburger");    const secret = document.querySelector(".secret");    let clickCount = 0;ha.addEventListener("click", function () {clickCount++;if (clickCount > 30) {if (prompt("please password") === "8888") {document.body.style.color = "red";secret.innerHTML = `<a href="https://highmetal.github.io/duelMasters/iwae.html">iwae</a><br><a href="https://highmetal.github.io/cardMove/">cardMove</a><br>`;} else {clickCount = 0;}      }      if (ha.classList.contains("onc")) {        ha.classList.remove("onc");      } else {        ha.classList.add("onc");      }    });    function clock() {      const time = new Date();      const year = time.getFullYear();      const month = time.getMonth() + 1;      const day = time.getDate();      const hour = time.getHours();      const minut = time.getMinutes();      const sec = time.getSeconds();      const monthStr = String(month).padStart(2, "0");      const dayStr = String(day).padStart(2, "0");      const hoursStr = String(hour).padStart(2, "0");      const minutesStr = String(minut).padStart(2, "0");      const secondsStr = String(sec).padStart(2, "0");      const clock = document.getElementById("clock");      let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;      clock.textContent = str;    }    setInterval(clock, 1000);    clock();
+    "use strict";    
+
+let colorPicker;
+let colorText;
+const defaultColor = "#fff";
+
+window.addEventListener("load", startup);
+
+function startup() {
+  colorPicker = document.querySelector("#color-picker");
+  colorText = document.querySelector("#color-text");
+
+  colorPicker.value = defaultColor;
+  colorText.value = defaultColor;
+  updateBackground(defaultColor);
+
+  colorPicker.addEventListener("input", () => {
+    const color = colorPicker.value;
+    updateBackground(color);
+    colorText.value = color;
+  });
+
+  colorText.addEventListener("input", () => {
+    const color = colorText.value;
+
+    if (color === "" || color === "#"){
+      updateBackground("#fff");
+      colorPicker.value = normalizeColor("#fff");
+      return;
+    }
+
+    if (isValidColor(color)) {
+      updateBackground(color);
+      colorPicker.value = normalizeColor(color);
+    }
+  });
+}
+
+function updateBackground(color) {
+  document.body.style.backgroundColor = color;
+  updateTextColor(color);
+}
+
+function updateTextColor(color) {
+  const rgb = hexToRgb(normalizeColor(color));
+  if (!rgb) return;
+
+  const brightness = (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114);
+
+  if (brightness < 128) {
+    document.body.style.color = "white";
+  } else {
+    document.body.style.color = "black";
+  }
+}
+
+function hexToRgb(hex) {
+  const match = hex.replace("#", "");
+  if (match.length !== 6) return null;
+
+  return {
+    r: parseInt(match.substring(0,2), 16),
+    g: parseInt(match.substring(2,4), 16),
+    b: parseInt(match.substring(4,6), 16)
+  };
+}
+
+
+function isValidColor(color) {
+  const s = new Option().style;
+  s.color = color;
+  return s.color !== "";
+}
+
+
+function normalizeColor(color) {
+  const temp = document.createElement("div");
+  temp.style.color = color;
+  document.body.appendChild(temp);
+
+  const computed = getComputedStyle(temp).color;
+  document.body.removeChild(temp);
+
+  const rgb = computed.match(/\d+/g);
+  if (!rgb) return defaultColor;
+
+  return "#" + rgb.slice(0,3).map(x => {
+    const hex = parseInt(x).toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
+  }).join("");
+}
+
+const ha = document.querySelector(".hamburger");    const secret = document.querySelector(".secret");    let clickCount = 0;ha.addEventListener("click", function () {clickCount++;if (clickCount > 30) {if (prompt("please password") === "8888") {document.body.style.color = "red";secret.innerHTML = `<a href="https://highmetal.github.io/duelMasters/iwae.html">iwae</a><br><a href="https://highmetal.github.io/cardMove/">cardMove</a><br>`;} else {clickCount = 0;}      }      if (ha.classList.contains("onc")) {        ha.classList.remove("onc");      } else {        ha.classList.add("onc");      }    });    function clock() {      const time = new Date();      const year = time.getFullYear();      const month = time.getMonth() + 1;      const day = time.getDate();      const hour = time.getHours();      const minut = time.getMinutes();      const sec = time.getSeconds();      const monthStr = String(month).padStart(2, "0");      const dayStr = String(day).padStart(2, "0");      const hoursStr = String(hour).padStart(2, "0");      const minutesStr = String(minut).padStart(2, "0");      const secondsStr = String(sec).padStart(2, "0");      const clock = document.getElementById("clock");      let str = `${year}/${monthStr}/${dayStr} ${hoursStr}:${minutesStr}:${secondsStr}`;      clock.textContent = str;    }    setInterval(clock, 1000);    clock();
   </script>
 </html>
