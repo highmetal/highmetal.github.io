@@ -34,7 +34,7 @@
       const ctx = canvas.getContext("2d");
 
       let rechargeAmount = 100;
-      const RECHARGE_SPEED = 0.3;
+      const RECHARGE_SPEED = 0.6;
       let score = 0;
 
       // 時間管理用の変数 
@@ -196,7 +196,7 @@
         }
 
         allItems.forEach((item) => {
-          item.update(1);
+          item.update(1.5);
           item.draw();
         });
 
