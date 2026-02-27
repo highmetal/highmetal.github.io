@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>射的ゲーム</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      canvas {
+        background: #eee;
+        display: block;
+        max-width: 100%;
+        max-height: 100%;
+        touch-action: none;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="480" height="320"></canvas>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+
+      let rechargeAmount = 100;
+      const RECHARGE_SPEED = 0.6;
+      let score = 0;
+
+      // 時間管理用の変数 
+      let timeLeft = 60; // 制限時間（秒）
+      let isGameOver = false;
+      let lastTime = performance.now();
+
+      const itemTypes = [
+        { id: 1, hp: 1, color: "#3498db", score: 100 },
+        { id: 2, hp: 1, color: "#3498db", score: 100 },
+        { id: 1, hp: 1, color: "#3498db", score: 100 },
+        { id: 3, hp: 2, color: "#2ecc71", score: 200 },
+        { id: 4, hp: 2, color: "#2ecc71", score: 200 },
+        { id: 5, hp: 3, color: "#e74c3c", score: 500 },
+      ];
+
+      class Item {
+        constructor(lane, index) {
+          this.lane = lane;
+          this.index = index;
+          this.width = 40;
+          this.height = 40;
+          this.spacing = 150;
+          this.resetType();
+          this.x = index * this.spacing;
+          this.y = 40 + lane * 70;
+        }
+
+        resetType() {
+          const randomType =
+            itemTypes[Math.floor(Math.random() * itemTypes.length)];
+          this.type = { ...randomType };
+        }
+
+        update(speed) {
+          if (isGameOver) return; // ゲーム終了時は動かさない
+
+          const totalLength = 7 * this.spacing;
+
+          if (this.isFalling) {
+            this.y += 8;
+            if (this.y > canvas.height) {
+              this.isFalling = false;
+              this.y = 40 + this.lane * 70;
+              this.resetType();
+              const randomGap = (Math.random() - 0.5) * 40;
+              if (this.lane === 1) {
+                this.x = this.x - totalLength + randomGap;
+              } else {
+                this.x = this.x + totalLength + randomGap;
+              }
+            }
+            return;
+          }
+
+          if (this.lane === 1) {
+            this.x += speed;
+            if (this.x > canvas.width + this.width) {
+              this.x -= totalLength;
+            }
+          } else {
+            this.x -= speed;
+            if (this.x < -this.width) {
+              this.x += totalLength;
+            }
+          }
+        }
+
+        draw() {
+          ctx.fillStyle = this.type.color;
+          ctx.beginPath();
+          ctx.arc(this.x + 20, this.y + 20, 18, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = "#555";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(this.x + 20, this.y);
+          ctx.lineTo(this.x + 20, this.y - 15);
+          ctx.stroke();
+
+          ctx.fillStyle = "white";
+          ctx.font = "bold 14px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText(this.type.hp, this.x + 20, this.y + 25);
+        }
+      }
+
+      const allItems = [];
+
+      function init() {
+        for (let l = 0; l < 3; l++) {
+          const offset = l * 60;
+          for (let i = 0; i < 7; i++) {
+            const item = new Item(l, i);
+            item.x += offset;
+            allItems.push(item);
+          }
+        }
+      }
+
+      function shoot() {
+        // ゲームオーバー時は撃てない
+        if (rechargeAmount < 100 || isGameOver) return;
+
+        const targetX = canvas.width / 2;
+        const hitItems = allItems.filter((item) => {
+          return (
+            item.x < targetX && item.x + item.width > targetX && !item.isFalling
+          );
+        });
+
+        hitItems.forEach((item) => {
+          item.type.hp -= 1;
+          if (item.type.hp <= 0 && !item.isFalling) {
+            item.isFalling = true;
+            score += item.type.score;
+          }
+        });
+        rechargeAmount = 0;
+      }
+
+      canvas.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        shoot();
+      });
+
+      canvas.addEventListener(
+        "touchstart",
+        (e) => {
+          e.preventDefault();
+          shoot();
+        },
+        { passive: false },
+      );
+
+      function update() {
+        const currentTime = performance.now();
+        const deltaTime = (currentTime - lastTime) / 1000; // 秒単位に変換
+        lastTime = currentTime;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // カウントダウン処理
+        if (!isGameOver) {
+          timeLeft -= deltaTime;
+          if (timeLeft <= 0) {
+            timeLeft = 0;
+            isGameOver = true;
+          }
+        }
+
+        ctx.strokeStyle = "#999";
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.moveTo(0, 25 + i * 70);
+          ctx.lineTo(canvas.width, 25 + i * 70);
+          ctx.stroke();
+        }
+
+        allItems.forEach((item) => {
+          item.update(1.5);
+          item.draw();
+        });
+
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.5)";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, 50);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.stroke();
+
+        drawUI();
+
+        // ゲームオーバー表示 
+        if (isGameOver) {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = "white";
+          ctx.font = "bold 40px Arial";
+          ctx.textAlign = "center";
+          ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+          ctx.font = "bold 20px Arial";
+          ctx.fillText(
+            "SCORE: " + score,
+            canvas.width / 2,
+            canvas.height / 2 + 40,
+          );
+        }
+
+        requestAnimationFrame(update);
+      }
+
+      function drawUI() {
+        // スコア表示
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 16px Arial";
+        ctx.textAlign = "right";
+        ctx.fillText("SCORE: " + score, canvas.width - 20, 30);
+
+        // 残り時間表示 
+        ctx.textAlign = "left";
+        ctx.fillText("TIME: " + Math.ceil(timeLeft), 20, 30);
+
+        const meterWidth = 100;
+        const meterHeight = 15;
+        const x = 20;
+        const y = canvas.height - 30;
+
+        if (rechargeAmount < 100 && !isGameOver) {
+          rechargeAmount += RECHARGE_SPEED;
+          if (rechargeAmount > 100) rechargeAmount = 100;
+        }
+
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, meterWidth, meterHeight);
+
+        ctx.fillStyle = rechargeAmount >= 100 ? "#2ecc71" : "#f39c12";
+        ctx.fillRect(
+          x + 2,
+          y + 2,
+          (meterWidth - 4) * (rechargeAmount / 100),
+          meterHeight - 4,
+        );
+
+        ctx.fillStyle = "#333";
+        ctx.font = "bold 12px Arial";
+        ctx.textAlign = "left";
+        ctx.fillText(rechargeAmount >= 100 ? "READY" : "RELOADING", x, y - 5);
+      }
+
+      init();
+      update();
+    </script>
+  </body>
+</html>
