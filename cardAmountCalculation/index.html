@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>カード金額計算</title>
     <link rel="icon" href="https://highmetal.github.io/high.ico" />
-    <link
-      rel="apple-touch-icon"
-      href="ati.PNG"
-    />
-    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <link rel="apple-touch-icon" href="ati.PNG" />
+    <link href="https://fonts.googleapis.com" rel="stylesheet" />
 
     <style>
       body {
-        font-family: 'Zen Maru Gothic', sans-serif;
+        font-family: "Zen Maru Gothic", sans-serif;
       }
 
       html {
@@ -85,13 +82,24 @@
         background-color: #ccc;
       }
 
-      #sumAmount {
+      #sum {
+        display: flex;
+        justify-content: end;
         font-weight: bold;
         margin-top: 1.5%;
         background: #fff;
         color: #000;
-        padding: 5px;
+        padding: 0;
+        line-height: 0.5;
+        margin-bottom: 3%;
         text-align: right;
+      }
+
+      #sumQuantity {
+        margin-right: 5%;
+      }
+      #sumAmount {
+        margin-right: 1%;
       }
 
       #message {
@@ -175,7 +183,7 @@
         width: 100%;
       }
 
-      .screenshot-mode #sumAmount {
+      .screenshot-mode #sum {
         text-align: right;
         width: 100%;
         font-size: 16px;
@@ -268,7 +276,7 @@
   <body>
     <div class="title">
       <h2>カード金額計算</h2>
-      <h5 class="var">version 1.2.0</h5>
+      <h5 class="var">version 1.2.1</h5>
     </div>
 
     <form id="form">
@@ -313,8 +321,10 @@
           <th class="no-shot">並び替え</th>
         </tr>
       </table>
-
-      <p id="sumAmount">総計: 0円</p>
+      <div id="sum">
+        <p id="sumQuantity">総枚数: 0枚</p>
+        <p id="sumAmount">総計: 0円</p>
+      </div>
     </div>
     <button id="capture">リストのダウンロード</button>
 
@@ -349,6 +359,21 @@
         localStorage.setItem("cardList", JSON.stringify(cardList));
       }
 
+      function updateAllCard() {
+        let totalQuantity = 0;
+
+        document.querySelectorAll("#table tr[data-id]").forEach((row) => {
+          const checkbox = row.querySelector("input[type='checkbox']");
+          if (checkbox.checked) {
+            const quantity = Number(row.cells[2].textContent.replace(/,/g, ""));
+            totalQuantity += quantity;
+          }
+        });
+
+        document.getElementById("sumQuantity").textContent =
+          `総枚数: ${totalQuantity.toLocaleString()}枚`;
+      }
+
       function updateSum() {
         let sum = 0;
         document.querySelectorAll("tr[data-amount]").forEach((row) => {
@@ -364,6 +389,7 @@
         const row = table.insertRow();
         row.dataset.id = card.id;
         row.dataset.amount = card.amount * card.quantity;
+        row.dataset.quantity = card.quantity;
 
         const nameCell = row.insertCell();
         const amountCell = row.insertCell();
@@ -390,7 +416,10 @@
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = true;
-        checkbox.addEventListener("change", updateSum);
+        checkbox.addEventListener("change", () => {
+          updateSum();
+          updateAllCard();
+        });
         checkCell.appendChild(checkbox);
 
         // 備考
@@ -468,10 +497,12 @@
             saveToLocalStorage();
 
             row.dataset.amount = newAmount * newQuantity;
+            row.dataset.quantity = newQuantity;
             editBtn.textContent = "編集";
             editing = false;
             row.classList.remove("editing");
             updateSum();
+            updateAllCard();
           }
         });
 
@@ -497,9 +528,11 @@
           cardList = cardList.filter((c) => c.id !== card.id);
           saveToLocalStorage();
           updateSum();
+          updateAllCard();
         });
 
         updateSum();
+        updateAllCard();
       }
 
       // ページ再読み込み
@@ -687,6 +720,7 @@
           }
 
           updateSum();
+          updateAllCard();
         });
       }
 
