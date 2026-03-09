@@ -122,8 +122,8 @@
       }
 
       th:nth-child(5) {
-        
-        font-size: 9px;
+        width: 1.5rem;
+        font-size: 15px;
       }
       td:nth-child(5) input[type="checkbox"] {
         transform: scale(1.2);
@@ -157,6 +157,12 @@
       th:nth-child(9) {
         width: 2rem;
         font-size: 9px;
+      }
+
+      td:nth-child(2),
+      td:nth-child(3),
+      td:nth-child(4) {
+        text-align: right;
       }
 
       .delete-cell {
@@ -276,7 +282,7 @@
   <body>
     <div class="title">
       <h2>カード金額計算</h2>
-      <h5 class="var">version 1.2.2</h5>
+      <h5 class="var">version 1.2.3</h5>
     </div>
 
     <form id="form">
@@ -314,7 +320,7 @@
           <th>値段</th>
           <th>枚数</th>
           <th>小計</th>
-          <th>含む</th>
+          <th>✔</th>
           <th>備考</th>
           <th class="no-shot">編集</th>
           <th class="no-shot">削除</th>
@@ -465,15 +471,27 @@
             const newQuantity = Number(newQuantityStr);
 
             if (newName === "") {
-              message.textContent = "カード名が空です";
+              showModal({
+                title: "注意",
+                message: `カード名が空です`,
+                type: "close",
+              });
               return;
             }
             if (newAmountStr === "") {
-              message.textContent = "値段が未入力です";
+              showModal({
+                title: "注意",
+                message: `値段が未入力です`,
+                type: "close",
+              });
               return;
             }
             if (newQuantityStr === "") {
-              message.textContent = "枚数が未入力です";
+              showModal({
+                title: "注意",
+                message: `枚数が未入力です`,
+                type: "close",
+              });
               return;
             }
 
@@ -554,15 +572,15 @@
         const bikou = bikouInput.value.trim();
 
         if (name === "") {
-          message.textContent = "カード名が入力されていません。";
+          messageDisplay("カード名が入力されていません。");
           return;
         }
         if (Number.isNaN(amount) || amount < 0) {
-          message.textContent = "値段は0円以上で入力してください。";
+          messageDisplay("値段は0円以上で入力してください。");
           return;
         }
         if (!Number.isInteger(quantity) || quantity < 0) {
-          message.textContent = "枚数は0以上で入力してください。";
+          messageDisplay("枚数は0以上で入力してください。");
           return;
         }
 
@@ -573,6 +591,13 @@
         saveToLocalStorage();
         addCardToTable(newCard);
         form.reset();
+
+        function messageDisplay(msg) {
+          message.textContent = msg;
+          setTimeout(() => {
+            message.textContent = "";
+          }, 3000);
+        }
       };
 
       //スクリーンショット
@@ -704,7 +729,7 @@
           return;
         }
         showModal({
-          title: "一括削除確認",
+          title: "確認",
           message: "リストからカードをすべて削除しますか？",
           type: "yesno",
         }).then((ok) => {
