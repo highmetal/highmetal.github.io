@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown Preview</title>
+    <link rel="icon" href="https://highmetal.github.io/high.ico" />
+    <!-- <link rel="apple-touch-icon" href="ati.PNG" /> -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <link href="https://fonts.googleapis.com" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <style>
+      body {
+        font-family: "Zen Maru Gothic", sans-serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      /* 上エリア */
+      #main {
+        flex: 1;
+        display: flex;
+        min-height: 0;
+      }
+
+      /* パネル */
+      .panel {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ヘッダー */
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
+        background: white;
+      }
+
+      .panel-header h1 {
+        margin: 0;
+        font-size: 18px;
+        color: #00cc66;
+      }
+
+      /* ボタン共通 */
+      .panel-header button {
+        padding: 4px 10px;
+        border: 1px solid #333;
+        background: white;
+        cursor: pointer;
+      }
+
+      .panel-header button:hover {
+        background: #eee;
+      }
+
+      .download-btn {
+        background-color: #ff9800 !important;
+        color: white !important;
+        border: none !important;
+        font-weight: bold;
+      }
+
+      /* エディタ */
+      textarea {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        border-right: 1px solid #ccc;
+        font-size: 16px;
+        resize: none;
+        outline: none;
+        background: #f5f5f5;
+        overflow: auto;
+      }
+
+      /* プレビュー */
+      #preview {
+        flex: 1;
+        padding: 20px;
+        overflow: auto;
+      }
+
+      /* 辞書 */
+      #dictionary {
+        border-top: 1px solid #ccc;
+        background: #d6d6d6;
+        padding: 10px;
+        font-size: 14px;
+        max-height: 35vh;
+        overflow-y: auto;
+      }
+
+      details {
+        margin-bottom: 5px;
+      }
+      summary {
+        font-weight: bold;
+      }
+      code {
+        background: #eee;
+        padding: 2px 4px;
+      }
+
+      /* PCでは切り替えボタンを非表示 */
+      .toggle-btn {
+        display: none;
+      }
+
+      /* スマホ版（768px以下） */
+      @media (max-width: 768px) {
+        .toggle-btn {
+          display: inline-block;
+          background-color: #00cc66 !important;
+          color: white !important;
+          border: none !important;
+          font-weight: bold;
+          margin-left: 5px;
+        }
+
+        #main {
+          flex-direction: column;
+        }
+
+        .panel {
+          width: 95%;
+          height: 100%;
+          margin: 0 auto;
+        }
+
+        .panel:not(.active) {
+          display: none;
+        }
+
+        .panel.active {
+          display: flex;
+          flex: 1;
+        }
+
+        textarea {
+          border-right: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="main">
+      <div class="panel active" id="editor-panel">
+        <div class="panel-header">
+          <h1>Markdown Editor</h1>
+          <div>
+            <button class="download-btn" onclick="downloadMarkdown()">
+              ダウンロード
+            </button>
+            <button class="toggle-btn">Previewへ</button>
+          </div>
+        </div>
+        <textarea id="editor"># Markdown Preview</textarea>
+      </div>
+
+      <div class="panel" id="preview-panel">
+        <div class="panel-header">
+          <h1>Preview</h1>
+          <button class="toggle-btn">Editorへ</button>
+        </div>
+        <div id="preview"></div>
+      </div>
+    </div>
+
+    <!-- 辞書 -->
+    <div id="dictionary">
+      <details open>
+        <summary>Markdownチートシート</summary>
+
+        <details>
+          <summary>見出し</summary>
+
+          <code># 見出し1</code><br />
+
+          <code>## 見出し2</code><br />
+
+          <code>### 見出し3</code><br />
+        </details>
+
+        <br />
+
+        <details>
+          <summary>水平線</summary>
+
+          <code>---</code>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>文字装飾</summary>
+
+          <code>**太字**</code><br />
+
+          <code>*斜体*</code><br />
+
+          <code>~~取り消し~~</code><br />
+
+          <code>`code`</code><br />
+        </details>
+
+        <br />
+
+        <details>
+          <summary>リスト</summary>
+
+          <code>- 箇条書き</code><br />
+
+          <code>- 箇条書き</code><br /><br />
+
+          <code>1. 番号付き</code><br />
+
+          <code>1. 番号付き</code>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>リンク</summary>
+
+          <code>[title](url)</code>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>画像</summary>
+
+          <code>![alt](url)</code>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>コード</summary>
+
+          <pre><code>
+
+```js
+
+console.log()
+
+```
+
+</code></pre>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>テーブル</summary>
+
+          <pre><code>| 列1 | 列2 |
+
+|---|---|
+
+| A | B |
+
+| C | D |</code></pre>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>引用</summary>
+
+          <code>> quote</code><br />
+
+          <code>>> quote</code>
+        </details>
+
+        <br />
+
+        <details>
+          <summary>チェックリスト</summary>
+
+          <code>- [ ] task</code><br />
+
+          <code>- [x] done</code>
+        </details>
+      </details>
+    </div>
+
+    <script>
+      const editor = document.getElementById("editor");
+      const preview = document.getElementById("preview");
+      const editorPanel = document.getElementById("editor-panel");
+      const previewPanel = document.getElementById("preview-panel");
+
+      /* Markdown更新 */
+      function updatePreview() {
+        preview.innerHTML = marked.parse(editor.value);
+        document.querySelectorAll("pre code").forEach((block) => {
+          hljs.highlightElement(block);
+        });
+      }
+
+      editor.addEventListener("input", updatePreview);
+      updatePreview();
+
+      /* 初回フォーカスでクリア */
+      let isFirstFocus = true;
+      editor.addEventListener("focus", function () {
+        if (isFirstFocus) {
+          editor.value = "";
+          isFirstFocus = false;
+          updatePreview();
+        }
+      });
+
+      /* ダウンロード */
+      function downloadMarkdown() {
+        const fileName = prompt("ファイル名を入力してください", "markdown");
+        if (fileName === null) return;
+        fileName = fileName.trim() || "markdown";
+        fileName = fileName.replace(/\.md$/, "");
+
+        const content = editor.value;
+        const blob = new Blob([content], {
+          type: "text/markdown;charset=utf-8",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${fileName}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      /* モード切替（ボタンが複数あるので全取得してループ） */
+      document.querySelectorAll(".toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          editorPanel.classList.toggle("active");
+          previewPanel.classList.toggle("active");
+        });
+      });
+    </script>
+  </body>
+</html>
