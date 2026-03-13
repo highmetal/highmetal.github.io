@@ -14,6 +14,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
       body {
@@ -67,11 +69,14 @@
         background: #eee;
       }
 
-      .download-btn {
+      .download-btn,
+      .imageButton,
+      .pdfButton {
         background-color: #ff9800 !important;
         color: white !important;
         border: none !important;
         font-weight: bold;
+        margin: 1%;
       }
 
       /* エディタ */
@@ -136,8 +141,9 @@
         }
 
         .panel {
-          width: 100%;
+          width: 95%;
           height: 100%;
+          margin: 0 auto;
         }
 
         .panel:not(.active) {
@@ -163,7 +169,7 @@
           <h1>Markdown Editor</h1>
           <div>
             <button class="download-btn" onclick="downloadMarkdown()">
-              ダウンロード
+              mdダウンロード
             </button>
             <button class="toggle-btn">Previewへ</button>
           </div>
@@ -174,6 +180,12 @@
       <div class="panel" id="preview-panel">
         <div class="panel-header">
           <h1>Preview</h1>
+          <button class="imageButton" onclick="downloadImage()">
+            png画像ダウンロード
+          </button>
+          <button class="pdfButton" onclick="downloadPDF()">
+            pdfダウンロード
+          </button>
           <button class="toggle-btn">Editorへ</button>
         </div>
         <div id="preview"></div>
@@ -352,6 +364,71 @@ console.log()
           previewPanel.classList.toggle("active");
         });
       });
+
+      //画像ダウンロード
+      function downloadImage() {
+        const target = document.getElementById("preview");
+
+        const originalOverflow = target.style.overflow;
+        const originalHeight = target.style.height;
+
+        target.style.overflow = "visible";
+        target.style.height = "auto";
+
+        html2canvas(target).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = "preview.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+
+          target.style.overflow = originalOverflow;
+          target.style.height = originalHeight;
+        });
+      }
+
+      //PDFダウンロード
+      async function downloadPDF() {
+        const target = document.getElementById("preview");
+
+        const originalOverflow = target.style.overflow;
+        const originalHeight = target.style.height;
+
+        target.style.overflow = "visible";
+        target.style.height = "auto";
+
+        const canvas = await html2canvas(target, {
+          scale: 2,
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("p", "mm", "a4");
+
+        const pdfWidth = 210;
+        const pdfHeight = 297;
+
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        pdf.save("preview.pdf");
+
+        target.style.overflow = originalOverflow;
+        target.style.height = originalHeight;
+      }
     </script>
   </body>
 </html>
