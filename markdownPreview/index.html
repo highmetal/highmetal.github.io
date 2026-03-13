@@ -127,6 +127,10 @@
 
       /* スマホ版（768px以下） */
       @media (max-width: 768px) {
+        .head {
+          display: flex;
+        }
+
         .toggle-btn {
           display: inline-block;
           background-color: #00cc66 !important;
@@ -134,6 +138,7 @@
           border: none !important;
           font-weight: bold;
           margin-left: 5px;
+          width: 6rem;
         }
 
         #main {
@@ -167,9 +172,9 @@
       <div class="panel active" id="editor-panel">
         <div class="panel-header">
           <h1>Markdown Editor</h1>
-          <div>
+          <div class="head">
             <button class="download-btn" onclick="downloadMarkdown()">
-              mdダウンロード
+              md
             </button>
             <button class="toggle-btn">Previewへ</button>
           </div>
@@ -180,12 +185,8 @@
       <div class="panel" id="preview-panel">
         <div class="panel-header">
           <h1>Preview</h1>
-          <button class="imageButton" onclick="downloadImage()">
-            png画像ダウンロード
-          </button>
-          <button class="pdfButton" onclick="downloadPDF()">
-            pdfダウンロード
-          </button>
+          <button class="imageButton" onclick="downloadImage()">png</button>
+          <button class="pdfButton" onclick="downloadPDF()">pdf</button>
           <button class="toggle-btn">Editorへ</button>
         </div>
         <div id="preview"></div>
@@ -340,7 +341,8 @@ console.log()
 
       /* ダウンロード */
       function downloadMarkdown() {
-        const fileName = prompt("ファイル名を入力してください", "markdown");
+        if (!confirm("マークダウンファイルをダウンロードしますか？")) return;
+        let fileName = prompt("ファイル名を入力してください", "markdown");
         if (fileName === null) return;
         fileName = fileName.trim() || "markdown";
         fileName = fileName.replace(/\.md$/, "");
@@ -367,6 +369,12 @@ console.log()
 
       //画像ダウンロード
       function downloadImage() {
+        if (!confirm("画像ファイル（png）をダウンロードしますか？")) return;
+        let fileName = prompt("ファイル名を入力してください", "markdown-view");
+        if (fileName === null) return;
+        fileName = fileName.trim() || "markdown-view";
+        fileName = fileName.replace(/\.png$/, "");
+
         const target = document.getElementById("preview");
 
         const originalOverflow = target.style.overflow;
@@ -377,7 +385,7 @@ console.log()
 
         html2canvas(target).then((canvas) => {
           const link = document.createElement("a");
-          link.download = "preview.png";
+          link.download = `${fileName}.png`;
           link.href = canvas.toDataURL("image/png");
           link.click();
 
@@ -388,6 +396,11 @@ console.log()
 
       //PDFダウンロード
       async function downloadPDF() {
+        if (!confirm("画像ファイル（pdf）をダウンロードしますか？")) return;
+        let fileName = prompt("ファイル名を入力してください", "markdown-view");
+        if (fileName === null) return;
+        fileName = fileName.trim() || "markdown-view";
+        fileName = fileName.replace(/\.pdf$/, "");
         const target = document.getElementById("preview");
 
         const originalOverflow = target.style.overflow;
@@ -424,7 +437,7 @@ console.log()
           heightLeft -= pdfHeight;
         }
 
-        pdf.save("preview.pdf");
+        pdf.save(`${fileName}.pdf`);
 
         target.style.overflow = originalOverflow;
         target.style.height = originalHeight;
