@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>メモ付きスマホ背景画像作成</title>
+    <style>
+      :root {
+        --primary-color: #007aff;
+        --bg-color: #f5f5f7;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--bg-color);
+        color: #333;
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+      }
+      h3 {
+        text-align: center;
+        color: #1d1d1f;
+      }
+      details {
+        background: #fff;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      .step-box {
+        background: #fff;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .annotation {
+        font-size: 13px;
+      }
+      button {
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin: 5px 2px;
+        transition: opacity 0.2s;
+      }
+      button:hover {
+        opacity: 0.8;
+      }
+      textarea {
+        width: 100%;
+        height: 100px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        padding: 10px;
+        box-sizing: border-box;
+        font-size: 16px; /* 入力時にズームされないように */
+      }
+      select {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+      }
+
+      /* 非表示制御 */
+      #backcolorSelector,
+      #fileInput {
+        display: none;
+      }
+      .color-dot {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        display: inline-block;
+        margin: 5px;
+      }
+
+      #preview-container {
+        text-align: center;
+        margin-top: 20px;
+      }
+      canvas {
+        max-width: 100%;
+        height: auto;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        background: #eee;
+      }
+      .download-btn {
+        background: #34c759;
+        width: 100%;
+        font-size: 1.1em;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>メモ付きスマホ背景作成 ver.1.0</h3>
+    <details>
+      <summary>使い方</summary>
+      <ol>
+        <li>背景画像または背景色を選択します。</li>
+        <li>メモを入力します（複数行OK）。</li>
+        <li>機種を選択してプレビューを確認。</li>
+        <li>「画像をダウンロード」で保存して壁紙に設定！</li>
+      </ol>
+    </details>
+
+    <div id="step1" class="step-box">
+      <h4>背景画像・色の選択</h4>
+      <input type="file" id="fileInput" accept="image/*" />
+      <button onclick="document.getElementById('fileInput').click()">
+        背景画像を選択
+      </button>
+      <button onclick="toggleColorSelector()">背景色を選択</button>
+
+      <div id="backcolorSelector">
+        <p>背景色:</p>
+        <div
+          class="color-dot"
+          style="background: #ff3b30"
+          onclick="setColor('#ff3b30')"
+        ></div>
+        <div
+          class="color-dot"
+          style="background: #007aff"
+          onclick="setColor('#007aff')"
+        ></div>
+        <div
+          class="color-dot"
+          style="background: #34c759"
+          onclick="setColor('#34c759')"
+        ></div>
+        <div
+          class="color-dot"
+          style="background: #ffffff"
+          onclick="setColor('#ffffff')"
+        ></div>
+        <div
+          class="color-dot"
+          style="background: #000000"
+          onclick="setColor('#000000')"
+        ></div>
+        <input type="color" id="colorPicker" onchange="setColor(this.value)" />
+      </div>
+    </div>
+
+    <div id="step2" class="step-box">
+      <h4>メモを入力</h4>
+      <textarea
+        id="memoInput"
+        placeholder="ここにメモを入力してください"
+      ></textarea>
+    </div>
+
+    <div id="step3" class="step-box">
+      <h4>スマホ機種を選択</h4>
+      <select id="deviceSelect">
+        <option value="750,1334">iPhone SE (第2/3世代) 750×1334</option>
+        <option value="750,1500">
+          iPhone SE (第2/3世代)(ぼやけ対策) 750×1500
+        </option>
+        <option value="1179,2556">iPhone 15/16/17 (標準) 1179×2556</option>
+        <option value="1179,2800" selected>
+          iPhone 15/16/17 (標準)(ぼやけ対策) 1179×2800
+        </option>
+        <option value="1290,2796">iPhone 15/16/17 Pro Max 1290×2796</option>
+        <option value="1290,3100">
+          iPhone 15/16/17 Pro Max(ぼやけ対策) 1290×3100
+        </option>
+        <option value="1080,2400">Android (標準 20:9) 1080×2400</option>
+      </select>
+      <p class="annotation">
+        ※iOSで壁紙を設定する際に画像サイズがぴったりの場合、ぼやけが発生するためサイズを2種類選択できるようにしました。
+      </p>
+    </div>
+
+    <div id="step4" class="step-box">
+      <h4>プレビュー</h4>
+      <div id="preview-container">
+        <canvas id="canvas"></canvas>
+      </div>
+      <button class="download-btn" onclick="downloadImage()">
+        画像をダウンロード
+      </button>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      const memoInput = document.getElementById("memoInput");
+      const deviceSelect = document.getElementById("deviceSelect");
+      const fileInput = document.getElementById("fileInput");
+      const colorSelector = document.getElementById("backcolorSelector");
+
+      let bgType = "color";
+      let bgColor = "#ffffff";
+      let bgImage = null;
+
+      function toggleColorSelector() {
+        colorSelector.style.display =
+          colorSelector.style.display === "block" ? "none" : "block";
+        bgType = "color";
+        draw();
+      }
+
+      function setColor(color) {
+        bgColor = color;
+        bgType = "color";
+        draw();
+      }
+
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            bgImage = img;
+            bgType = "image";
+            colorSelector.style.display = "none";
+            draw();
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      function draw() {
+        const [width, height] = deviceSelect.value.split(",").map(Number);
+        canvas.width = width;
+        canvas.height = height;
+
+        // 背景描画
+        if (bgType === "color") {
+          ctx.fillStyle = bgColor;
+          ctx.fillRect(0, 0, width, height);
+        } else if (bgImage) {
+          const scale = Math.max(
+            width / bgImage.width,
+            height / bgImage.height,
+          );
+          const x = (width - bgImage.width * scale) / 2;
+          const y = (height - bgImage.height * scale) / 2;
+          ctx.drawImage(
+            bgImage,
+            x,
+            y,
+            bgImage.width * scale,
+            bgImage.height * scale,
+          );
+        }
+
+        // テキスト描画設定
+        const text = memoInput.value;
+        if (!text) return;
+
+        const fontSize = Math.floor(width / 14);
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+
+        // 視認性向上のためのスタイル設定
+        if (bgType === "color") {
+          const isDark = bgColor === "#000000" || bgColor === "#007aff";
+          ctx.fillStyle = isDark ? "#ffffff" : "#333333";
+          ctx.shadowBlur = 0;
+        } else {
+          ctx.fillStyle = "#ffffff"; // 画像の上なら白文字が一般的
+          ctx.shadowColor = "rgba(0,0,0,0.8)"; // 黒い影をつけて読みやすく
+          ctx.shadowBlur = 8;
+        }
+
+        // 余白を高さの25%に設定
+        const startY = height * 0.25;
+        const lines = text.split("\n");
+        const lineHeight = fontSize * 1.5;
+
+        lines.forEach((line, i) => {
+          ctx.fillText(line, width / 2, startY + i * lineHeight);
+        });
+      }
+
+      memoInput.addEventListener("input", draw);
+      deviceSelect.addEventListener("change", draw);
+
+      function downloadImage() {
+        const link = document.createElement("a");
+        link.download = `memo-wallpaper.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+
+      window.onload = draw;
+    </script>
+  </body>
+</html>
