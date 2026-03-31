@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>デッキ -祝えサイクリカSF-</title>
+    <style>
+      body {
+        font-family: "メイリオ", sans-serif;
+        font-size: 18px;
+      }
+
+      img {
+        display: block;
+        margin: 0 auto;
+        border: solid 1px black;
+        max-width: 700px;
+      }
+
+      .move {
+        font-size: 16px;
+        padding: 2%;
+      }
+
+      #image-button {
+        display: flex;
+      }
+
+      .buttonStyle {
+        color: rgb(255, 255, 255);
+        border-radius: 5%;
+        width: 200px;
+        height: 50px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        margin: 0 auto;
+      }
+      .buttonStyle:hover {
+        transform: scale(1.01);
+      }
+
+      #deckChange {
+        background-color: rgb(255, 93, 93);
+      }
+
+      #deckCopy {
+        background-color: rgb(55, 55, 55);
+        display: flex;
+        align-items: center;
+      }
+
+      .topButtons {
+        display: grid;
+      }
+
+      #cardComment p {
+        font-size: 14px;
+      }
+      #cardComment h3 {
+        border-bottom: solid 0.5px #c1c1c1;
+      }
+
+      #cardComment img {
+        width: 50%;
+        border: none;
+        padding: 3%;
+      }
+
+      #topBack {
+        position: fixed;
+        bottom: 50px;
+        right: 20px;
+        visibility: hidden;
+        color: rgb(255, 255, 255);
+        background-color: rgb(119, 205, 73);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        font-size: 11px;
+        cursor: pointer;
+      }
+
+      #index {
+        background-color: rgb(230, 230, 230);
+        padding: 1%;
+      }
+
+      #index a {
+        color: #000;
+      }
+      #index a:hover {
+        color: #878787;
+      }
+
+      #index ul {
+        list-style-type: circle;
+      }
+
+      .breadcrumb {
+        list-style: none;
+        display: flex;
+        gap: 8px;
+        padding: 0;
+        flex-wrap: wrap;
+        font-size: 14px;
+      }
+
+      .breadcrumb li {
+        white-space: nowrap;
+      }
+
+      .breadcrumb li::after {
+        content: ">";
+        margin-left: 8px;
+      }
+
+      .breadcrumb li:last-child::after {
+        content: "";
+      }
+
+      /* カード全体 */
+      .card {
+        margin-left: 2%;
+        width: 260px;
+        aspect-ratio: 63/88;
+        background: white;
+        border: 3px solid black;
+        border-radius: 12px;
+        padding: 8px;
+        position: relative;
+      }
+
+      /* 上部 */
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cost {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        color: white;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+      .vividro {
+        display: flex;
+        align-items: center;
+        margin-bottom: 4px;
+      }
+
+      /* ビビッドロー文字 */
+      .vividro-title {
+        background-color: #000;
+        color: #fff;
+        font-size: 10px;
+        padding: 2px 6px;
+        font-weight: bold;
+        letter-spacing: -0.05em;
+      }
+
+      /* 三角共通 */
+      .vividro-arrow {
+        width: 0;
+        height: 0;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+      }
+
+      /* 左三角 */
+      .vividro-arrow.left {
+        border-right: 8px solid black;
+      }
+
+      /* 右三角 */
+      .vividro-arrow.right {
+        border-left: 8px solid black;
+      }
+
+      /* コスト */
+      .vividro-cost {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        color: white;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+      }
+
+      .name {
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      /* 文明 */
+      .race {
+        text-align: center;
+        font-size: 10px;
+        margin: 4px 0;
+      }
+
+      /* 画像*/
+      /*.image {
+        height: 40%;
+        background: aqua;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        margin-bottom: 6px;
+      } */
+
+      /* 種類 */
+      .type {
+        width: 25%;
+        padding: 2px 8px;
+        font-size: 10px;
+        color: rgb(0, 0, 0);
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #c3122f 50%,
+          #c3122f 100%
+        );
+        border: 1px solid black;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* 効果 */
+      .effect {
+        font-size: 11px;
+        line-height: 1.4;
+      }
+      .card-bottom-number {
+        position: absolute;
+        bottom: 4px;
+        left: 50%;
+        transform: translateX(-50%) rotate(180deg);
+        font-size: 12px;
+        font-weight: bold;
+        color: #ffffff;
+        background: linear-gradient(
+          45deg,
+          #c3122f 0%,
+          #c3122f 50%,
+          #439cd8 50%,
+          #439cd8 100%
+        );
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid black;
+      }
+
+      .card-name {
+        font-weight: bold;
+      }
+
+      .aosiro {
+        background: linear-gradient(
+          45deg,
+          #ffff2d 0%,
+          #ffff2d 50%,
+          #439cd8 50%,
+          #439cd8 100%
+        );
+      }
+      .ao {
+        background: linear-gradient(
+          45deg,
+          #439cd8 0%,
+          #439cd8 50%,
+          #439cd8 50%,
+          #439cd8 100%
+        );
+      }
+
+      @media (max-width: 768px) {
+        img {
+          width: 100%;
+        }
+        h1 {
+          font-size: 22px;
+        }
+
+        h2 {
+          font-size: 20px;
+          border-bottom: solid #c1c1c1;
+        }
+
+        .topButtons {
+          display: flex;
+        }
+
+        #deckCopy img {
+          display: none;
+        }
+
+        #image-button {
+          display: block;
+        }
+
+        .buttonStyle {
+          border-radius: 50%;
+          width: 80px;
+          height: 80px;
+        }
+
+        #deckChange {
+          display: block;
+          margin: 0 auto;
+        }
+
+        #cardComment img {
+          width: 90%;
+        }
+
+        #index {
+          padding: 0%;
+        }
+        .breadcrumb {
+          font-size: 12px;
+          gap: 4px;
+        }
+
+        .breadcrumb li::after {
+          margin-left: 4px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="deckName">祝えサイクリカSFデッキについて</h1>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li><a href="../index.html">トップページ</a></li>
+        <li><a href="../deck.html">デッキ一覧</a></li>
+        <li>祝えサイクリカSF</li>
+      </ol>
+    </nav>
+    <div id="image-button">
+      <img
+        src="image/DeckImageコスト順.jpeg"
+        width="65%"
+        alt="デッキリストコスト順"
+        id="deckImage"
+      />
+
+      <div class="topButtons">
+        <button id="deckChange" class="buttonStyle">枚数順にする</button>
+
+        <button id="deckCopy" class="buttonStyle">
+          <img src="../image/favicon.ico" width="18px" height="18px" />Deck
+          makerにコピー
+        </button>
+      </div>
+    </div>
+    <p>
+      個人的に祝えを使うなら一番まるいと思っている基本の型。<br /><br />
+      枚数はまだ正解が見えていないため日々研究中。<br /><br />
+      Tier5くらいかな
+    </p>
+    <section>
+      <h2>立ち回り</h2>
+      <p>
+        2ターン目か3ターン目で 《ロスト・ウォーターゲイト》、《♪閑かさや
+        とにかくブレイン
+        蝉ミンミン》、《ブレイン・ストーム》を使い、《「祝え!この物語の終幕を!」》を4ターン目のトップに来るように置く。<br />
+        また、《魔誕音像スカルテット》や《洗打の妖精》で相手の動きを遅らせられるようにしたり、<br />
+        《超英雄タイム》で相手のメタなどの盤面を除去できるようにしており、一応最低限動ける形にはしている。
+        <br /><del>が、その時々で引きたいカードを引けるかは別の問題...</del
+        ><br /><br />
+      </p>
+
+      <p>
+        4ターン目の《「祝え!この物語の終幕を!」》を打ったら勝ちまでもっていきたい。（一応4キルデッキ）<br /><br />
+      </p>
+
+      <details>
+        <summary>4ターン目理想ムーブ</summary>
+        <div class="move">
+          ビビッドロー4《「祝え!この物語の終幕を!」》<br />
+          → 手から《龍素記号Sr スペルサイクリカ》<br />
+          → 墓地から《「祝え!この物語の終幕を!」》<br />
+          → 手から《禁断機関 VV-8》<br /><br />
+          → 《龍素記号Sr スペルサイクリカ》攻撃時に《未来の法皇
+          ミラダンテSF》に革命チェンジ<br />
+          → ファイナル革命で《「祝え!この物語の終幕を!」》<br />
+          → 手から《龍素記号Sr スペルサイクリカ》<br />
+          → 墓地から《「祝え!この物語の終幕を!」》<br />
+          → 手から《音響の精霊龍 ラフルル・ラブ》<br />
+          → 《禁断機関 VV-8》の封印が外れ追加ターン<br />
+          → 《音響の精霊龍 ラフルル・ラブ》攻撃時に《龍装者
+          バルチュリス》宣言<br /><br />
+          最初の攻撃の革命チェンジが《時の法皇ミラダンテⅫ》であれば打点は減るがクリーチャートリガーケアができるため状況に応じて動きたい。<br />
+          <del>（引けるかどうか）</del>
+        </div>
+      </details>
+
+      <br />
+    </section>
+
+    <section id="cardComment">
+      <h2>採用カード<del>とコメント（適当）</del></h2>
+
+      <div id="index">
+        <h4>目次</h4>
+        <ul>
+          <li><a href="#1cost">1コスト</a></li>
+          <li><a href="#2cost">2コスト</a></li>
+          <li><a href="#5cost">5コスト</a></li>
+          <li><a href="#6cost">6コスト</a></li>
+          <li><a href="#7cost">7コスト</a></li>
+          <li><a href="#8cost">8コスト</a></li>
+        </ul>
+      </div>
+
+      <h3 id="1cost">1コスト</h3>
+      <ul>
+        <li>《ロスト・ウォーターゲイト》2枚</li>
+        <!-- <img
+          src="image/ロスト・ウォータゲイト.jpg"
+          alt="ロスト・ウォータゲイト"
+        /> -->
+        <div class="card-ol">
+          <div class="card">
+            <div class="card-header">
+              <div class="cost ao">1</div>
+              <div class="name">ロスト・ウォータゲイト</div>
+            </div>
+
+            <div class="type ao">呪文</div>
+
+            <div class="effect">
+              <p>
+                Ｓ・トリガー<br />
+                ■自分の山札を見る。その中から多色カードを１枚表向きにしても良い。その後、山札をシャッフルし、そのカードを山札の上に置く。
+              </p>
+              <br />
+            </div>
+            <div class="card-bottom-number ao">1</div>
+          </div>
+        </div>
+        <p>
+          祝えを引けてなくても1マナでトップに置けるしデッキ見れるからシールドわかる神のカード。しかし、これだけだと祝えの出し先までが非確定だからブレインストームの方を枚数優先している。
+        </p>
+      </ul>
+      <br />
+
+      <h3 id="2cost">2コスト</h3>
+      <ul>
+        <li>《魔誕音像スカルテット》3枚</li>
+        <img src="image/スカルテット.jpg" alt="スカルテット" />
+        <p>
+          メタその1。テスタでもいいがこのデッキの受けが少ないため、G・ストライクを優先した。G-NEOなのも役立つかも。赤が欲しいから洗打の妖精よりも多く入れてる。
+        </p>
+        <br />
+        <li>《洗打の妖精》2枚</li>
+        <!-- <img src="image/洗打の妖精.jpg" alt="洗打の妖精" /> -->
+        <div class="card-ol">
+          <div class="card">
+            <div class="card-header">
+              <div class="cost ao">2</div>
+              <div class="name">
+                <ruby>洗打の妖精<rt>スクラブ・フェアリー</rt></ruby>
+              </div>
+            </div>
+
+            <div class="type ao">クリーチャー</div>
+
+            <div class="effect">
+              <p>
+                Ｇ・ストライク<br />
+                ■ジャストダイバー<br />
+                ■相手のクリーチャーが出た時、それが相手のマナゾーンにあるカードの枚数よりコストが大きいクリーチャーなら、持ち主の手札に戻してもよい。
+              </p>
+              <br />
+            </div>
+            <div class="card-bottom-number ao">1</div>
+          </div>
+        </div>
+        <p>
+          メタその2。カマスでもいいがこのデッキの受けが少ないため、G・ストライクを優先した。スカルテットと合わせてメタは5枚構成。ジャストダイバーのため、祝えから出せば強そう。（小並感）
+        </p>
+        <br />
+        <li>《ブレイン・ストーム》4枚</li>
+        <p>蝉ミンミンのかさまし。GS付けて♡</p>
+      </ul>
+      <br />
+
+      <h3 id="5cost">5コスト</h3>
+      <ul>
+        <li>《龍装者 バルチュリス》3枚</li>
+        <p>
+          3点2点バルチュリスができたらさすがに強い。赤単色枠でもありマナ埋めしやすいから3枚採用。祝えとかファイナル革命のドローで引きたい。
+        </p>
+      </ul>
+      <br />
+
+      <h3 id="6cost">6コスト</h3>
+      <ul>
+        <li>《ボルシャック・スーパーヒーロー/超英雄タイム》4枚</li>
+        <img
+          src="image/ボルシャック・スーパーヒーロー 超英雄タイム.jpg"
+          alt="ボルシャック・スーパーヒーロー 超英雄タイム"
+        />
+        <p>
+          基本下面でメタの除去をする用。一応祝えで上面も出せるがこちらのメタも破壊されるから注意。メタと祝えとこのカードしか引けないと最悪。（経験談）
+        </p>
+        <br />
+        <li>
+          《マジック・A・セミプーロ/♪閑かさや とにかくブレイン 蝉ミンミン》4枚
+        </li>
+        <img
+          src="image/マジック・A・セミプーロ♪閑かさや とにかくブレイン 蝉ミンミン.jpg"
+          alt="マジック・A・セミプーロ/♪閑かさや とにかくブレイン 蝉ミンミン"
+        />
+        <p>
+          基本下面で祝えをトップに置く用。上が2面止めれるトリガーかつコマンドなのも偉い。
+        </p>
+        <br />
+        <li>
+          <a href="../card/「祝え!この物語の終幕を!」.html">
+            《「祝え!この物語の終幕を!」》</a
+          >4枚
+        </li>
+        <!-- <img
+          src="image/「祝え!この物語の終幕を!」.jpg"
+          alt="「祝え!この物語の終幕を!」"
+        /> -->
+        <div class="card-ol">
+          <div class="card">
+            <div class="card-header">
+              <div class="cost">6</div>
+              <div class="name">
+                「<ruby>祝<rt>いわ</rt></ruby
+                >え！この <ruby>物語<rt>ものがたり</rt></ruby
+                >の <ruby>終幕<rt>しゅうまく</rt></ruby
+                >を！」
+              </div>
+            </div>
+
+            <div class="race">美孔麗王国</div>
+
+            <div class="type">呪文</div>
+
+            <div class="effect">
+              <div class="vividro">
+                <span class="vividro-arrow left"></span>
+                <span class="vividro-title">ビビッドロー</span>
+                <span class="vividro-arrow right"></span>
+                <span class="vividro-cost">4</span>
+              </div>
+              <p>
+                ■カードを1枚引く。その後、水または火の、コスト7以下のクリーチャーを1体、自分の手札から出す。そのクリーチャーに「スピードアタッカー」を与える。このターンの終わりに、そのクリーチャーを山札の上に置く。
+              </p>
+              <br />
+            </div>
+            <div class="card-bottom-number">1</div>
+          </div>
+        </div>
+        <p>
+          コンセプト。4マナで1ドローし、7コストのクリーチャーを踏み倒してSAを与える最強のカード。
+        </p>
+        <br />
+        <li>《メガ・マナロック・ドラゴン》1枚</li>
+        <p>
+          殿堂カードその1。多色相手には強いんじゃない？（あんま使ったことない）
+        </p>
+        <br />
+        <li>《禁断機関 VV-8》1枚</li>
+        <img src="image/禁断機関 VV-8.jpg" alt="禁断機関 VV-8" />
+        <p>
+          殿堂カードその2。コンボの途中に絡めばなんか追加ターンとれるし手札が潤沢になる。
+        </p>
+      </ul>
+      <br />
+
+      <h3 id="7cost">7コスト</h3>
+      <ul>
+        <li>《龍素記号Sr スペルサイクリカ》4枚</li>
+        <img
+          src="image/龍素記号Sr スペルサイクリカ.jpg"
+          alt="龍素記号Sr スペルサイクリカ"
+        />
+        <p>
+          祝えから一番出したいやつ。たのしい。デュエプレ版ターン1制限だから祝え実装までになんとかしてくれ。
+        </p>
+        <br />
+        <li>《蒼神龍アナザー・ワールド》2枚</li>
+        <img
+          src="image/蒼神龍アナザー・ワールド.jpg"
+          alt="蒼神龍アナザー・ワールド"
+        />
+        <p>
+          祝えから出せるマッドネス。手札が超壊滅級だったら祝えで出して5ドローリセマラできるからそこでミラダンテ持ってきたい。《D-Jealousy-灰撫/♪五本まで
+          集めて林 森ジャングル》の入れ替え枠。
+        </p>
+        <br />
+        <li>
+          《音卿の精霊龍 ラフルル・ラブ/「未来から来る、だからミラクル」》2枚
+        </li>
+        <img
+          src="image/音卿の精霊龍 ラフルル・ラブ 「未来から来る、だからミラクル」.jpg"
+          alt="音卿の精霊龍 ラフルル・ラブ 「未来から来る、だからミラクル」"
+        />
+        <p>
+          上記2体と革命チェンジできる呪文メタ。手札悪くて6ターン目生きてたら下面を使って蝉ミンミンで次のターンの祝えに備えれるかもね。3枚入れたいが枠無い。
+        </p>
+      </ul>
+      <br />
+      <li>《芸魔龍馬 バルバトチェス》1枚</li>
+      <!-- <img
+        src="image/芸魔龍馬 バルバトチェス.jpg"
+        alt="芸魔龍馬 バルバトチェス"
+      /> -->
+      <div class="card-ol">
+        <div class="card">
+          <div class="card-header">
+            <div class="cost">6</div>
+            <div class="name">
+              <ruby>芸魔龍馬<rt>げいまりゅうま</rt></ruby> バルバトチェス
+            </div>
+          </div>
+
+          <div class="race">マジック・ドラゴン/ゲーム・コマンド</div>
+
+          <div class="type">クリーチャー</div>
+
+          <div class="effect">
+            <p>
+              ■革命チェンジ:コスト５以上のマジック<br />
+              ■スピードアタッカー<br />
+              ■Ｗ・ブレイカー<br />
+              ■このクリーチャーがバトルゾーンに出た時、相手のパワー１００００以下のクリーチャーを１体選び、破壊する。その後、カードを２枚引く。<br />
+              ■終極宣言:自分のターンの初めに、次の能力を使ってもよい。<br />
+              ▶このターン、自分のマジックを使うコストを４少なくする。ただし、コストは０以下にはならない。このターン、自分がマジックを使ったとき、カードを１枚引いてもよい。
+            </p>
+            <br />
+          </div>
+          <div class="card-bottom-number">1</div>
+        </div>
+      </div>
+      <p>
+        祝えから出せるしセミプーロから革命チェンジでも出せる。10000以下破壊+2ドローが偉い。終極宣言で1マナ蝉ミンミンすれば祝えをトップに置きながらそのままビビッドロー可能なため、5マナあれば祝えまでつながる。もう少し枚数入れたい。
+      </p>
+      <br />
+
+      <h3 id="8cost">8コスト</h3>
+      <ul>
+        <li>《未来の法皇 ミラダンテSF》2枚</li>
+        <!-- <img
+          src="image/未来の法皇 ミラダンテSF.jpg"
+          alt="未来の法皇 ミラダンテSF"
+        /> -->
+        <div class="card-ol">
+          <div class="card">
+            <div class="card-header">
+              <div class="cost aosiro">8</div>
+              <div class="name">
+                <ruby>未来<rt>みらい</rt></ruby
+                >の <ruby>法皇<rt>ほうおう</rt> ミラダンテ</ruby>
+                <ruby>SF<rt>スーパーフューチャー</rt></ruby>
+              </div>
+            </div>
+
+            <div class="race">
+              エンジェル・コマンド・ドラゴン/革命軍/ドレミ団
+            </div>
+
+            <div class="type aosiro">クリーチャー</div>
+
+            <div class="effect">
+              <p>
+                ■革命チェンジ：光または水のコスト５以上のドラゴン<br />
+                ■Ｔ・ブレイカー<br />
+                ■ファイナル革命:このクリーチャーが「革命チェンジ」によってバトルゾーンに出た時、そのターン中に他の「ファイナル革命」をまでだ使っていなければ、カードを１枚引いてもよい。そうしたら、光か水のコスト６以下の呪文を１枚、自分の手札からコストを支払わずに唱えてもよい。
+              </p>
+              <br />
+            </div>
+            <div class="card-bottom-number aosiro">1</div>
+          </div>
+        </div>
+        <p>
+          7コスト帯の方々と革命チェンジできる。サイクリカとこのカードで祝え打ちまくれてたのしい。
+        </p>
+        <br />
+        <li>《時の法皇 ミラダンテⅫ》1枚</li>
+        <!-- <img src="image/時の法皇 ミラダンテⅫ.jpg" alt="時の法皇 ミラダンテⅫ" /> -->
+        <div class="card-ol">
+          <div class="card">
+            <div class="card-header">
+              <div class="cost aosiro">8</div>
+              <div class="name">
+                <ruby>時<rt>とき</rt></ruby
+                >の <ruby>法皇<rt>ほうおう</rt> ミラダンテ</ruby>
+                <ruby>Ⅻ<rt>トゥエルブ</rt></ruby>
+              </div>
+            </div>
+
+            <div class="race">
+              エンジェル・コマンド・ドラゴン/革命軍/ドレミ団
+            </div>
+
+            <div class="type aosiro">クリーチャー</div>
+
+            <div class="effect">
+              <p>
+                ■革命チェンジ：光または水のコスト５以上のドラゴン<br />
+                ■Ｔ・ブレイカー<br />
+                ■このクリーチャーがバトルゾーンに出た時、光のコスト５以下の呪文を１枚、コストを支払わずに自分の手札から唱えてもよい。そうしなければ、カードを１枚引く。<br />
+                ■ファイナル革命：このクリーチャーが「革命チェンジ」によってバトルゾーンに出た時、そのターン中に他の「ファイナル革命」をまでだ使っていなければ、次の相手のターンの終わりまで、相手はコスト７以下のクリーチャーを召喚できない。
+              </p>
+              <br />
+            </div>
+            <div class="card-bottom-number aosiro">1</div>
+          </div>
+        </div>
+        <p>
+          殿堂カードその3。クリーチャートリガーメタ。DMR-22 「革命ファイナル
+          第2章 世界は0だ!!
+          ブラックアウト!!」のレジェンド枠が2枚もこのデッキに入ってて当時小学生でボックスを買った製作者はうれしい。
+        </p>
+      </ul>
+    </section>
+    <a href="../card/「祝え!この物語の終幕を!」.html"
+      >《「祝え!この物語の終幕を!」》カード説明へ戻る</a
+    >
+    <a href="../index.html">トップページへ戻る</a>
+
+    <button id="topBack">トップへ戻る</button>
+  </body>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script>
+    const deckChange = document.getElementById("deckChange");
+    const deckImage = document.getElementById("deckImage");
+    let isDeckChanger = true;
+
+    deckChange.addEventListener("click", function () {
+      let comment;
+      if (isDeckChanger) {
+        comment = "コスト順にする";
+        deckImage.src = "image/DeckImage枚数順.jpeg";
+        deckImage.alt = "デッキリスト枚数順";
+        deckChange.style.backgroundColor = "#009EA2";
+      }
+      if (!isDeckChanger) {
+        comment = "枚数順にする";
+        deckImage.src = "image/DeckImageコスト順.jpeg";
+        deckImage.alt = "デッキリストコスト順";
+        deckChange.style.backgroundColor = "#FF615D";
+      }
+
+      deckChange.textContent = comment;
+      isDeckChanger = !isDeckChanger;
+    });
+
+    const deckCopy = document.getElementById("deckCopy");
+
+    deckCopy.addEventListener("click", function () {
+      alert(
+        "エラー：デッキが公開されていないため、コピーできません。（機能未作成なだけ）",
+      );
+    });
+
+    const topBack = document.getElementById("topBack");
+
+    window.addEventListener("scroll", function () {
+      if (window.scrollY > 100) {
+        topBack.style.visibility = "visible";
+      } else {
+        topBack.style.visibility = "hidden";
+      }
+    });
+
+    $(function () {
+      var pagescroll = $("#topBack").click(function () {
+        $("body, html").animate({ scrollTop: 0 }, 1000);
+        return false;
+      });
+    });
+  </script>
+</html>
