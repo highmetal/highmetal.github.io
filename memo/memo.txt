@@ -17,4 +17,28 @@
 </script>
 
 
-スマホでコーディング
+
+毎秒背景色をランダムに変える
+    const index = document.getElementById("body");
+
+    const colors = [
+        "red", "blue", "green", "black", "yellow", "#00cc00", "#ff0066",
+        "white", "gray", "orange", "purple", "cyan", "magenta",
+        "pink", "lightskyblue", "lightgreen", "lemonchiffon", "violet",
+        "navy", "darkgreen", "maroon", "darkslategray", "saddlebrown",
+        "#FF5733",
+        "#33FF57",
+        "#3357FF",
+        "#F0E68C",
+        "#FF69B4",
+        "#40E0D0"
+    ];
+    let colorIndex = 0;
+    setInterval(function () {
+        let newColor;
+        do {
+            newColor = colors[Math.floor(Math.random() * (colors.length + 1))];
+        } while (newColor === index.style.backgroundColor);
+
+        index.style.backgroundColor = newColor;
+    }, 1000)
