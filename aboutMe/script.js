@@ -2,19 +2,36 @@
 
  //body color changer 
     const body = document.getElementById("body");
+
+    function rectTopCheck(element){
+        return element.getBoundingClientRect().top;
+    }
+    
     window.addEventListener("scroll", function () {
-        let color = "white";
-        if (window.scrollY > 10) {
-            color = "#f7f9f7";
-        }
-        if (window.scrollY > 200) {
-            color = "#dbe7d8";
-        }
-        if (window.scrollY > 550) {
-            color = "#a9c5a0";
-        }
-        if (window.scrollY > 1600) {
+        const copyRight = this.document.getElementById("copyRight");
+        const want = document.getElementById("want");
+        const bad = document.getElementById("bad");
+        const likeSongs = document.getElementById("likeSongs");
+        const like = document.getElementById("like");
+        const overView = document.getElementById("overView");
+        const index = this.document.getElementById("index");
+        
+        let color = "#ffffff";
+        
+        if(rectTopCheck(index) > 0){
+            color = "#f1f5f1"
+        }else if(rectTopCheck(overView) > 0){
+            color = "#e9f0e9"
+        }else if(rectTopCheck(like) > 0){
+            color = "#e2ede2"
+        }else if(rectTopCheck(likeSongs) > 0){
+            color = "#c6dac3"
+        }else if(rectTopCheck(bad) > 0){
+            color = "#94af8d"
+        }else if (rectTopCheck(want) > 0) {
             color = "#6b8f71";
+        }else if (rectTopCheck(copyRight) > 0) {
+            color = "#4a6d50";
         }
         body.style.backgroundColor = color;
     })
@@ -33,4 +50,4 @@
     const h = String(modified.getHours()).padStart(2, '0');
     const min = String(modified.getMinutes()).padStart(2, '0');
 
-    appdateTimes.textContent = `更新：${y}/${m}/${d} ${h}:${min}`;
+    appdateTimes.textContent = `最終更新：${y}/${m}/${d} ${h}:${min}`;
