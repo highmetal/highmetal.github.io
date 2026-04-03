@@ -6,11 +6,11 @@
         visibility: hidden;
         color: rgb(255, 255, 255);
         background-color: rgb(119, 205, 73);
-        border: 1px solid black;
+        border: 1.3px solid black;
         border-radius: 50%;
         width: 60px;
         height: 60px;
-        font-size: 13px;
+        font-size: 12px;
         cursor: pointer;
         transition: 0.2s ease;
       }
