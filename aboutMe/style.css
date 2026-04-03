@@ -106,13 +106,14 @@
             border-radius: 10px;
             padding: 2%;
             margin: 3%;
-            border: 1px solid black;
+            border: 1.5px solid black;
         }
 
         .caption1,
         .caption2 {
             border-bottom: 1.5px solid #ff0066;
             color: #ff0066;
+            -webkit-text-stroke: 1.2px #ffffff;
         }
 
         .caption1::before {
@@ -121,7 +122,9 @@
 
         .caption2 {
             border-bottom-width: 1px;
-
+        }
+        .caption2::before{
+            content: "●";
         }
         /* ------------------------------ */
 
@@ -139,16 +142,22 @@
         }
         /* ------------------------------------------------ */
 
-        .platform {
+        .platform,
+        .genre {
             font-weight: 500;
             margin: 1%;
-            background-color: #009f00;
             color: #ffffff;
             width: fit-content;
             border-radius: 12px;
         }
-
-        .platform::before {
+        .platform{
+            background-color: #009f00;
+        }
+        .genre{
+            background-color: #009f9f;
+        }
+        .platform::before,
+        .genre::before{
             content: "・";
             margin-left: 5px;
         }
