@@ -113,7 +113,6 @@
         .caption2 {
             border-bottom: 1.5px solid #ff0066;
             color: #ff0066;
-            -webkit-text-stroke: 1.2px #ffffff;
         }
 
         .caption1::before {
@@ -133,7 +132,7 @@
         }
 
         .overViews {
-            width: 47%;
+            width: 40%;
         }
 
         .overView-image {
@@ -169,4 +168,9 @@
             margin: -1%;
             padding: 25px;
             color: #ffffff;
+        }
+
+        #youtube{
+            width: 100%;
+            border: 1px solid #000000;
         }
