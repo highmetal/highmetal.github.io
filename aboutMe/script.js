@@ -8,32 +8,14 @@
     }
     
     window.addEventListener("scroll", function () {
-        const copyRight = this.document.getElementById("copyRight");
-        const want = document.getElementById("want");
-        const bad = document.getElementById("bad");
-        const likeSongs = document.getElementById("likeSongs");
-        const like = document.getElementById("like");
-        const overView = document.getElementById("overView");
-        const index = this.document.getElementById("index");
-        
-        let color = "#ffffff";
-        
-        if(rectTopCheck(index) > 0){
-            color = "#f1f5f1"
-        }else if(rectTopCheck(overView) > 0){
-            color = "#e9f0e9"
-        }else if(rectTopCheck(like) > 0){
-            color = "#e2ede2"
-        }else if(rectTopCheck(likeSongs) > 0){
-            color = "#c6dac3"
-        }else if(rectTopCheck(bad) > 0){
-            color = "#94af8d"
-        }else if (rectTopCheck(want) > 0) {
-            color = "#6b8f71";
-        }else if (rectTopCheck(copyRight) > 0) {
-            color = "#4a6d50";
-        }
-        body.style.backgroundColor = color;
+        const sectionAll = document.querySelectorAll("section");
+        const colorList = ["#ffffff", "#f1f5f1", "#e9f0e9", "#e2ede2", "#c6dac3", "#94af8d", "#6b8f71", "#4a6d50"]
+
+        sectionAll.forEach((section, i) => {
+            if(rectTopCheck(section) < window.innerHeight){
+                body.style.backgroundColor = colorList[i];
+            }
+        });
     })
 
     //copy right auto appdate
