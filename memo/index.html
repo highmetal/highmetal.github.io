@@ -53,7 +53,7 @@
 
     //空白と改行削除
     function removeSpaceAndLine(text) {
-        return text.replace(/ /g, "").replace(/　/g, "").replace(/\n/g, "");
+        return text.replace(/ |　|\n|\t/g, "");
     }
 
 </script>
