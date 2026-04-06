@@ -17,6 +17,12 @@
             font-size: medium;
         }
 
+        #userSettingText {
+            font-size: medium;
+            width: 10%;
+            height: 13px;
+        }
+
         .caption {
             font-weight: bold;
         }
@@ -34,7 +40,7 @@
         .replacement-io input {
             width: 80%;
             height: 13px;
-            font-size: 18px;
+            font-size: medium;
         }
 
         .replacement-io #replacementBefore,
@@ -58,25 +64,21 @@
             <p>空白を除いた文字数：<span id="charCount-noSpace"></span></p>
             <p>改行を除いた文字数：<span id="charCount-noLine"></span></p>
             <p>空白と改行を除いた文字数：<span id="charCount-noSpace-noLine"></span></p>
+            <p><input type="text" id="userSettingText" placeholder="">を除いた文字数：<span id="charCount-userSetting"></span>
+            </p>
+            <p></p>
         </div><br>
 
-        <!-- <div id="search">
-            <details>
-                <summary class="caption">文字列検索</summary>
-                <input type="text">
-            </details>
-        </div><br> -->
-
         <details id="replacement">
-            <summary class="caption">文字列置換</summary>
+            <summary class="caption">文字列置換（プロトタイプ）</summary>
             <div class="replacement-io">
                 <div>
                     <p>置換対象の文字列</p>
-                    <input type="text" id="replacementIn">
+                    <input type="text" id="replacementIn" placeholder="置換対象にしたい文字列を入力">
                 </div>
                 <div>
                     <p>置換適用後の文字列</p>
-                    <input type="text" id="replacementOut">
+                    <input type="text" id="replacementOut" placeholder="置換したい文字列を入力">
                 </div>
             </div>
 
@@ -105,15 +107,21 @@
 
     //文字列カウンター部分
     const inputArea = document.getElementById("inputArea");
+
     const charCount = document.getElementById("charCount");
     const charCountNoSpace = document.getElementById("charCount-noSpace");
     const charCountNoLine = document.getElementById("charCount-noLine");
     const charCountNoSpaceNoLine = document.getElementById("charCount-noSpace-noLine");
+    const charCountUserSetting = document.getElementById("charCount-userSetting");
+
+    const userSettingText = document.getElementById("userSettingText");
 
     //textareaで入力をしたら文字数を計算
-    inputArea.addEventListener("input", function () {
-        calcText();
-    })
+    [inputArea, userSettingText].forEach(el => {
+        el.addEventListener("input", function () {
+            calcText();
+        });
+    });
 
     //文字数計算
     function calcText() {
@@ -122,6 +130,7 @@
         charCountNoSpace.textContent = removeSpace(text).length;
         charCountNoLine.textContent = removeLine(text).length;
         charCountNoSpaceNoLine.textContent = removeSpaceAndLine(text).length;
+        charCountUserSetting.textContent = removeUserSet(text).length;
     }
     //空白削除
     function removeSpace(text) {
@@ -136,6 +145,11 @@
     //空白と改行削除
     function removeSpaceAndLine(text) {
         return text.replace(/ |　|\n|\t/g, "");
+    }
+
+    //ユーザー入力文字削除
+    function removeUserSet(text) {
+        return text.replaceAll(userSettingText.value, "");
     }
 
 
