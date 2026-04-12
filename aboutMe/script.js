@@ -33,4 +33,4 @@
     const min = String(modified.getMinutes()).padStart(2, '0');
 
     //appdateTimes.textContent = `最終更新：${y}/${m}/${d} ${h}:${min}`;
-    appdateTimes.textContent = `最終更新：2026/04/11 21:14`;
+    appdateTimes.textContent = `最終更新：2026/04/12 13:55`;
