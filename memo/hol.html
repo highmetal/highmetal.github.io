@@ -1,0 +1,55 @@
+
+
+<input type="date" id=date />
+
+<select id=lectureNum>
+  <option value="1">1</option>
+  <option value="2">2</option>
+  <option value="3">3</option>
+  <option value="4">4</option>
+</select>
+
+<button id=doneButton>done</button>
+<button id=backButton>back</button>
+
+<div id=view></div>
+
+<script>
+const date=document.getElementById("date");
+const lecNum=document.getElementById("lectureNum");
+const doneButton=document.getElementById("doneButton");
+const backButton=document.getElementById("backButton");
+const view=document.getElementById("view");
+
+let holidays = [];
+
+doneButton.addEventListener("click",function(){
+
+if(!date.value){
+view.textContent = "日付が選択されていません。";
+return;
+}
+
+const weekDays = ["日","月","火","水","木","金","土"];
+
+//日付取得
+const newDate = new Date(date.value);
+//日付から曜日を取得
+const weekNum = newDate.getDay();
+
+//文字作成
+let text = weekDays[weekNum];
+text += lecNum.value;
+
+holidays.push(text);
+
+view.textContent = holidays;
+});
+
+//末尾削除
+backButton.addEventListener("click",function(){
+holidays.pop();
+view.textContent = holidays;
+});
+
+</script>
