@@ -34,22 +34,29 @@ const weekDays = ["日","月","火","水","木","金","土"];
 
 //日付取得
 const newDate = new Date(date.value);
-//日付から曜日を取得
+
+const month = newDate.getMonth()+1;
+const day = newDate.getDate();
+//日付から曜日番号を取得
 const weekNum = newDate.getDay();
 
+const nd = month+"."+day+"."+weekDays[weekNum];
+
 //文字作成
-let text = weekDays[weekNum];
-text += lecNum.value;
+let text =
+month+"/"+day
++"("+weekDays[weekNum]+ ") "
++lecNum.value+"講目が休講";
 
-holidays.push(text);
+holidays.push(nd);
 
-view.textContent = holidays;
+view.textContent = text;
 });
 
 //末尾削除
 backButton.addEventListener("click",function(){
 holidays.pop();
-view.textContent = holidays;
+view.textContent = text;
 });
 
 </script>
