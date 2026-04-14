@@ -1,8 +1,6 @@
-<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="ja"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>codePre</title>
     <style>
       .viewer {
@@ -16,7 +14,7 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 96%;
+        width: 95%;
         height: 600px;
       }
       .viewer button {
@@ -32,15 +30,34 @@
     </div>
     <div class="viewer">
       <textarea class="text"></textarea>
-      <iframe class="preview"></iframe>
+      <iframe class="preview" style="display: none;"></iframe>
     </div>
-  </body>
+  
   <script>
     "use strict";
     const textarea = document.querySelector(".text");
     const siteView = document.querySelector(".siteView");
     const iframe = document.querySelector(".preview");
     const codeView = document.querySelector(".codeView");
+
+    textarea.value =
+ `<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+
+    </style>
+</head>
+<body>
+    
+</body>
+<script>
+
+<\/script>
+</html>`;
 
     hide(iframe);
 
@@ -73,6 +90,8 @@
 
       // レイアウト
       qdiv: "<div>|</div>",
+      qstyle: "<style>|</style>",
+      qscript: "<script>|<\/script>",
 
       // リスト
       qul: "<ul>\n  |\n</ul>",
@@ -105,6 +124,16 @@
       qimg: '<img src="|" alt="">',
       qinput: '<input type="|" />',
       qbr: '<br />',
+      
+      //js系
+      qconst: `const = |;`,
+      qlet: `let = |;`,
+      qdocget: `document.getElementById("|");`,
+      qdocquer: `document.querrySelector(".|");`,
+      qadde: `addEventListener("|",function(){};`,
+      
+      qccc: `(|)`,
+      qeqq: ` = `,
     };
 
     textarea.addEventListener("input", function () {
@@ -135,4 +164,5 @@
       textarea.selectionStart = textarea.selectionEnd = newCursor;
     });
   </script>
-</html>
+
+</body></html>
