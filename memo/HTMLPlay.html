@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML実行Web</title>
+    <style>
+      #codeButton,
+      #viewTitle,
+      #view {
+        display: none;
+      }
+      #codeField,
+      #view {
+        width: 97%;
+        min-height: 35rem;
+        border: solid 0.3rem;
+      }
+      .operation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .operation button {
+        border: solid 0.2rem;
+        border-radius: 0.8rem;
+        width: 10rem;
+        height: 3rem;
+        background-color: black;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="operation">
+      <h3 id="codeTitle">コーディングモード</h3>
+      <h3 id="viewTitle">表示モード</h3>
+      <button id="codeButton">コーディングモードへ</button>
+      <button id="viewButton">結果表示モードへ</button>
+    </div>
+    <textarea id="codeField" placeholder="ここにHTMLを入力"></textarea>
+    <iframe id="view"></iframe>
+  </body>
+  <script>
+    const codeButton = document.getElementById("codeButton");
+    const viewButton = document.getElementById("viewButton");
+    const codeTitle = document.getElementById("codeTitle");
+    const viewTitle = document.getElementById("viewTitle");
+    const codeField = document.getElementById("codeField");
+    const view = document.getElementById("view");
+
+    viewButton.addEventListener("click", function () {
+      viewButton.style.display = "none";
+      codeButton.style.display = "block";
+
+      codeTitle.style.display = "none";
+      viewTitle.style.display = "block";
+
+      codeField.style.display = "none";
+      view.style.display = "block";
+
+      viewEdit();
+    });
+    codeButton.addEventListener("click", function () {
+      viewButton.style.display = "block";
+      codeButton.style.display = "none";
+
+      codeTitle.style.display = "block";
+      viewTitle.style.display = "none";
+
+      codeField.style.display = "block";
+      view.style.display = "none";
+    });
+
+    function viewEdit() {
+      codeField.value == ""
+        ? (view.srcdoc = `<style>h1{color:red;text-align:center;}</style><h1>コードがありません</h1>`)
+        : (view.srcdoc = codeField.value);
+    }
+
+    codeField.addEventListener("input", function () {});
+  </script>
+</html>
