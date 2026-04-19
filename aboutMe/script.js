@@ -21,16 +21,4 @@
     //copy right auto appdate
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    //auto appdate time
-    const appdateTimes = document.getElementById("update");
 
-    const modified = new Date(document.lastModified);
-
-    const y = modified.getFullYear();
-    const m = String(modified.getMonth() + 1).padStart(2, '0');
-    const d = String(modified.getDate()).padStart(2, '0');
-    const h = String(modified.getHours()).padStart(2, '0');
-    const min = String(modified.getMinutes()).padStart(2, '0');
-
-    //appdateTimes.textContent = `最終更新：${y}/${m}/${d} ${h}:${min}`;
-    appdateTimes.textContent = `最終更新：2026/04/12 13:55`;
