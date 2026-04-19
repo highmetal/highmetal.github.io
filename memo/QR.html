@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QRコード生成</title>
+    <style>
+      textarea {
+        width: 98%;
+        min-height: 100px;
+        resize: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="https">https://</button>
+    <button id="clearBtn">clear</button>
+
+    <br />
+
+    <textarea type="text"></textarea>
+
+    <br />
+    <canvas id="qr"></canvas>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+  <script>
+    const qr = new QRious({
+      element: document.getElementById("qr"),
+      size: 100,
+    });
+
+    const textarea = document.querySelector("textarea");
+    textarea.addEventListener("input", () => {
+      qr.value = textarea.value;
+    });
+
+    const httpsButton = document.getElementById("https");
+    httpsButton.addEventListener("click", () => {
+      textarea.value = "https://";
+    });
+
+    const clearBtn = document.getElementById("clearBtn");
+    clearBtn.addEventListener("click", () => {
+      textarea.value = "";
+    });
+  </script>
+</html>
