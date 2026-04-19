@@ -420,7 +420,7 @@
   <body>
     <div class="title">
       <h2>カード金額計算</h2>
-      <h5 class="var">version 1.4.0</h5>
+      <h5 class="var">version 1.5.0</h5>
     </div>
 
     <form id="form">
@@ -547,7 +547,7 @@
         const quantityCell = row.insertCell();
         const subtotalCell = row.insertCell();
         const checkCell = row.insertCell();
-        const bikouCell = row.insertCell();
+        const noteCell = row.insertCell();
         const editCell = row.insertCell();
         const deleteCell = row.insertCell();
         const handleCell = row.insertCell();
@@ -574,7 +574,7 @@
         checkCell.appendChild(checkbox);
 
         // 備考
-        bikouCell.textContent = card.bikou;
+        noteCell.textContent = card.note;
 
         // 編集ボタン
         const editBtn = document.createElement("button");
@@ -601,7 +601,7 @@
               "",
             )}" class="amount">`;
             quantityCell.innerHTML = `<input type="number" min="1" value="${quantityCell.textContent}" class="quantity">`;
-            bikouCell.innerHTML = `<input type="text" value="${bikouCell.textContent}">`;
+            noteCell.innerHTML = `<input type="text" value="${noteCell.textContent}">`;
             editBtn.textContent = "保存";
             editing = true;
           } else {
@@ -610,7 +610,7 @@
             const newQuantityStr = quantityCell
               .querySelector("input")
               .value.trim();
-            const newBikou = bikouCell.querySelector("input").value.trim();
+            const newnote = noteCell.querySelector("input").value.trim();
 
             const newAmount = Number(newAmountStr);
             const newQuantity = Number(newQuantityStr);
@@ -646,7 +646,7 @@
             subtotalCell.textContent = (
               newAmount * newQuantity
             ).toLocaleString();
-            bikouCell.textContent = newBikou;
+            noteCell.textContent = newnote;
 
             // 配列の更新
             const index = cardList.findIndex((c) => c.id === card.id);
@@ -655,7 +655,7 @@
               name: newName,
               amount: newAmount,
               quantity: newQuantity,
-              bikou: newBikou,
+              note: newnote,
             };
             saveToLocalStorage();
 
@@ -708,13 +708,13 @@
         const nameInput = document.getElementById("name");
         const amountInput = document.getElementById("amount");
         const quantityInput = document.getElementById("quantity");
-        const bikouInput = document.getElementById("kari");
+        const noteInput = document.getElementById("kari");
         const message = document.getElementById("message");
 
         const name = nameInput.value.trim();
         const amount = Number(amountInput.value.trim());
         const quantity = Number(quantityInput.value.trim());
-        const bikou = bikouInput.value.trim();
+        const note = noteInput.value.trim();
 
         if (name === "") {
           messageDisplay("カード名が入力されていません。");
@@ -731,7 +731,15 @@
 
         message.textContent = "";
 
-        const newCard = { id: Date.now(), name, amount, quantity, bikou };
+        // const newCard = { id: Date.now(), name, amount, quantity, note };
+        const newCard = {
+          id: crypto.randomUUID(),
+          name,
+          amount,
+          quantity,
+          note,
+        };
+
         cardList.push(newCard);
         saveToLocalStorage();
         addCardToTable(newCard);
@@ -958,7 +966,13 @@
           return;
         }
 
-        const json = JSON.stringify(cardList, null, 2);
+        const exportData = cardList.map((card) => ({
+          na: card.name,
+          am: card.amount,
+          qu: card.quantity,
+          no: card.note,
+        }));
+        const json = JSON.stringify(exportData);
 
         navigator.clipboard
           .writeText(json)
@@ -1024,8 +1038,24 @@
           return;
         }
 
-        data.forEach((card) => {
-          if (!card.id) card.id = Date.now() + Math.random();
+        console.log(data);
+
+        // data.forEach((card) => {
+        //   //   if (!card.id)
+        //   card.id = crypto.randomUUID();
+
+        //   cardList.push(card);
+        //   addCardToTable(card);
+        // });
+
+        data.forEach((item) => {
+          const card = {
+            id: crypto.randomUUID(),
+            name: item.na,
+            amount: item.am,
+            quantity: item.qu,
+            note: item.no,
+          };
 
           cardList.push(card);
           addCardToTable(card);
