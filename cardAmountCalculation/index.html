@@ -838,7 +838,7 @@
             const newList = [];
 
             $("#table tr[data-id]").each(function () {
-              const id = Number(this.dataset.id);
+              const id = this.dataset.id;
               const card = oldList.find((c) => c.id === id);
               if (card) newList.push(card);
             });
