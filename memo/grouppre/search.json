@@ -1,0 +1,5 @@
+[
+  { "title": "トップページ", "url": "index.html" },
+  { "title": "ブログ記事1", "url": "blog1.html" },
+  { "title": "お問い合わせ", "url": "contact.html" }
+]
