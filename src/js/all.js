@@ -6,7 +6,7 @@ const searchResult = document.getElementById("searchResult");
 
 const pages = [];
 
-fetch("searthList.json")
+fetch("searchList.json")
     .then(function(response){
         return response.json();
     })
