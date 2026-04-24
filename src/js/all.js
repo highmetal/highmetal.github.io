@@ -4,7 +4,7 @@ const searchButton = document.getElementById("searchButton");
 
 const searchResult = document.getElementById("searchResult");
 
-const pages = [];
+let pages = [];
 
 fetch("searchList.json")
     .then(function(response){
