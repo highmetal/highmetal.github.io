@@ -1,99 +1,100 @@
 <!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>検索</title>
-    <style>
-      .card {
-        background: gray;
-        margin: 5px;
-        padding: 5px;
-      }
-      .link {
-        color: black;
-        text-decoration: none;
-      }
-    </style>
-  </head>
-  <body>
-    <input type="text" id="search" placeholder="キーワードを入力" />
-    <button id="search-button">検索</button>
-    <div id="results"></div>
-    <script>
-      const pages = [
-        {
-          title: "github page",
-          url: "https://highmetal.github.io",
-          img: "",
-          desc: "github pagesで作ったページ",
-          tags: ["github", "ギットハブ", "ぎっとはぶ"],
-        },
-        {
-          title: "Google",
-          url: "https://google.com",
-          img: "",
-          desc: "Googleのリンク",
-          tags: ["google", "グーグル", "ぐーぐる"],
-        },
-        {
-          title: "Chat-GPT",
-          url: "https://chatgpt.com",
-          img: "",
-          desc: "",
-          tags: [
-            "chat-gpt",
-            "チャットジーピーティー",
-            "ちゃっとじーぴーてぃー",
-            "チャットgpt",
-            "ちゃっとgpt",
-          ],
-        },
-      ];
- 
-      const searchInput = document.getElementById("search");
-      const searchButton = document.getElementById("search-button");
-      const results = document.getElementById("results");
- 
-      //初期表示
-      render(pages);
- 
-      //検索ボタンで検索する処理
-      searchButton.addEventListener("click", function (e) {
-        const keyword = searchInput.value.toLowerCase();
-        const filtered = pages.filter((page) =>
-          page.tags.some((tag) => tag.toLowerCase().includes(keyword))
-        );
- 
-        render(filtered);
-      });
- 
-      //テキストボックスに入力して検索する処理
-      //   searchInput.addEventListener("input", (e) => {
-      //     const keyword = e.target.value.toLowerCase();
-      //     const filtered = pages.filter((page) =>
-      //       page.tags.some((tag) => tag.toLowerCase().includes(keyword))
-      //     );
-      //     render(filtered);
-      //   });
- 
-      //表示
-      function render(data) {
-        results.innerHTML = "";
-        data.forEach((page) => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
+
+<head>
+    <meta charset="UTF-8" />
+    <title></title>
+    <style>
+        .card {
+            background-color: gray;
+            margin: 5px;
+            padding: 5px;
+        }
+
+        .link {
+            color: black;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <input type="text" id="search" placeholder="キーワードを入力" />
+    <button id="search-button">検索</button>
+    <div id="results"></div>
+    <script>
+        const pages = [
+            {
+                title: "github page",
+                url: "https://highmetal.github.io",
+                img: "",
+                desc: "github pagesで作ったページ",
+                tags: ["github", "ギットハブ", "ぎっとはぶ"],
+            },
+            {
+                title: "Google",
+                url: "https://google.com",
+                img: "",
+                desc: "Googleのリンク",
+                tags: ["google", "グーグル", "ぐーぐる"],
+            },
+            {
+                title: "Chat-GPT",
+                url: "https://chatgpt.com",
+                img: "",
+                desc: "",
+                tags: [
+                    "chat-gpt",
+                    "チャットジーピーティー",
+                    "ちゃっとじーぴーてぃー",
+                    "チャットgpt",
+                    "ちゃっとgpt",
+                ],
+            },
+        ];
+        const searchInput = document.getElementById("search");
+        const searchButton = document.getElementById("search-button");
+        const results = document.getElementById("results");
+
+        //初期表示
+        render(pages);
+
+        //検索ボタンで検索する処理
+        // searchButton.addEventListener("click", function (e) {
+        //     const keyword = searchInput.value.toLowerCase();
+        //     const filtered = pages.filter((page) =>
+        //         page.tags.some((tag) => tag.toLowerCase().includes(keyword))
+        //     );
+        //     render(filtered);
+        // });
+
+        //テキストボックスに入力して検索する処理
+        searchInput.addEventListener("input", (e) => {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = pages.filter((page) =>
+                page.tags.some((tag) => tag.toLowerCase().includes(keyword))
+            );
+            render(filtered);
+        });
+
+        //表示
+        function render(data) {
+            results.innerHTML = "";
+            data.forEach((page) => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
 <a href="${page.url}" target="_blank" rel="noopener noreferrer" class="link">
-<img src="${page.img}" >
+<img src="${page.img}" alt="image">
 <div class="card-content">
 <h3>${page.title}</h3>
 <p>${page.desc}</p>
 </div>
 </a>`;
-          results.appendChild(card);
-        });
-      }
-    </script>
-  </body>
+                results.appendChild(card);
+            });
+        }
+    </script>
+</body>
+
 </html>
