@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+html{
+    background-color: #fff;
+    background-image: url(../image/IMG_4367.jpeg);
+    background-size: 100%;
+}
+
+h1{
+    color: #00cc66;
+    -webkit-text-stroke: 1px #333;
+}

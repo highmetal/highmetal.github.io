@@ -1,0 +1,176 @@
+@charset "utf-8";
+        body {
+            font-family: "Zen Maru Gothic", sans-serif;
+            margin: 0.5%;
+            transition: 0.8s ease;
+        }
+
+        #title {
+            margin-top: 5%;
+            color: #00cc00;
+            -webkit-text-stroke: 1px #000000;
+            font-size: 28px;
+        }
+
+        /* パンくずリスト ----------------- */
+        .breadcrumb {
+            display: flex;
+            gap: 8px;
+            font-size: 14px;
+            margin-top: 1%;
+        }
+
+        .breadcrumb li {
+            white-space: nowrap;
+        }
+
+        .breadcrumb li::after {
+            content: "＞";
+            margin-left: 8px;
+        }
+
+        .breadcrumb li:last-child::after {
+            content: "";
+        }
+        /* ------------------------------ */
+
+        #update {
+            text-align: right;
+        }
+
+        /* 目次 -------------------------- */
+        #index {
+            background-color: rgb(228, 228, 228);
+            padding: 3%;
+            margin: 3%;
+            border: 2px solid black;
+        }
+
+        #index h3 {
+            background-color: darkgray;
+            width: fit-content;
+            padding: 1%;
+            border-radius: 15%;
+        }
+
+        li {
+            list-style-type: none;
+            list-style-position: inside;
+        }
+
+        ol.first-layer {
+            counter-reset: num_f;
+        }
+
+        .first-layer li {
+            counter-increment: num_f;
+        }
+
+        .first-layer li:before {
+            display: marker;
+            content: counter(num_f)". ";
+        }
+
+        ol.second-layer {
+            counter-reset: num_s;
+        }
+
+        .second-layer li {
+            counter-increment: num_s;
+            padding-left: 2rem;
+        }
+
+        .second-layer li:before {
+            display: marker;
+            content: counter(num_f)'.' counter(num_s)". ";
+        }
+        /* ------------------------------ */
+
+
+        /* 概要 ------------------------------------------- */
+        .highmetalIcon {
+            width: 10rem;
+            height: 10rem;
+            font-size: 12px;
+            border: 1.5px solid #000000;
+        }
+
+        .highmetalLogo {
+            width: 2rem;
+        }
+
+
+        /* 見出し　----------------------- */
+        section {
+            background-color: rgb(229, 255, 238);
+            border-radius: 10px;
+            padding: 2%;
+            margin: 3%;
+            border: 1.5px solid black;
+        }
+
+        .caption1,
+        .caption2 {
+            border-bottom: 1.5px solid #ff0066;
+            color: #ff0066;
+        }
+
+        .caption1::before {
+            content: "★";
+        }
+
+        .caption2 {
+            border-bottom-width: 1px;
+        }
+        .caption2::before{
+            content: "●";
+        }
+        /* ------------------------------ */
+
+        .overView-object {
+            display: flex;
+        }
+
+        .overViews {
+            width: 40%;
+        }
+
+        .overView-image {
+            margin-left: 10%;
+            margin-top: 15px;
+        }
+        /* ------------------------------------------------ */
+
+        .platform,
+        .genre {
+            font-weight: 500;
+            margin: 1%;
+            color: #ffffff;
+            width: fit-content;
+            border-radius: 12px;
+        }
+        .platform{
+            background-color: #009f00;
+        }
+        .genre{
+            background-color: #009f9f;
+        }
+        .platform::before,
+        .genre::before{
+            content: "・";
+            margin-left: 5px;
+        }
+
+        #copyRight {
+            border-top: 3px solid #000000;
+            background-color: #2f4f4f;
+            text-align: center;
+            margin: -1%;
+            padding: 25px;
+            color: #ffffff;
+        }
+
+        #youtube{
+            width: 100%;
+            border: 1px solid #000000;
+        }

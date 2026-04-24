@@ -1,0 +1,95 @@
+@charset "utf-8";
+
+html{
+    font-family: "Zen Maru Gothic", sans-serif;
+}
+
+body{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ヘッダー部分 --------------------*/
+header{
+    background-color: #ff0066;
+    height: 35px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1.5px solid #333;
+    border-bottom: 1.5px solid #333;
+    font-family: "Hiragino Maru Gothic ProN", "ヒラギノ丸ゴ ProN W4", "Yu Gothic", sans-serif;
+  
+}
+ .header-clock{
+    display: flex;
+    justify-content: left;
+}
+
+.clock{
+    margin: auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: #eee;
+    line-height: 1.2;
+    /* デフォルト16で画面サイズ小さい時12*/
+} 
+
+/* リンク部分 */
+#header-links{
+    display: flex;
+    justify-content: flex-end;
+    gap: 2.5rem;
+}
+.header-link{
+    margin: auto;
+    cursor: pointer;
+    color: #eee;
+    font-weight: bold;
+    border-radius: 50%;
+    transition: 0.3s ease;
+    width: 31%;
+    text-align: center;
+}
+.header-link a{
+    text-decoration: none;
+    color: inherit;
+}
+/* ホバー時 */
+.header-link:hover{
+    color: #333;
+    background-color: #eee;
+}
+
+/* 検索部分 */
+.header-search{
+    height: 32px;
+    display: flex;
+}
+.search{
+    margin: auto;
+    font-size: 14px;
+}
+.search-input{
+    margin-right: -5px;
+    width: 75%;
+    background-color: #eee;
+    border: 1px solid #333;
+}
+.search-button{
+    border: 1px solid #333;
+    background-color: #007bff;
+    color: #eee;
+}
+
+
+/* フッター部分 --------------------*/
+footer{
+    margin-top: auto;
+    text-align: center;
+    height: 35px;
+    border-top: 1.5px solid #333;
+    border-bottom: 1.5px solid #333;
+    background-color: #ff0066;
+    color: #eee;
+}
