@@ -10,6 +10,29 @@ body {
   min-height: 100vh;
 }
 
+main h1 {
+  color: #00cc66;
+  -webkit-text-stroke: 1px #333;
+  text-shadow: 0px 0px 4px rgba(0, 204, 102, 0.8);
+}
+main .element {
+  /* background-color: rgba(0, 204, 102, 0.7); */
+  /* border: 1px solid #333; */
+  margin: 3%;
+  padding: 1%;
+  font-weight: 450;
+}
+
+@media (max-width: 768px) {
+  main h1 {
+    margin: 5% 0 10% 0;
+    font-size: 26px;
+  }
+  main .element {
+    line-height: 1.7;
+  }
+}
+
 /* ヘッダー部分 --------------------*/
 header {
   background-color: #ff0066;
@@ -28,11 +51,16 @@ header {
 
 .clock {
   margin: auto;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 600;
   color: #eee;
   line-height: 1.2;
-  /* デフォルト16で画面サイズ小さい時12*/
+}
+
+@media (max-width: 768px) {
+  .clock {
+    font-size: 12px;
+  }
 }
 
 /* リンク部分 */
@@ -55,10 +83,18 @@ header {
   text-decoration: none;
   color: inherit;
 }
+
 /* ホバー時 */
 .header-link:hover {
   color: #333;
   background-color: #eee;
+}
+
+@media (max-width: 768px) {
+  /* リンク部分*/
+  .header-link {
+    width: 35%;
+  }
 }
 
 /* 検索部分 */
@@ -91,11 +127,4 @@ footer {
   border-bottom: 1.5px solid #333;
   background-color: #ff0066;
   color: #eee;
-}
-
-@media (max-width: 768px) {
-  /* リンク部分*/
-  .header-link {
-    width: 35%;
-  }
 }

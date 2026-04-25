@@ -25,13 +25,13 @@ function formatTwoDigits(value) {
 }
 
 //サイト内検索処理
-const searchInput = document.getElementById("headerSearchInput");
+const headerSearchInput = document.getElementById("headerSearchInput");
 const searchButton = document.getElementById("searchButton");
 
 //検索ボタンを押したときの処理
 searchButton.addEventListener("click", function () {
   //検索文字列を取得
-  const word = searchInput.value;
+  const word = headerSearchInput.value;
   window.location.href = `search.html?q=${encodeURIComponent(word)}`;
 });
 

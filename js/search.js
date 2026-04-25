@@ -6,7 +6,7 @@ let pages = [];
 
 //検索文字列取得
 const parms = new URLSearchParams(window.location.search);
-const word = parms.get("q") || "";
+let word = parms.get("q") || "";
 
 //検索結果のjson読み込み
 fetch("searchList.json")
@@ -17,6 +17,14 @@ fetch("searchList.json")
     pages = data;
     searchRender();
   });
+
+//メインの検索テキストボックスからの検索
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", function () {
+  searchResult.innerHTML = "";
+  word = searchInput.value;
+  searchRender();
+});
 
 //検索結果表示
 function searchRender() {
