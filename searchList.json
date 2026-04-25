@@ -47,5 +47,35 @@
       "shopping list",
       ""
     ]
+  },
+  {
+    "title": "自己紹介",
+    "url": "https://highmetal.github.io/src/aboutMe/index.html",
+    "tags": ["自己紹介", "highmetal", ""]
+  },
+  {
+    "title": "文字数カウンター",
+    "url": "https://highmetal.github.io/old/textCounter/index.html",
+    "tags": ["文字数カウンター", ""]
+  },
+  {
+    "title": "HTMLER",
+    "url": "https:/highmetal.github.io/old/codePre/index.html",
+    "tags": ["codePre", "html", "コード", ""]
+  },
+  {
+    "title": "ファイル作成",
+    "url": "https:/highmetal.github.io/old/createFile/index.html",
+    "tags": ["ファイル作成", ""]
+  },
+  {
+    "title": "旧トップページ（リンク使えないかも）",
+    "url": "https://highmetal.github.io/old/index.html",
+    "tags": ["old", "highmetal", ""]
+  },
+  {
+    "title": "デュエマメモ",
+    "url": "https:/highmetal.github.io/old/memo/Duel Masters/index.html",
+    "tags": [""]
   }
 ]
