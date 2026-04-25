@@ -15,12 +15,8 @@ function clock() {
   const sec = date.getSeconds();
   //文字列作成
   clockElement.textContent = `
-  ${year}/
-  ${formatTwoDigits(month)}/
-  ${formatTwoDigits(day)}　
-  ${formatTwoDigits(hour)}:
-  ${formatTwoDigits(minut)}:
-  ${formatTwoDigits(sec)}
+  ${year}/${formatTwoDigits(month)}/${formatTwoDigits(day)}　
+  ${formatTwoDigits(hour)}:${formatTwoDigits(minut)}:${formatTwoDigits(sec)}
   `;
 }
 //2桁文字列型変換
