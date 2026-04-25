@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>highmetal github page</title>
+    <link rel="apple-touch-icon" href="high_ati.png" />
+    <link rel="icon" href="high.ico" />
+    <style>
+      .hamburger {
+        width: 40px;
+        height: 40px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+      }
+
+      .line {
+        width: 100%;
+        height: 3px;
+        background: #000000;
+        transition: all 0.3s ease;
+      }
+
+      .onc span:nth-of-type(1) {
+        transform: translate(0px, 13.3px) rotate(45deg);
+      }
+
+      .onc span:nth-of-type(2) {
+        opacity: 0;
+      }
+
+      .onc span:nth-of-type(3) {
+        transform: translate(0px, -13.3px) rotate(-45deg);
+      }
+
+      body {
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease;
+        font-family: sans-serif;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="hamburger">
+      <span class="line"></span>
+      <span class="line"></span>
+      <span class="line"></span>
+    </button>
+    <h3>Welcome to My Page!</h3>
+    <p class="greet-capes"></p>
+    <div id="clock"></div>
+    <br />
+    
+    <p>
+      このサイトは作成者（highmetal）が個人的に欲しかったり、作りたいアプリをHTML/JavaScriptで作成したり、AI（Chat-GPT、Google Gemini）と協力したり、丸投げして作成したものをまとめたサイトです。個人利用が基本的な目的となっており、他の利用者のことは何も考えて作成されておりませんのでご了承ください。
+    </p>
+
+    <a href="aboutMe/">about me</a>
+
+    <h3>self made</h3>
+    <a href="https://highmetal.github.io/roulette/newRoulette.html"
+      >ルーレット</a
+    ><br />
+
+    <a href="https://highmetal.github.io/checkList/">チェックリスト</a><br />
+    <br />
+
+    <a href="https://highmetal.github.io/memoryGame/game.html">神経衰弱</a
+    ><br /><br />
+
+    <h3>vibe coding</h3>
+
+    <a href="https://highmetal.github.io/cardAmountCalculation/"
+      >カード金額計算</a
+    ><br />
+
+    <a href="https://highmetal.github.io/textCounter/">文字数カウンター</a
+    ><br />
+
+    <a href="https://highmetal.github.io/markdownPreview/"
+      >マークダウンファイル作成・プレビュー</a
+    ><br />
+
+    <a href="https://highmetal.github.io/backgroundGenerator/"
+      >メモ付きスマホ背景画像作成</a
+    ><br />
+    
+    <a href="https://highmetal.github.io/timetableCreator/"
+      >時間割画像作成</a
+    ><br />
+
+    <a href="https://highmetal.github.io/codePre/">コードデモ</a><br />
+
+    <a href="https://highmetal.github.io/cardPre/">デッキ回し</a><br />
+
+    <a href="https://highmetal.github.io/createFile/">ファイル作成</a><br />
+
+    <br /><br />
+    <h3>background color changer</h3>
+    <input type="color" id="color-picker" />
+    <input type="text" id="color-text" placeholder="#ff0000" />
+  </body>
+  
+  <script src="script/script.js"></script>
+</html>

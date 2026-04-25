@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>localStorageチュートリアル</title>
+    <style></style>
+  </head>
+  <body>
+    <input type="text" class="inputText" />
+    <button id="add">追加</button>
+    <button id="lsDelete">LS削除</button>
+    <div class="view"></div>
+  </body>
+  <script>
+    const inputText = document.querySelector(".inputText");
+    const addButton = document.getElementById("add");
+    const view = document.querySelector(".view");
+    const lsDelete = document.getElementById("lsDelete");
+
+    let addSaves = JSON.parse(localStorage.getItem("a") || "[]");
+
+    function saveToLS() {
+      localStorage.setItem("a", JSON.stringify(addSaves));
+    }
+    function render() {
+      view.innerHTML = "";
+      addSaves.forEach(function (item) {
+        view.innerHTML += item;
+      });
+      console.log(addSaves);
+    }
+
+    addButton.addEventListener("click", function () {
+      if (inputText.value === "") {
+        console.log("テキストボックスに文字がない");
+        return;
+      }
+      addSaves.push(inputText.value);
+      saveToLS();
+      render();
+      inputText.value = "";
+    });
+    console.log(localStorage);
+    lsDelete.addEventListener("click", function () {
+      addSaves = [];
+      saveToLS();
+      render();
+    });
+
+    render();
+  </script>
+</html>
