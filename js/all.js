@@ -33,4 +33,4 @@ searchButton.addEventListener("input", function (text) {
 });
 
 //コピーライトの年自動更新
-document.getElementById("year").textContent = newDate().getFullYear();
+document.getElementById("year").textContent = new Date().getFullYear();
