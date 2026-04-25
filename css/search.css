@@ -1,0 +1,21 @@
+@charset "utf-8";
+
+main {
+}
+
+.search-input {
+  display: flex;
+  margin: 5% 0 8% 0;
+  font-size: 20px;
+  border: 1px solid #333;
+}
+
+.search-result {
+  margin: 1%;
+}
+
+.page-link {
+  margin: 3% 0 3% 0;
+  border: 1px solid #333;
+  width: fit-content;
+}

@@ -25,7 +25,7 @@ function searchRender() {
     //ヒットしたなら表示
     if (page.tags.includes(word.toLowerCase())) {
       const newDiv = document.createElement("div");
-      newDiv.classList.add("pageLink");
+      newDiv.classList.add("page-link");
 
       const newA = document.createElement("a");
       newA.href = page.url;

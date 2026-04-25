@@ -25,7 +25,7 @@ function formatTwoDigits(value) {
 }
 
 //サイト内検索処理
-const searchInput = document.getElementById("searchInput");
+const searchInput = document.getElementById("headerSearchInput");
 const searchButton = document.getElementById("searchButton");
 
 //検索ボタンを押したときの処理

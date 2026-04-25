@@ -27,7 +27,7 @@
       </div>
 
       <div class="header-clock">
-        <p class="clock">2026/04/24　21:49:33</p>
+        <p class="clock" id="clock">2026/04/24　21:49:33</p>
       </div>
 
       <!-- ヘッダーリンク -->
@@ -44,8 +44,8 @@
             <input
               type="text"
               placeholder="サイト内検索"
-              class="search-input"
-              id="searchInput"
+              class="header-search-input"
+              id="headerSearchInput"
             />
             <button class="search-button" id="searchButton">検索</button>
           </span>
@@ -55,8 +55,8 @@
 
     <!-- メイン要素 -->
     <main>
-      <input type="text" />
-      <div id="searchResult"></div>
+      <input type="text" class="search-input" id="searchInput" />
+      <div class="search-result" id="searchResult"></div>
     </main>
 
     <!-- フッター要素 -->
