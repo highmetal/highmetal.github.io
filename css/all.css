@@ -48,7 +48,7 @@ header {
   font-weight: bold;
   border-radius: 50%;
   transition: 0.3s ease;
-  width: 35%;
+  width: 31%;
   text-align: center;
 }
 .header-link a {
@@ -91,4 +91,11 @@ footer {
   border-bottom: 1.5px solid #333;
   background-color: #ff0066;
   color: #eee;
+}
+
+@media (max-width: 768px) {
+  /* リンク部分*/
+  .header-link {
+    width: 35%;
+  }
 }

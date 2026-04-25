@@ -1,18 +1,17 @@
 @charset "utf-8";
 
-html{
-    background-color: #000;
-    background-image: url(../image/47.jpeg);
-    background-size: 100%;
+html {
+  background-color: #000;
+  background-size: 100%;
 }
-body{
-    color: #fff;
+body {
+  color: #fff;
 }
 
-main a{
-    color:#0066cc;
-    transition: 0.2s ease;
+main a {
+  color: #0066cc;
+  transition: 0.2s ease;
 }
-main a:hover{
-    color: rgba(0, 102, 204, 0.8)
+main a:hover {
+  color: rgba(0, 102, 204, 0.8);
 }
