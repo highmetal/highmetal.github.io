@@ -59,6 +59,15 @@
     "tags": ["文字数カウンター", ""]
   },
   {
+    "title": "ルーレット",
+    "url": "https://highmetal.github.io/old/roulette/newRoulette.html",
+    "tags": ["ルーレット", ""]
+  },{
+    "title": "神経衰弱",
+    "url": "https://highmetal.github.io/old/memoryGame/game.html",
+    "tags": ["神経衰弱", ""]
+  },
+  {
     "title": "HTMLER",
     "url": "https:/highmetal.github.io/old/codePre/index.html",
     "tags": ["codePre", "html", "コード", ""]
