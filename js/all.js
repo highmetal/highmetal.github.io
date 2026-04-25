@@ -2,6 +2,9 @@
 
 //時計
 const clockElement = document.getElementById("clock");
+setInterval(clock, 1000);
+clock();
+
 function clock() {
   const date = new Date();
   const year = date.getFullYear();
@@ -14,7 +17,7 @@ function clock() {
   clockElement.textContent = `
   ${year}/
   ${formatTwoDigits(month)}/
-  ${formatTwoDigits(day)} 
+  ${formatTwoDigits(day)}　
   ${formatTwoDigits(hour)}:
   ${formatTwoDigits(minut)}:
   ${formatTwoDigits(sec)}
