@@ -41,29 +41,27 @@ headerLinks.appendChild(aboutSpan);
 
 //サイト内検索部分
 const isSearchPage = window.location.pathname.includes("search.html");
-if (!isSearchPage) {
-  const searchDiv = document.createElement("div");
-  searchDiv.className = "header-search";
+const searchDiv = document.createElement("div");
+searchDiv.className = "header-search";
 
-  const searchSpan = document.createElement("span");
-  searchSpan.className = "search";
+const searchSpan = document.createElement("span");
+searchSpan.className = "search";
 
-  const searchInput = document.createElement("input");
-  searchInput.type = "text";
-  searchInput.placeholder = "サイト内検索";
-  searchInput.className = "header-search-input";
-  searchInput.id = "headerSearchInput";
+const searchInput = document.createElement("input");
+searchInput.type = "text";
+searchInput.placeholder = "サイト内検索";
+searchInput.className = "header-search-input";
+searchInput.id = "headerSearchInput";
 
-  const searchButton = document.createElement("button");
-  searchButton.className = "search-button";
-  searchButton.id = "searchButton";
-  searchButton.textContent = "検索";
+const searchButton = document.createElement("button");
+searchButton.className = "search-button";
+searchButton.id = "searchButton";
+searchButton.textContent = "検索";
 
-  searchSpan.appendChild(searchInput);
-  searchSpan.appendChild(searchButton);
-  searchDiv.appendChild(searchSpan);
-  headerLinks.appendChild(searchDiv);
-}
+searchSpan.appendChild(searchInput);
+searchSpan.appendChild(searchButton);
+searchDiv.appendChild(searchSpan);
+headerLinks.appendChild(searchDiv);
 
 header.appendChild(headerLinks);
 
