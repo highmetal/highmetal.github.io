@@ -9,9 +9,9 @@ window.addEventListener("DOMContentLoaded", function () {
   const logoDiv = document.createElement("div");
   logoDiv.id = "logo";
   const logoLink = document.createElement("a");
-  logoLink.href = "./";
+  logoLink.href = "/";
   const logoImg = document.createElement("img");
-  logoImg.src = "image/high.ico";
+  logoImg.src = "/image/high.ico";
   logoImg.alt = "ロゴ";
 
   logoLink.appendChild(logoImg);
@@ -36,7 +36,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const aboutSpan = document.createElement("span");
   aboutSpan.className = "header-link";
   const aboutLink = document.createElement("a");
-  aboutLink.href = "src/aboutMe/index.html";
+  aboutLink.href = "/src/aboutMe/index.html";
   aboutLink.textContent = "自己紹介";
 
   aboutSpan.appendChild(aboutLink);
