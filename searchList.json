@@ -75,23 +75,18 @@
     "tags": ["codePre", "html", "コード", "htmler", ""]
   },
   {
-    "title": "ファイル作成",
-    "url": "https:/highmetal.github.io/old/createFile",
-    "tags": ["ファイル作成", ""]
-  },
-  {
     "title": "旧トップページ（リンク使えないかも）",
     "url": "https://highmetal.github.io/old",
     "tags": ["old", "highmetal", ""]
   },
   {
     "title": "デュエマメモ",
-    "url": "https:/highmetal.github.io/old/memo/Duel Masters/",
+    "url": "https:/highmetal.github.io/old/memo/Duel Masters/index.html",
     "tags": ["dm"]
   },
   {
     "title": "射的",
-    "url": "https:/highmetal.github.io/src/targetSooting",
+    "url": "https:/highmetal.github.io/src/targetSooting/index.html",
     "tags": ["射的", "shotting", "ai"]
   },
   {
