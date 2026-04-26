@@ -9,6 +9,7 @@ let pages = [];
 //検索文字列取得
 const parms = new URLSearchParams(window.location.search);
 let word = parms.get("q") || "";
+//検索ボックスに検索文字列を入れる
 searchInput.value = word;
 
 //検索結果のjson読み込み
