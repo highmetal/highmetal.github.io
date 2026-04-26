@@ -29,19 +29,6 @@ window.addEventListener("DOMContentLoaded", function () {
   clockDiv.appendChild(clockP);
   header.appendChild(clockDiv);
 
-  //リンク部分
-  const headerLinks = document.createElement("div");
-  headerLinks.id = "header-links";
-  // 自己紹介リンク
-  const aboutSpan = document.createElement("span");
-  aboutSpan.className = "header-link";
-  const aboutLink = document.createElement("a");
-  aboutLink.href = "/src/aboutMe/index.html";
-  aboutLink.textContent = "自己紹介";
-
-  aboutSpan.appendChild(aboutLink);
-  headerLinks.appendChild(aboutSpan);
-
   //サイト内検索部分
   const searchDiv = document.createElement("div");
   searchDiv.className = "header-search";
@@ -63,7 +50,53 @@ window.addEventListener("DOMContentLoaded", function () {
   searchSpan.appendChild(searchInput);
   searchSpan.appendChild(searchButton);
   searchDiv.appendChild(searchSpan);
-  headerLinks.appendChild(searchDiv);
+
+  header.appendChild(searchDiv);
+
+  //リンク部分
+  const headerLinks = document.createElement("div");
+  headerLinks.id = "header-links";
+
+  //トップのリンク
+  const topSpan = document.createElement("span");
+  topSpan.className = "header-link";
+  const topLink = document.createElement("a");
+  topLink.href = "/";
+  topLink.textContent = "トップ";
+
+  topSpan.appendChild(topLink);
+
+  //検索のリンク
+  const search2Span = document.createElement("span");
+  search2Span.className = "header-link";
+  const searchLink = document.createElement("a");
+  searchLink.href = "/search.html";
+  searchLink.textContent = "検索";
+
+  search2Span.appendChild(searchLink);
+
+  //自己紹介リンク
+  const aboutMeSpan = document.createElement("span");
+  aboutMeSpan.className = "header-link";
+  const aboutMeLink = document.createElement("a");
+  aboutMeLink.href = "/src/aboutMe/index.html";
+  aboutMeLink.textContent = "自己紹介";
+
+  aboutMeSpan.appendChild(aboutMeLink);
+
+  //このサイトについてリンク
+  const aboutSpan = document.createElement("span");
+  aboutSpan.className = "header-link";
+  const aboutLink = document.createElement("a");
+  aboutLink.href = "/about.html";
+  aboutLink.textContent = "このサイトについて";
+
+  aboutSpan.appendChild(aboutLink);
+
+  headerLinks.appendChild(topSpan);
+  headerLinks.appendChild(search2Span);
+  headerLinks.appendChild(aboutMeSpan);
+  headerLinks.appendChild(aboutSpan);
 
   header.appendChild(headerLinks);
 
