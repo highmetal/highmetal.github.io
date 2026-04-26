@@ -2,12 +2,14 @@
 
 const searchResult = document.getElementById("searchResult");
 const searchResultNum = document.getElementById("searchResultNum");
+const searchInput = document.getElementById("searchInput");
 
 let pages = [];
 
 //検索文字列取得
 const parms = new URLSearchParams(window.location.search);
 let word = parms.get("q") || "";
+searchInput.value = word;
 
 //検索結果のjson読み込み
 fetch("searchList.json")
@@ -20,7 +22,6 @@ fetch("searchList.json")
   });
 
 //メインの検索テキストボックスからの検索
-const searchInput = document.getElementById("searchInput");
 searchInput.addEventListener("input", function () {
   searchResult.innerHTML = "";
   word = searchInput.value;
