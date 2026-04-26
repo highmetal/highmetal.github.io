@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字数カウンター</title>
+    <style>
+        body {
+            font-family: "Zen Maru Gothic", sans-serif;
+        }
+
+        #inputArea {
+            width: 80%;
+            height: 16rem;
+            resize: none;
+            font-size: medium;
+        }
+
+        #userSettingText {
+            font-size: medium;
+            width: 10%;
+            height: 13px;
+        }
+
+        .caption {
+            font-weight: bold;
+        }
+
+        #replacement div {
+            width: 100%;
+        }
+
+        .replacement-io,
+        #previewResults {
+            display: flex;
+            align-items: center;
+        }
+
+        .replacement-io input {
+            width: 80%;
+            height: 13px;
+            font-size: medium;
+        }
+
+        .replacement-io #replacementBefore,
+        .replacement-io #replacementIn {
+            margin-right: 5%;
+        }
+
+        #replacement button {
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>文字数カウンター</h1>
+        <textarea id="inputArea" placeholder="文字を入力"></textarea>
+        <br>
+        <div>
+            <p>文字数：<span id="charCount"></span></p>
+            <p>空白を除いた文字数：<span id="charCount-noSpace"></span></p>
+            <p>改行を除いた文字数：<span id="charCount-noLine"></span></p>
+            <p>空白と改行を除いた文字数：<span id="charCount-noSpace-noLine"></span></p>
+            <p><input type="text" id="userSettingText" placeholder="">を除いた文字数：<span id="charCount-userSetting"></span>
+            </p>
+            <p></p>
+        </div><br>
+
+        <details id="replacement">
+            <summary class="caption">文字列置換（プロトタイプ）</summary>
+            <div class="replacement-io">
+                <div>
+                    <p>置換対象の文字列</p>
+                    <input type="text" id="replacementIn" placeholder="置換対象にしたい文字列を入力">
+                </div>
+                <div>
+                    <p>置換適用後の文字列</p>
+                    <input type="text" id="replacementOut" placeholder="置換したい文字列を入力">
+                </div>
+            </div>
+
+
+            <div id="preview">
+                <p class="caption">プレビュー</p>
+                <div id="previewResults">
+                    <div>
+                        <p>置換前</p>
+                        <p id="replacementBefore"></p>
+                    </div>
+                    <div>
+                        <p>置換後</p>
+                        <p id="replacementAfter"></p>
+                    </div>
+                </div>
+            </div>
+            <button id="replacementPasteButton">文字列を置換</button>
+        </details><br>
+
+
+        <footer><small>&copy; 2026 highmetal. All rights reserved.</small></footer>
+    </div>
+</body>
+<script>
+
+    //文字列カウンター部分
+    const inputArea = document.getElementById("inputArea");
+
+    const charCount = document.getElementById("charCount");
+    const charCountNoSpace = document.getElementById("charCount-noSpace");
+    const charCountNoLine = document.getElementById("charCount-noLine");
+    const charCountNoSpaceNoLine = document.getElementById("charCount-noSpace-noLine");
+    const charCountUserSetting = document.getElementById("charCount-userSetting");
+
+    const userSettingText = document.getElementById("userSettingText");
+
+    //textareaで入力をしたら文字数を計算
+    [inputArea, userSettingText].forEach(el => {
+        el.addEventListener("input", function () {
+            calcText();
+        });
+    });
+
+    //文字数計算
+    function calcText() {
+        let text = inputArea.value;
+        charCount.textContent = text.length;
+        charCountNoSpace.textContent = removeSpace(text).length;
+        charCountNoLine.textContent = removeLine(text).length;
+        charCountNoSpaceNoLine.textContent = removeSpaceAndLine(text).length;
+        charCountUserSetting.textContent = removeUserSet(text).length;
+    }
+    //空白削除
+    function removeSpace(text) {
+        return text.replace(/ |　/g, "");
+    }
+
+    //改行削除
+    function removeLine(text) {
+        return text.replace(/\n/g, "");
+    }
+
+    //空白と改行削除
+    function removeSpaceAndLine(text) {
+        return text.replace(/ |　|\n|\t/g, "");
+    }
+
+    //ユーザー入力文字削除
+    function removeUserSet(text) {
+        return text.replaceAll(userSettingText.value, "");
+    }
+
+
+    //文字列置換部分
+    const replacementIn = document.getElementById("replacementIn");
+    const replacementOut = document.getElementById("replacementOut");
+    const replacementBefore = document.getElementById("replacementBefore");
+    const replacementAfter = document.getElementById("replacementAfter");
+    const replacementPasteButton = document.getElementById("replacementPasteButton");
+
+    //文字入力でプレビュー更新
+    [replacementIn, replacementOut].forEach(el => {
+        el.addEventListener("input", updatePreview);
+    });
+
+    //置換ボタン
+    replacementPasteButton.addEventListener("click", function () {
+        const replacedText = inputArea.value.replaceAll(replacementIn.value, replacementOut.value);
+        inputArea.value = replacedText;
+        replacementIn.value = "";
+        replacementOut.value = "";
+        replacementBefore.textContent = "";
+        replacementAfter.textContent = "";
+        calcText();
+    });
+
+    //置換
+    function updatePreview() {
+        const text = inputArea.value;
+        replacementBefore.textContent = text;
+        const replaced = text.replaceAll(replacementIn.value, replacementOut.value);
+        replacementAfter.textContent = replaced;
+    }
+
+</script>
+
+</html>

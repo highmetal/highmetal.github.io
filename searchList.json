@@ -45,26 +45,28 @@
       "shopping",
       "shoppinglist",
       "shopping list",
+      "self",
       ""
     ]
   },
   {
     "title": "自己紹介",
-    "url": "https://highmetal.github.io/src/aboutMe/index.html",
-    "tags": ["自己紹介", "highmetal", ""]
+    "url": "https://highmetal.github.io/src/aboutMe",
+    "tags": ["自己紹介", "highmetal", "self", ""]
   },
   {
     "title": "文字数カウンター",
-    "url": "https://highmetal.github.io/old/textCounter/index.html",
-    "tags": ["文字数カウンター", ""]
+    "url": "https://highmetal.github.io/src/textCounter",
+    "tags": ["文字数カウンター", "カウンター", ""]
   },
   {
     "title": "ルーレット",
-    "url": "https://highmetal.github.io/old/roulette/newRoulette.html",
-    "tags": ["ルーレット", ""]
-  },{
+    "url": "https://highmetal.github.io/src/roulette",
+    "tags": ["ルーレット", "self", ""]
+  },
+  {
     "title": "神経衰弱",
-    "url": "https://highmetal.github.io/old/memoryGame/game.html",
+    "url": "https://highmetal.github.io/src/memoryGame",
     "tags": ["神経衰弱", ""]
   },
   {
@@ -86,5 +88,10 @@
     "title": "デュエマメモ",
     "url": "https:/highmetal.github.io/old/memo/Duel Masters/index.html",
     "tags": [""]
+  },
+  {
+    "title": "射的",
+    "url": "https:/highmetal.github.io/targetSooting",
+    "tags": ["射的", "shotting", "ai"]
   }
 ]

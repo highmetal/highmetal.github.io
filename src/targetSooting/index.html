@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>射的ゲーム</title>
+    <style>
+      button {
+        color: rgb(49, 49, 49);
+        background-color: rgb(182, 207, 198);
+        border-radius: 10px;
+        border: solid 3px rgb(0, 0, 0);
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>射的</h1>
+    <button class="start">スタート</button>
+  </body>
+  <script>
+    const startButton = document.querySelector(".start");
+    startButton.addEventListener("click", function () {
+      location.href = "game.html";
+    });
+  </script>
+</html>
