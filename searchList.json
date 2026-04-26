@@ -71,23 +71,23 @@
   },
   {
     "title": "HTMLER",
-    "url": "https:/highmetal.github.io/old/codePre/index.html",
+    "url": "https:/highmetal.github.io/old/codePre",
     "tags": ["codePre", "html", "コード", "htmler", ""]
   },
   {
     "title": "ファイル作成",
-    "url": "https:/highmetal.github.io/old/createFile/index.html",
+    "url": "https:/highmetal.github.io/old/createFile",
     "tags": ["ファイル作成", ""]
   },
   {
     "title": "旧トップページ（リンク使えないかも）",
-    "url": "https://highmetal.github.io/old/index.html",
+    "url": "https://highmetal.github.io/old",
     "tags": ["old", "highmetal", ""]
   },
   {
     "title": "デュエマメモ",
-    "url": "https:/highmetal.github.io/old/memo/Duel Masters/index.html",
-    "tags": [""]
+    "url": "https:/highmetal.github.io/old/memo/Duel Masters",
+    "tags": ["dm"]
   },
   {
     "title": "射的",
