@@ -98,6 +98,17 @@ window.addEventListener("DOMContentLoaded", function () {
   headerLinks.appendChild(aboutMeSpan);
   headerLinks.appendChild(aboutSpan);
 
+  //ハンバーガーメニュー
+  const hamburger = document.createElement("div");
+  hamburger.className = "hamburger";
+  hamburger.id = "hamburger";
+  for (let i = 0; i < 3; i++) {
+    const line = document.createElement("span");
+    line.className = "line";
+    hamburger.appendChild(line);
+  }
+  header.appendChild(hamburger);
+
   header.appendChild(headerLinks);
 
   //フッター作成
@@ -115,14 +126,11 @@ window.addEventListener("DOMContentLoaded", function () {
   //コピーライト部分
   const brandText = document.createTextNode(" highmetal All rights reserved.");
   copyP.appendChild(brandText);
-
   footer.appendChild(copyP);
-
-  //ナビゲーション部分
+  //フッターナビゲーション部分
   const nav = document.createElement("nav");
   const ul = document.createElement("ul");
   const li = document.createElement("li");
-
   const a = document.createElement("a");
   a.href = "/about.html";
   a.textContent = "このサイトについて";
@@ -132,21 +140,72 @@ window.addEventListener("DOMContentLoaded", function () {
   nav.appendChild(ul);
   footer.appendChild(nav);
 
+  //ハンバーガーメニュー開いた時のナビゲーション
+  const menu = document.createElement("nav");
+  menu.className = "menu";
+  menu.id = "menu";
+  menu.style.display = "none";
+  const menuUl = document.createElement("ul");
+  const menuList = [
+    ["トップ", "/"],
+    ["検索", "/search.html"],
+    ["自己紹介", "/src/aboutMe/index.html"],
+    ["このサイトについて", "/about.html"],
+  ];
+  menuList.forEach(function ([name, path]) {
+    const menuLi = document.createElement("li");
+    const menuA = document.createElement("a");
+    menuA.className = "menu-rink";
+    menuA.href = path;
+    menuA.textContent = name;
+    menuLi.appendChild(menuA);
+    menuUl.appendChild(menuLi);
+  });
+  const menuRemove = document.createElement("span");
+  menuRemove.className = "menu-remove";
+  menuRemove.textContent = "閉じる";
+
+  menu.appendChild(menuRemove);
+  menu.appendChild(menuUl);
+  header.appendChild(menu);
+
   //時計開始
   setInterval(clock, 1000);
   clock();
 
   //サイト内検索処理
   const headerSearchInput = document.getElementById("headerSearchInput");
-  const headersearchButton = document.getElementById("searchButton");
-  if (headerSearchInput && searchButton) {
+  const headerSearchButton = document.getElementById("searchButton");
+  if (headerSearchInput && headerSearchButton) {
     //検索ボタンを押したときの処理
-    headersearchButton.addEventListener("click", function () {
+    headerSearchButton.addEventListener("click", function () {
       //検索文字列を取得
       const word = headerSearchInput.value;
       window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
     });
   }
+
+  //ハンバーガーメニュー処理
+  const hamburgerMenu = document.getElementById("hamburger");
+  const lines = document.querySelectorAll(".line");
+  hamburgerMenu.addEventListener("click", function () {
+    lines.forEach(function (e) {
+      e.classList.toggle("active");
+    });
+    if (menu.style.display === "none") {
+      hamburger.style.zIndex = 10000;
+      menu.style.display = "flex";
+    } else {
+      menu.style.display = "none";
+    }
+  });
+  //ハンバーガーメニューの閉じるボタン
+  menuRemove.addEventListener("click", function () {
+    menu.style.display = "none";
+    lines.forEach(function (e) {
+      e.classList.toggle("active");
+    });
+  });
 });
 
 //時計
