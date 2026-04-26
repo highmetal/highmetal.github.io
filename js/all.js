@@ -91,7 +91,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const li = document.createElement("li");
 
   const a = document.createElement("a");
-  a.href = "about.html";
+  a.href = "/about.html";
   a.textContent = "このサイトについて";
 
   li.appendChild(a);
@@ -111,7 +111,7 @@ window.addEventListener("DOMContentLoaded", function () {
     headersearchButton.addEventListener("click", function () {
       //検索文字列を取得
       const word = headerSearchInput.value;
-      window.location.href = `search.html?q=${encodeURIComponent(word)}`;
+      window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
     });
   }
 });

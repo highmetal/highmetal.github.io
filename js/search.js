@@ -1,6 +1,7 @@
 "use strict";
 
 const searchResult = document.getElementById("searchResult");
+const searchResultNum = document.getElementById("searchResultNum");
 
 let pages = [];
 
@@ -51,4 +52,5 @@ function searchRender() {
     newP.textContent = "検索結果はありません。";
     searchResult.appendChild(newP);
   }
+  searchResultNum.textContent = `${hitCount}件の結果`;
 }

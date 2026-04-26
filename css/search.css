@@ -11,6 +11,10 @@ main {
   width: 50%;
 }
 
+.search-result-num {
+  text-align: left;
+}
+
 .search-result {
   margin: 1%;
 }
