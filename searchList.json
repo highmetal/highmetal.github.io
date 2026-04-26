@@ -50,11 +50,6 @@
     ]
   },
   {
-    "title": "自己紹介",
-    "url": "https://highmetal.github.io/src/aboutMe",
-    "tags": ["自己紹介", "highmetal", "self", ""]
-  },
-  {
     "title": "文字数カウンター",
     "url": "https://highmetal.github.io/src/textCounter",
     "tags": ["文字数カウンター", "カウンター", ""]
@@ -65,33 +60,38 @@
     "tags": ["ルーレット", "self", ""]
   },
   {
-    "title": "神経衰弱",
-    "url": "https://highmetal.github.io/src/memoryGame",
-    "tags": ["神経衰弱", ""]
-  },
-  {
     "title": "HTMLER",
     "url": "https://highmetal.github.io/old/codePre/",
     "tags": ["codePre", "html", "コード", "htmler", ""]
   },
   {
-    "title": "旧トップページ（リンク使えないかも）",
+    "title": "ファイル作成",
+    "url": "https://highmetal.github.io/src/createFile",
+    "tags": ["ファイル作成", "file", ""]
+  },
+  {
+    "title": "神経衰弱",
+    "url": "https://highmetal.github.io/src/memoryGame",
+    "tags": ["神経衰弱", "game", "ゲーム", ""]
+  },
+  {
+    "title": "自己紹介",
+    "url": "https://highmetal.github.io/src/aboutMe",
+    "tags": ["自己紹介", "highmetal", "self", ""]
+  },
+  {
+    "title": "旧トップページ",
     "url": "https://highmetal.github.io/old",
-    "tags": ["old", "highmetal", ""]
+    "tags": ["old", "highmetal"]
   },
   {
     "title": "デュエマメモ",
-    "url": "https://highmetal.github.io/old/memo/Duel Masters/index.html",
+    "url": "https://highmetal.github.io/old/memo/Duel%20Masters/index.html",
     "tags": ["dm"]
   },
   {
     "title": "射的",
     "url": "https://highmetal.github.io/src/targetSooting/index.html",
-    "tags": ["射的", "shotting", "ai"]
-  },
-  {
-    "title": "ファイル作成",
-    "url": "https://highmetal.github.io/src/createFile",
-    "tags": ["ファイル作成", "file", ""]
+    "tags": ["射的", "shotting", "ai", "game", "ゲーム"]
   }
 ]
