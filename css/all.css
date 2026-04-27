@@ -157,6 +157,7 @@ header {
 
 .menu ul {
   list-style: none;
+  line-height: 2.5;
 }
 .menu-rink {
   color: #eee;
@@ -165,12 +166,16 @@ header {
 }
 
 .menu-remove {
-  position: absolute; /* 自由に配置 */
+  margin-top: 60px;
+  position: absolute;
   top: 60%;
   right: 50%;
   color: #eee;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 20px;
+  border-radius: 50%;
+  height: 30px;
+  text-align: center;
 }
 
 @media (max-width: 768px) {
