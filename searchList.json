@@ -60,9 +60,9 @@
     "tags": ["ルーレット", "self", ""]
   },
   {
-    "title": "HTMLER",
-    "url": "https://highmetal.github.io/old/codePre/",
-    "tags": ["codePre", "html", "コード", "htmler", ""]
+    "title": "HTMLPreview",
+    "url": "https://highmetal.github.io/src/htmlPreview",
+    "tags": ["codepre", "html", "コード", "htmlpre", "preview", "code", ""]
   },
   {
     "title": "ファイル作成",

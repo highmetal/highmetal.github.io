@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTMLPreview</title>
+    <style>
+      .operation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .operation button {
+        border: solid 0.2rem;
+        border-radius: 0.8rem;
+        width: 10rem;
+        height: 3rem;
+        background-color: black;
+        color: white;
+      }
+
+      #codeField,
+      #preview {
+        width: 97%;
+        min-height: 45rem;
+        border: solid 0.15rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="operation">
+      <h3 id="codeTitle">コーディングモード</h3>
+      <h3 id="viewTitle">表示モード</h3>
+      <button class="codeButton">コーディングモードへ</button>
+      <button class="viewButton">結果表示モードへ</button>
+    </div>
+    <div class="viewer">
+      <textarea id="codeField" placeholder="ここにHTMLを入力"></textarea>
+      <iframe id="preview" style="display: none"></iframe>
+    </div>
+
+    <script>
+      "use strict";
+      const codeField = document.getElementById("codeField");
+      const viewButton = document.querySelector(".viewButton");
+      const codeTitle = document.getElementById("codeTitle");
+      const viewTitle = document.getElementById("viewTitle");
+      const codeButton = document.querySelector(".codeButton");
+      const preview = document.getElementById("preview");
+
+      codeViews();
+
+      function siteViews() {
+        preview.srcdoc = codeField.value;
+        preview.style.display = "block";
+        codeButton.style.display = "block";
+        viewButton.style.display = "none";
+        codeField.style.display = "none";
+        codeTitle.style.display = "none";
+        viewTitle.style.display = "block";
+        viewEdit();
+      }
+      function codeViews() {
+        preview.style.display = "none";
+        codeButton.style.display = "none";
+        viewButton.style.display = "block";
+        codeField.style.display = "block";
+        codeTitle.style.display = "block";
+        viewTitle.style.display = "none";
+      }
+      function viewEdit() {
+        codeField.value ===
+        `<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title></title>
+        <style>
+            
+        </style>
+    </head>
+    <body>
+        
+    </body>
+    <script>
+        
+    <\/script>
+</html>`
+          ? (preview.srcdoc = `<style>h1{color:red;text-align:center;font-size:20px;}</style><h1>コードがありません</h1>`)
+          : (preview.srcdoc = codeField.value);
+      }
+
+      viewButton.addEventListener("click", siteViews);
+      codeButton.addEventListener("click", codeViews);
+
+      codeField.value = `<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title></title>
+        <style>
+            
+        </style>
+    </head>
+    <body>
+        
+    </body>
+    <script>
+        
+    <\/script>
+</html>`;
+
+      const snippets = {
+        //テキスト系
+        qp: "<p>|</p>",
+        qspan: "<span>|</span>",
+
+        //レイアウト
+        qdiv: "<div>|</div>",
+        qstyle: "<style>|</style>",
+        qscript: "<script>|<\/script>",
+        qtb: "        |",
+
+        //リスト
+        qul: "<ul>\n  |\n</ul>",
+        qol: "<ol>\n  |\n</ol>",
+        qli: "<li>|</li>",
+
+        //見出し
+        qh1: "<h1>|</h1>",
+        qh2: "<h2>|</h2>",
+        qh3: "<h3>|</h3>",
+        qh4: "<h4>|</h4>",
+        qh5: "<h5>|</h5>",
+        qh6: "<h6>|</h6>",
+
+        //テーブル
+        qtable: "<table>\n  |\n</table>",
+        qtr: "<tr>\n  |\n</tr>",
+        qth: "<th>|</th>",
+        qtd: "<td>|</td>",
+
+        //フォーム
+        qform: "<form>|</form>",
+        qlabel: '<label for="">|</label>',
+        qtextarea: "<textarea>|</textarea>",
+        qselect: "<select>\n  |\n</select>",
+        qoption: '<option value="">|</option>',
+        qbutton: "<button>|</button>",
+
+        qa: '<a href="|"></a>',
+        qimg: '<img src="|" alt="">',
+        qinput: '<input type="|" />',
+        qbr: "<br />",
+
+        //js系
+        qconst: `const = |;`,
+        qlet: `let = |;`,
+        qdocget: `document.getElementById("|")`,
+        qdocquer: `document.querySelector(".|")`,
+        qadde: `addEventListener("|",function(){});`,
+
+        qccc: `(|)`,
+        qequ: ` = |`,
+        qeqq: ` === |`,
+        qta: ` + |`,
+        qhi: ` - |`,
+        qka: ` * |`,
+        qwa: ` / |`,
+        qww: ` % |`,
+
+        qbackqo: "`|",
+      };
+
+      codeField.addEventListener("input", function () {
+        const value = codeField.value;
+        const cursorPos = codeField.selectionStart;
+        const beforeCursor = value.slice(0, cursorPos);
+
+        //末尾の単語を取得
+        const match = beforeCursor.match(/q[a-zA-Z0-9]+$/);
+        if (!match) return;
+
+        const key = match[0];
+        const snippet = snippets[key];
+        if (!snippet) return;
+
+        const startPos = cursorPos - key.length;
+
+        //カーソル位置(|)をスニペットから探す
+        const cursorMarkerIndex = snippet.indexOf("|");
+        const cleanSnippet = snippet.replace("|", "");
+
+        const newValue =
+          value.slice(0, startPos) + cleanSnippet + value.slice(cursorPos);
+
+        codeField.value = newValue;
+
+        const newCursor = startPos + cursorMarkerIndex;
+        codeField.selectionStart = codeField.selectionEnd = newCursor;
+      });
+    </script>
+  </body>
+</html>
