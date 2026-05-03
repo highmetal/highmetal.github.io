@@ -3,6 +3,9 @@
 main {
   text-align: center;
 }
+main h1 {
+  text-align: left;
+}
 
 .search-input {
   margin: 5% 0 3% 0;

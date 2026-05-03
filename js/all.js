@@ -134,6 +134,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const a = document.createElement("a");
   a.href = "/about.html";
   a.textContent = "このサイトについて";
+  a.className = "footer-link";
 
   li.appendChild(a);
   ul.appendChild(li);
