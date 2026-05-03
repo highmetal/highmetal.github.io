@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Piano</title>
+  </head>
+  <body>
+    <div>
+      音量
+      <input id="vol" type="range" min="0" max="1" step="0.01" value="0.5" />
+      音色
+      <select id="wave">
+        <option value="sine">sine</option>
+        <option value="square">square</option>
+        <option value="triangle">triangle</option>
+        <option value="sawtooth">sawtooth</option>
+      </select>
+    </div>
+
+    <div id="blackRow"></div>
+    <div id="whiteRow"></div>
+    <div id="chordRow"></div>
+
+    <script>
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+      const vol = document.getElementById("vol");
+      const wave = document.getElementById("wave");
+
+      const freq = {
+        F3: 174.61,
+        "F#3": 185.0,
+        G3: 196.0,
+        "G#3": 207.65,
+        A3: 220.0,
+        Bb3: 233.08,
+        B3: 246.94,
+        C4: 261.63,
+        "C#4": 277.18,
+        D4: 293.66,
+        Eb4: 311.13,
+        E4: 329.63,
+        F4: 349.23,
+        "F#4": 369.99,
+        G4: 392.0,
+        "G#4": 415.3,
+        A4: 440.0,
+        Bb4: 466.16,
+        B4: 493.88,
+        C5: 523.25,
+        D5: 587.33,
+        E5: 659.25,
+      };
+
+      // keyboard mapping (変更禁止)
+      const keyMap = {
+        a: "F3",
+        s: "G3",
+        d: "A3",
+        f: "B3",
+        g: "C4",
+        h: "D4",
+        j: "E4",
+        k: "F4",
+        l: "G4",
+        ";": "A4",
+        ":": "B4",
+        "]": "C5",
+        w: "F#3",
+        e: "G#3",
+        r: "Bb3",
+        y: "C#4",
+        u: "Eb4",
+        o: "F#4",
+        p: "G#4",
+        "@": "Bb4",
+      };
+
+      const chordMap = {
+        z: ["C4", "E4", "G4"],
+        x: ["D4", "F4", "A4"],
+        c: ["E4", "G4", "B4"],
+        v: ["F4", "A4", "C5"],
+        b: ["G4", "B4", "D5"],
+        n: ["A4", "C5", "E5"],
+        m: ["B4", "D5", "F5"],
+        ",": ["C5", "E5", "G5"],
+        ".": ["D5", "F5", "A5"],
+        "/": ["E5", "G5", "B5"],
+      };
+
+      const active = new Map();
+
+      function play(note, id) {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+
+        o.type = wave.value;
+        o.frequency.value = freq[note];
+
+        g.gain.value = vol.value;
+
+        o.connect(g);
+        g.connect(ctx.destination);
+
+        o.start();
+
+        active.set(id, { o, g });
+      }
+
+      function stop(id) {
+        const a = active.get(id);
+        if (!a) return;
+        a.g.gain.setTargetAtTime(0, ctx.currentTime, 0.02);
+        a.o.stop(ctx.currentTime + 0.05);
+        active.delete(id);
+      }
+
+      // keyboard
+      document.addEventListener("keydown", (e) => {
+        if (e.repeat) return;
+        const k = e.key;
+
+        if (chordMap[k]) {
+          chordMap[k].forEach((n) => play(n, k + n));
+        } else if (keyMap[k]) {
+          play(keyMap[k], k);
+        }
+      });
+
+      document.addEventListener("keyup", (e) => {
+        const k = e.key;
+
+        if (chordMap[k]) {
+          chordMap[k].forEach((n) => stop(k + n));
+        } else stop(k);
+      });
+
+      function makeKey(label, note, key) {
+        const b = document.createElement("button");
+        b.textContent = label;
+
+        b.onmousedown = () => play(note, key);
+        b.onmouseup = () => stop(key);
+        b.onmouseleave = () => stop(key);
+
+        b.ontouchstart = (e) => {
+          e.preventDefault();
+          play(note, key);
+        };
+        b.ontouchend = () => stop(key);
+
+        return b;
+      }
+
+      // BLACK KEYS
+      const blackRow = document.getElementById("blackRow");
+      [
+        ["F#3", "w"],
+        ["G#3", "e"],
+        ["Bb3", "r"],
+        ["C#4", "y"],
+        ["Eb4", "u"],
+        ["F#4", "o"],
+        ["G#4", "p"],
+        ["Bb4", "@"],
+      ].forEach(([n, k]) => {
+        blackRow.appendChild(makeKey(n, n, k));
+      });
+
+      // WHITE KEYS
+      const whiteRow = document.getElementById("whiteRow");
+      [
+        ["F3", "a"],
+        ["G3", "s"],
+        ["A3", "d"],
+        ["B3", "f"],
+        ["C4", "g"],
+        ["D4", "h"],
+        ["E4", "j"],
+        ["F4", "k"],
+        ["G4", "l"],
+        ["A4", ";"],
+        ["B4", ":"],
+        ["C5", "]"],
+      ].forEach(([n, k]) => {
+        whiteRow.appendChild(makeKey(n, n, k));
+      });
+
+      // CHORDS
+      const chordRow = document.getElementById("chordRow");
+      Object.entries(chordMap).forEach(([k, notes]) => {
+        const label = notes.join("-");
+        const b = document.createElement("button");
+
+        b.textContent = label;
+
+        b.onmousedown = () => notes.forEach((n) => play(n, k + n));
+        b.onmouseup = () => notes.forEach((n) => stop(k + n));
+        b.onmouseleave = () => notes.forEach((n) => stop(k + n));
+
+        b.ontouchstart = (e) => {
+          e.preventDefault();
+          notes.forEach((n) => play(n, k + n));
+        };
+        b.ontouchend = () => notes.forEach((n) => stop(k + n));
+
+        chordRow.appendChild(b);
+      });
+    </script>
+  </body>
+</html>
+
+<!--
+プロンプト
+ブラウザで動くピアノを作ってください。 仕様： - キーボード入力とクリックで音を鳴らす - 長押ししている間、音が鳴り続ける - 音量はinput type rangeで調整 - 音色はselectから選ぶ - 同時発音可能 キー対応： | キー | 音名 | 内容 | | -- | -- | -- | | a | F3 | 白鍵 | | s | G3 | 白鍵 | | d | A3 | 白鍵 | | f | B3 | 白鍵 | | g | C4 | 白鍵 | | h | D4 | 白鍵 | | j | E4 | 白鍵 | | k | F4 | 白鍵 | | l | G4 | 白鍵 | | ; | A4 | 白鍵 | | : | B4 | 白鍵 | | ] | C5 | 白鍵 | | -- | --- | -- | | w | F#3 | 黒鍵 | | e | G#3 | 黒鍵 | | r | Bb3 | 黒鍵 | | y | C#4 | 黒鍵 | | u | Eb4 | 黒鍵 | | o | F#4 | 黒鍵 | | p | G#4 | 黒鍵 | | @ | Bb4 | 黒鍵 | - z〜/ は「3和音コード」 - コード内容は固定すること： z = C4 E4 G4 x = D4 F4 A4 c = E4 G4 B4 v = F4 A4 C5 b = G4 B4 D5 n = A4 C5 E5 m = B4 D5 F5 , = C5 E5 G5 . = D5 F5 A5 / = E5 G5 B5 制約： - キー配列は変更禁止 - HTMLCSSJSはHTMLにまとめて出力 - 完全動作コードのみ出力（説明不要）- 曖昧指示はすべて追加するものとする - ボタンはキーボードの文字ではなく鳴る音のみを記載し、黒鍵は一番上の列、白鍵は二番目の列、コードは一番下の列に配置し、キーボードの配置と同じにすること - 色のCSSは付けないこと 
+-->
