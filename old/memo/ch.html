@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        chat?
+    </title>
+    <link rel="apple-touch-icon" href="" />
+    <link rel="icon" href="" />
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+
+        main {
+            width: 100%;
+            height: 100%;
+        }
+
+        #name {
+            background-color: #333;
+            color: #eee;
+        }
+
+        #name:before {
+            content: "< ";
+        }
+
+        #chat {
+            width: 100%;
+            height: 90%;
+            background-color: skyblue;
+        }
+
+        .message {
+            margin-bottom: 1%;
+            padding: 1.5%;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .userChat {
+            background-color: lime;
+            margin-right: 0;
+            margin-left: 92%;
+        }
+
+        .comChat {
+            background-color: #eee;
+            margin-left: 2%;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: rgb(54, 255, 94);
+            display: none;
+        }
+
+        #input {
+            display: flex;
+            width: 100%;
+            height: 24px;
+            position: absolute;
+            bottom: 1%;
+            left: 25%;
+            font-size: 20px;
+        }
+
+        #text {
+            width: 50%;
+        }
+
+        #fileLabel {
+            display: inline-block;
+            width: 30px;
+        }
+
+        #send {
+            background-color: transparent;
+            border: none;
+            position: absolute;
+            left: 70%;
+            height: 24px;
+            font-size: 20px;
+            color: skyblue;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div id="name">highmetal</div>
+        <div id="chat"></div>
+        <div id=input>
+            <input type="text" id="text">
+            <div>
+                <label id="fileLabel">
+                    ◼️<input type="file">
+                </label>
+            </div>
+            <button id="send">▶︎</button>
+        </div>
+    </main>
+</body>
+<script>
+    const chatField = document.getElementById("chat");
+    const inputText = document.getElementById("text");
+    const sendButton = document.getElementById("send");
+
+    const comChatList = ["こんにちは", "はい", "w", "？"];
+
+    sendButton.addEventListener("click", function () {
+        if (inputText.value === "") {
+            return;
+        }
+        userChatAdd();
+        setTimeout(() => {
+            comChatAdd();
+        }, 500);
+    });
+
+    function userChatAdd() {
+        const chatText = document.createElement("div");
+        chatText.className = "userChat message";
+        chatText.textContent = inputText.value;
+        chatField.appendChild(chatText);
+        inputText.value = "";
+    }
+
+    function comChatAdd() {
+        const chatText = document.createElement("div");
+        chatText.className = "comChat message";
+        chatText.textContent = comChatList[Math.floor(Math.random() * 4)];
+        chatField.appendChild(chatText);
+    }
+</script>
+
+</html>
