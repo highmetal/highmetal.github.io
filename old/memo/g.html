@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Code RPG - v16.1</title>
+    <style>
+        :root { 
+            --bg: #f1f3f6; --card: #ffffff; --text: #2d3436; 
+            --accent: #0984e3; --danger: #d63031; --success: #27ae60; --gray: #636e72;
+        }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        .status-container { padding: 10px; background: white; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+        .bar-label { font-size: 10px; font-weight: bold; margin-bottom: 2px; display: block; color: var(--gray); }
+        .hp-bar-outer { width: 100%; height: 28px; background: #dfe6e9; border-radius: 14px; overflow: hidden; border: 2px solid #555; position: relative; }
+        .hp-bar-inner { height: 100%; transition: width 0.3s; position: absolute; left: 0; top: 0; z-index: 1; }
+        .enemy-fill { background: linear-gradient(90deg, #ff7675, #d63031); }
+        .player-fill { background: var(--success); }
+        .bar-text { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: #000; font-weight: 900; z-index: 10; pointer-events: none; text-shadow: 1px 1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff; }
+
+        #code-display { flex-grow: 1; padding: 10px; overflow-y: auto; background: #fff; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid #eee; min-height: 100px; }
+        .code-row { display: flex; align-items: center; gap: 5px; }
+        .code-line { flex-grow: 1; padding: 6px 10px; border-radius: 5px; background: #f1f2f6; border-left: 4px solid var(--accent); font-size: 12px; font-family: monospace; font-weight: bold; }
+        .indent-1 { margin-left: 20px; border-left-color: #fab1a0; }
+        .delete-btn { background: #eee; border: none; color: #999; border-radius: 4px; width: 26px; height: 26px; cursor: pointer; font-weight: bold; }
+        
+        #player-area { background: var(--card); padding: 10px; border-top: 1px solid #ddd; flex-shrink: 0; }
+        #party { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; min-height: 100px; }
+        .monster { background: #fff; border: 1px solid #dfe6e9; border-radius: 8px; padding: 6px 4px; text-align: center; cursor: pointer; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .monster.disabled { background: #f1f2f6 !important; color: #b2bec3 !important; cursor: not-allowed; opacity: 0.6; box-shadow: none; }
+        .monster-name { font-size: 10px; font-weight: bold; display: block; pointer-events: none; }
+        .monster-skill { font-size: 9px; color: var(--accent); font-family: monospace; font-weight: bold; pointer-events: none; }
+        .monster-stats { font-size: 8px; color: #666; margin-top: 3px; border-top: 1px solid #eee; padding-top: 2px; pointer-events: none; }
+        .cd-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); color: var(--danger); display: flex; align-items: center; justify-content: center; font-weight: bold; border-radius: 8px; font-size: 16px; pointer-events: none; }
+
+        .btn-group { display: flex; gap: 6px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn-run { background: var(--accent); color: white; }
+        .btn-run:disabled, .btn-clear:disabled { background: #bdc3c7 !important; color: #7f8c8d; cursor: not-allowed; }
+        .btn-clear { background: var(--gray); color: white; flex: 0.3; }
+
+        #log { height: 90px; font-size: 11px; color: var(--gray); overflow-y: auto; border-top: 1px solid #eee; padding-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="status-container">
+    <span class="bar-label">TARGET: 巨大バグ・コア</span>
+    <div class="hp-bar-outer">
+        <div id="enemy-hp-fill" class="hp-bar-inner enemy-fill" style="width: 100%;"></div>
+        <div id="enemy-hp-txt" class="bar-text">5000 / 5000 HP</div>
+    </div>
+</div>
+
+<div id="code-display"></div>
+
+<div id="player-area">
+    <div id="party">
+        </div>
+    
+    <div class="status-container" style="padding: 0 0 10px 0; border: none;">
+        <span class="bar-label">SYSTEM MEMORY (PLAYER)</span>
+        <div class="hp-bar-outer">
+            <div id="mem-fill" class="hp-bar-inner player-fill" style="width: 100%;"></div>
+            <div id="mem-display-text" class="bar-text">2500 / 2500 MB</div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn btn-clear" id="btn-reset" onclick="clearStack()">リセット</button>
+        <button class="btn btn-run" id="btn-run" onclick="executeTurn()">コンパイル実行</button>
+    </div>
+    <div id="log"></div>
+</div>
+
+<script>
+    let enemyHP = 5000;
+    const maxEnemyHP = 5000;
+    let memory = 2500;
+    const maxMemory = 2500;
+    let isRunning = false;
+    let currentStack = [];
+
+    const party = [
+        { name: "Knight.java", code: "for(i=0;3;i++)", type: "loop", val: 3, cd: 0, maxCd: 4, cost: 50, pwr: 0, heal: 0 },
+        { name: "Fighter.cpp", code: "attack()", type: "action", val: 0, cost: 150, pwr: 300, heal: 0, cd: 0, maxCd: 2 },
+        { name: "Priest.py", code: "Mem.heal()", type: "heal", val: 0, cost: 80, pwr: 0, heal: 400, cd: 0, maxCd: 5 },
+        { name: "Gambler.js", code: "if(mem < 30%)", desc: "x3.0", type: "if", val: 3.0, cost: 40, pwr: 0, heal: 0, cd: 0, maxCd: 3 },
+        { name: "Scholar.sql", code: "if(mem > 80%)", desc: "x1.5", type: "if", val: 1.5, cost: 30, pwr: 0, heal: 0, cd: 0, maxCd: 2 },
+        { name: "Archer.go", code: "attack()", type: "action", val: 0, cost: 100, pwr: 200, heal: 0, cd: 0, maxCd: 1 }
+    ];
+
+    function renderUI() {
+        // バーの更新
+        const enemyPer = Math.max(0, (enemyHP / maxEnemyHP) * 100);
+        document.getElementById('enemy-hp-fill').style.width = enemyPer + "%";
+        document.getElementById('enemy-hp-txt').innerText = `${Math.floor(Math.max(0, enemyHP))} / ${maxEnemyHP} HP`;
+
+        const memPer = Math.max(0, (memory / maxMemory) * 100);
+        document.getElementById('mem-fill').style.width = memPer + "%";
+        document.getElementById('mem-fill').style.background = memPer < 25 ? "var(--danger)" : "var(--success)";
+        document.getElementById('mem-display-text').innerText = `${Math.floor(Math.max(0, memory))} / ${maxMemory} MB`;
+
+        // パーティの描画
+        const usedIdx = currentStack.map(s => s.monsterIdx);
+        const partyHTML = party.map((m, i) => {
+            const isDisabled = m.cd > 0 || usedIdx.includes(i) || isRunning;
+            const stats = `費:${m.cost}${m.pwr ? ` 攻:${m.pwr}` : m.heal ? ` 回:${m.heal}` : ` ${m.desc}`}`;
+            return `
+                <div class="monster ${isDisabled ? 'disabled' : ''}" onclick="addSkill(${i})">
+                    <span class="monster-name">${m.name}</span>
+                    <span class="monster-skill">${m.code}</span>
+                    <div class="monster-stats">${stats}</div>
+                    ${m.cd > 0 ? `<div class="cd-overlay">${m.cd}</div>` : ''}
+                </div>`;
+        }).join('');
+        document.getElementById('party').innerHTML = partyHTML;
+
+        // ボタン
+        document.getElementById('btn-run').disabled = isRunning;
+        document.getElementById('btn-run').innerText = isRunning ? "実行中..." : "コンパイル実行";
+        document.getElementById('btn-reset').disabled = isRunning;
+    }
+
+    function addSkill(idx) {
+        if (isRunning) return;
+        const m = party[idx];
+        if (m.cd > 0 || currentStack.some(s => s.monsterIdx === idx)) return;
+        currentStack.push({ ...m, stackId: Date.now() + Math.random(), monsterIdx: idx });
+        renderStack();
+    }
+
+    function removeSkill(stackId) {
+        if (isRunning) return;
+        currentStack = currentStack.filter(s => s.stackId !== stackId);
+        renderStack();
+    }
+
+    function renderStack() {
+        let indent = 0;
+        const stackHTML = currentStack.map(s => {
+            const res = `
+                <div class="code-row">
+                    <div class="code-line ${indent > 0 ? 'indent-1' : ''}">${s.code}</div>
+                    <button class="delete-btn" onclick="removeSkill(${s.stackId})">×</button>
+                </div>`;
+            if (s.type === 'loop' || s.type === 'if') indent = 1;
+            return res;
+        }).join('');
+        document.getElementById('code-display').innerHTML = stackHTML;
+        renderUI();
+    }
+
+    function clearStack() {
+        if (isRunning) return;
+        currentStack = [];
+        renderStack();
+    }
+
+    function log(msg, color = "var(--gray)") {
+        const l = document.getElementById('log');
+        l.innerHTML += `<div style="color:${color}">> ${msg}</div>`;
+        l.scrollTo(0, l.scrollHeight);
+    }
+
+    async function executeTurn() {
+        if (isRunning) return;
+        isRunning = true;
+        renderUI();
+
+        if (currentStack.length === 0) {
+            memory = Math.min(maxMemory, memory + 50);
+            log(`待機中：50MB 回復`, "var(--success)");
+            party.forEach(m => { if (m.cd > 0) m.cd--; });
+            renderUI();
+            await enemyAction();
+            isRunning = false;
+            renderUI();
+            return;
+        }
+
+        log("--- コンパイル開始 ---", "#0984e3");
+        let multiplier = 1.0;
+        let loopCount = 1;
+
+        currentStack.forEach(s => party[s.monsterIdx].cd = party[s.monsterIdx].maxCd + 1);
+
+        const execStack = [...currentStack];
+        currentStack = [];
+        renderStack();
+
+        for (let s of execStack) {
+            // 消費
+            if (!await consume(s.cost)) break;
+
+            if (s.type === 'loop') loopCount *= s.val;
+            if (s.type === 'if') {
+                const met = s.code.includes('< 30%') ? (memory / maxMemory < 0.3) : (memory / maxMemory > 0.8);
+                if (met) { multiplier *= s.val; log(`【成立】${s.name}：${s.val}倍`, "var(--success)"); }
+                else { log(`【不成立】${s.name}`); }
+            }
+            
+            if (s.type === 'action' || s.type === 'heal') {
+                for (let i = 0; i < loopCount; i++) {
+                    if (i > 0 && !await consume(s.cost)) break;
+                    if (s.type === 'action') {
+                        const d = Math.floor(s.pwr * multiplier);
+                        enemyHP -= d; log(`${s.name}：${d} ダメージ`, "var(--danger)");
+                    } else {
+                        const h = Math.floor(s.heal * multiplier);
+                        memory = Math.min(maxMemory, memory + h); log(`回復：${h}MB 回復`, "var(--success)");
+                    }
+                    renderUI();
+                    if (enemyHP <= 0) break;
+                    await new Promise(r => setTimeout(r, 250));
+                }
+            }
+            if (enemyHP <= 0) break;
+        }
+
+        if (memory <= 0) { alert("システムクラッシュ！"); location.reload(); return; }
+
+        party.forEach(m => { if (m.cd > 0) m.cd--; });
+        if (enemyHP > 0) await enemyAction();
+        else log("勝利しました！", "var(--success)");
+        
+        isRunning = false;
+        renderUI();
+    }
+
+    async function consume(amt) {
+        memory -= amt;
+        renderUI();
+        if (memory <= 0) { log("!! Out Of Memory !!", "var(--danger)"); return false; }
+        return true;
+    }
+
+    async function enemyAction() {
+        await new Promise(r => setTimeout(r, 500));
+        const dmg = 350 + Math.floor(Math.random() * 100);
+        memory -= dmg;
+        log(`敵の攻撃：${dmg}MB 負荷`, "#d63031");
+        renderUI();
+        if (memory <= 0) { alert("システムクラッシュ！"); location.reload(); }
+    }
+
+    // 初回起動
+    window.onload = renderUI;
+</script>
+</body>
+</html>
