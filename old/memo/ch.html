@@ -19,40 +19,48 @@
             width: 100%;
             height: 100%;
             overflow-x: hidden;
-            overflow-y: hidden;
         }
 
         main {
             width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         #name {
             background-color: #333;
             color: #eee;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
         }
 
         #name:before {
             content: "< ";
+            font-size: 20px;
         }
 
         #chat {
+            padding-top: 1%;
             width: 100%;
-            height: 90%;
+            flex: 1;
+            overflow-y: auto;
             background-color: skyblue;
         }
 
         .message {
             margin-bottom: 1%;
-            padding: 1.5%;
+            padding: 1%;
             width: fit-content;
             height: fit-content;
         }
 
         .userChat {
             background-color: lime;
-            margin-right: 0;
-            margin-left: 92%;
+            margin-right: 2%;
+            margin-left: auto;
         }
 
         .comChat {
@@ -69,15 +77,19 @@
             display: flex;
             width: 100%;
             height: 24px;
-            position: absolute;
+            position: fixed;
             bottom: 1%;
-            left: 25%;
+            left: 1%;
+            background-color: #eee;
             font-size: 20px;
+            padding: 1%;
+
         }
 
         #text {
-            width: 50%;
-            font-size:20px;
+            width: 80%;
+            font-size: 20px;
+            resize: none;
         }
 
         #fileLabel {
@@ -89,10 +101,10 @@
             background-color: transparent;
             border: none;
             position: absolute;
-            left: 70%;
+            left: 90%;
             height: 24px;
             font-size: 20px;
-            color: skyblue;
+            color: rgb(64, 145, 174);
         }
     </style>
 </head>
@@ -102,7 +114,7 @@
         <div id="name">highmetal</div>
         <div id="chat"></div>
         <div id=input>
-            <input type="text" id="text">
+            <textarea id="text"></textarea>
             <div>
                 <label id="fileLabel">
                     ◼️<input type="file">
@@ -124,17 +136,39 @@
             return;
         }
         userChatAdd();
-        setTimeout(() => {
-            comChatAdd();
-        }, 500);
+
+        switch (inputText.value) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+                comandChat(inputText.value);
+                break;
+            case "highmetal":
+            case "icon":
+                secretChat(inputText.value);
+                break;
+
+            default:
+                setTimeout(() => {
+                    comChatAdd();
+                }, 500);
+        }
+        inputText.value = "";
+
+
     });
+
+    startChat();
 
     function userChatAdd() {
         const chatText = document.createElement("div");
         chatText.className = "userChat message";
+        console.log(inputText.value.length);
+
         chatText.textContent = inputText.value;
         chatField.appendChild(chatText);
-        inputText.value = "";
+        chatField.scrollTop = chatField.scrollHeight;
     }
 
     function comChatAdd() {
@@ -142,7 +176,47 @@
         chatText.className = "comChat message";
         chatText.textContent = comChatList[Math.floor(Math.random() * 4)];
         chatField.appendChild(chatText);
+        chatField.scrollTop = chatField.scrollHeight;
     }
+
+    function comandChat(num) {
+        const chatText = document.createElement("div");
+        chatText.className = "comChat message";
+        chatText.textContent = comChatList[num];
+        chatField.appendChild(chatText);
+        chatField.scrollTop = chatField.scrollHeight;
+    }
+
+    function startChat() {
+        const chatText = document.createElement("div");
+        chatText.className = "comChat message";
+        chatText.textContent = "チャットだよ";
+        chatField.appendChild(chatText);
+        chatField.scrollTop = chatField.scrollHeight;
+    }
+
+    function secretChat(text) {
+        switch (text) {
+            case "3399":
+                const chatLink = document.createElement("a");
+                chatLink.className = "comChat message";
+                chatLink.href = "https://highmetal.github.io";
+                chatLink.target = "_brank";
+                chatLink.textContent = "highmetal.github.io";
+                chatField.appendChild(chatLink);
+                chatField.scrollTop = chatField.scrollHeight;
+                break;
+            case "icon":
+                const chatImage = document.createElement("img");
+                chatImage.className = "comChat message";
+                chatImage.src = "https://highmetal.github.io/image/high.ico";
+                chatField.appendChild(chatImage);
+                chatField.scrollTop = chatField.scrollHeight;
+                break;
+            default:
+        }
+    }
+
 </script>
 
 </html>
