@@ -149,7 +149,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const menuUl = document.createElement("ul");
   const menuList = [
     ["トップ", "/"],
-    ["検索", "/search.html"],
+    ["サイト内検索", "/search.html"],
     ["自己紹介", "/src/aboutMe/index.html"],
     ["このサイトについて", "/about.html"],
   ];
