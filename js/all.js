@@ -1,7 +1,7 @@
 "use strict";
 
 //DOM読み込みを待つ
-window.addEventListener("DOMContentLoaded", function () {
+//window.addEventListener("DOMContentLoaded", function () {
   //ヘッダー作成
   const header = document.getElementById("header");
   if (!header) return;
@@ -207,7 +207,7 @@ window.addEventListener("DOMContentLoaded", function () {
       e.classList.toggle("active");
     });
   });
-});
+//});
 
 //時計
 function clock() {
