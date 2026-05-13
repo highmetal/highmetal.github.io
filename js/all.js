@@ -1,7 +1,7 @@
 "use strict";
 
 //DOM読み込みを待つ
-//window.addEventListener("DOMContentLoaded", function () {
+window.addEventListener("DOMContentLoaded", function () {
   //ヘッダー作成
   const header = document.getElementById("header");
   if (!header) return;
@@ -150,7 +150,7 @@
   const menuList = [
     ["トップ", "/"],
     ["サイト内検索", "/search.html"],
-    ["自己紹介", "/src/aboutMe/index.html"],
+    //["自己紹介", "/src/aboutMe/index.html"],
     ["このサイトについて", "/about.html"],
   ];
   menuList.forEach(function ([name, path]) {
@@ -207,7 +207,7 @@
       e.classList.toggle("active");
     });
   });
-//});
+});
 
 //時計
 function clock() {
