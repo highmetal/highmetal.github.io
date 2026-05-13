@@ -75,6 +75,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
   search2Span.appendChild(searchLink);
 
+/*
   //自己紹介リンク
   const aboutMeSpan = document.createElement("span");
   aboutMeSpan.className = "header-link";
@@ -83,6 +84,7 @@ window.addEventListener("DOMContentLoaded", function () {
   aboutMeLink.textContent = "自己紹介";
 
   aboutMeSpan.appendChild(aboutMeLink);
+*/
 
   //このサイトについてリンク
   const aboutSpan = document.createElement("span");
@@ -95,7 +97,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
   headerLinks.appendChild(topSpan);
   headerLinks.appendChild(search2Span);
-  headerLinks.appendChild(aboutMeSpan);
+  //headerLinks.appendChild(aboutMeSpan);
   headerLinks.appendChild(aboutSpan);
 
   //ハンバーガーメニュー
