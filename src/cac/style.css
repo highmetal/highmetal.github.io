@@ -1,0 +1,228 @@
+@charset "utf-8";
+
+html {
+    font-family: "Zen Maru Gothic", sans-serif;
+    background-color: rgb(185, 232, 212);
+    color: #333;
+    margin: 1%;
+}
+
+#title {
+    display: flex;
+    justify-content: space-between;
+}
+
+#varsion {
+    margin-top: 3%;
+}
+
+#names,
+#quantitys {
+    position: relative;
+    display: inline-block;
+}
+
+/* クリアボタン,4枚ボタン */
+#clearButton,
+#fourButton {
+    display: none;
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 12px;
+    background-color: #ccc;
+    border-radius: 50%;
+}
+
+#fourButton {
+    right: 22px;
+}
+
+/* スピナー消す */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+/* inputでiOSが拡大されないように20px固定 */
+input,
+textarea {
+    font-size: 20px;
+    background-color: #eee;
+    border-radius: 5px;
+}
+
+/* 追加読み込み一括削除ボタン部分 */
+#operationButton,
+#importButtons {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 全ボタン */
+#addButton,
+#loadButton,
+#captureButton,
+#copyButton {
+    background-color: #00cc00;
+}
+
+#allDeleteButton {
+    background-color: #ff0066;
+}
+
+#addButton,
+#loadButton,
+#allDeleteButton,
+#captureButton,
+#copyButton {
+    color: white;
+    font-weight: 450;
+    font-size: 14px;
+    border-radius: 5px;
+    height: 32px;
+    width: 25%;
+    margin: 3% 0;
+}
+
+/* 表部分 */
+#table,
+tr,
+th,
+td {
+    border: 1px solid #000;
+    border-collapse: collapse;
+}
+
+#table {
+    width: 100%;
+}
+
+th {
+    background-color: #ccc;
+}
+
+td {
+    background-color: #eee;
+}
+
+td:nth-child(1) input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+td:nth-child(6) button {
+    background-color: #00cc00;
+    color: #eee;
+    border-radius: 50%;
+    font-size: 14px;
+    width: 40px;
+    height: 40px;
+}
+
+/* 合計部分 */
+#sum {
+    display: flex;
+    justify-content: end;
+    background-color: #eee;
+    margin-top: 1.5%;
+    margin-bottom: 3%;
+}
+
+#sumQuantity {
+    margin-right: 5%;
+}
+
+#sumAmount {
+    margin-right: 1%;
+}
+
+
+/* モーダル */
+#modal {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 99;
+}
+
+#modalContent {
+    background-color: #339988;
+    border: 0.15rem solid #333;
+    padding: 20px;
+    width: 85%;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#modalButtons,
+#editButtons {
+    margin-top: 15px;
+}
+
+#modal button,
+#editModal button {
+    background-color: #333;
+    color: #eee;
+    margin: 0 10px;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#editModal {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 9;
+}
+
+#editModalContent {
+    background-color: #00cc00;
+    border: 0.15rem solid #333;
+    padding: 20px;
+    width: 98%;
+    border-radius: 8px;
+    text-align: center;
+}
+
+#editInputs {
+    text-align: left;
+}
+
+#editInputs input {
+    margin: 5% 0;
+}
+
+#editInputs input,
+#editRemarks {
+    background-color: #eee;
+}
+
+#editRemarks {
+    width: 100%;
+    height: 100px;
+    resize: none;
+}
+
+#editAmount,
+#editQuantity {
+    width: 40%;
+}
+
+#editAmountAndQuantiy {
+    display: flex;
+    justify-content: space-between;
+}

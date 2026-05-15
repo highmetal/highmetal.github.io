@@ -4,37 +4,110 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
+    <title>cac</title>
 
-    </title>
     <!-- icon -->
     <link rel="apple-touch-icon" href="cac_ati.PNG" />
     <link rel="icon" href="" />
+
     <!-- リセットCSS -->
     <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
     <!-- CSS -->
     <link rel="stylesheet" href="style.css" />
+
 </head>
 
 <body>
-    <div class="title">
+    <div id="title">
         <h2>カード金額計算 cac</h2>
-        <h5 class="varsion">version 1.6.0</h5>
+        <h5 id="varsion">version 1.6.0</h5>
     </div>
 
     <form id="form">
         <!-- 入力要素 -->
-        <div class="inputs">
+        <div id="inputs">
             <!-- カード名とクリアボタン -->
-            <div class="names">
-                <label type="text" id="name">カード名：</label>
-                <span class="clear-button" id="clearButton">×</span>
-            </div>
+            <div id="names">
+                <label>カード名：<input type="text" id="name" placeholder="ミラクル・ミラダンテ"></label>
+                <span id="clearButton">×</span><br>
+            </div><br>
+            <label>値段　　：<input type="number" id="amount" placeholder="500">円</label><br>
+            <div id="quantitys">
+                <label>枚数　　：<input type="number" id="quantity" placeholder="4">枚</label>
+                <span id="fourButton">4</span>
+            </div><br>
+            <label>備考　　：<input type="text" id="remarks" placeholder="使用デッキ、購入予定店舗"></label>
+        </div>
+        <div id="operationButton">
+            <button id="addButton">追加</button>
+            <button id="loadButton">読み込み</button>
+            <button id="allDeleteButton">一括削除</button>
         </div>
     </form>
-</body>
-<script>
 
-</script>
+    <div id="message"></div>
+
+    <main id="">
+        <table id="table">
+            <tr>
+                <th>　</th>
+                <th>カード名</th>
+                <th>値段</th>
+                <th>枚数</th>
+                <th>小計</th>
+                <th>編集</th>
+            </tr>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>a</td>
+                <td>600</td>
+                <td>4</td>
+                <td>2400</td>
+                <td><button>編集</button></td>
+            </tr>
+        </table>
+        <div id="sum">
+            <p id="sumQuantity">総枚数：99枚</p>
+            <p id="sumAmount">総計：9999円</p>
+        </div>
+    </main>
+    <div id="importButtons">
+        <button id="captureButton">ダウンロード</button>
+        <button id="copyButton">コピー</button>
+    </div>
+
+    <div id="modal">
+        <div id="modalContent">
+            <h3 id="modalTitle">削除確認</h3>
+            <p id="modalMessage">本当に削除してもよろしいですか？</p>
+            <div id="modalButtons">
+                <button id="modalButtonFalse">いいえ</button>
+                <button id="modalButtonTrue">はい</button>
+                <button id="modalButtonExit">とじる</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal">
+        <div id="editModalContent">
+            <h3>編集</h3>
+            <div id="editInputs">
+                <label>カード名：<input type="text" id="editName"></label><br>
+                <div id="editAmountAndQuantiy">
+                    <label>値段：<input type="text" id="editAmount">円</label>
+                    <label>枚数：<input type="text" id="editQuantity">枚</label><br>
+                </div>
+                <label>備考：<textarea id="editRemarks"></textarea></label>
+            </div>
+            <div id="editButtons">
+                <button id="editQuitButton">やめる</button>
+                <button id="editCompletionButton">完了</button>
+                <button id="editDeleteButton">削除</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
 
 </html>
