@@ -40,6 +40,7 @@ main .element {
   gap: 8px;
   font-size: 14px;
   margin-top: 1%;
+  list-style-type: none;
 }
 
 .breadcrumb li {
@@ -54,6 +55,7 @@ main .element {
 .breadcrumb li:last-child::after {
   content: "";
 }
+
 
 /* ヘッダー部分 --------------------*/
 header {
