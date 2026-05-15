@@ -6,7 +6,6 @@
       "カード金額計算",
       "カード",
       "かーど",
-      "ka-do",
       "金額",
       "計算",
       "金額計算",
@@ -18,12 +17,13 @@
       "cardamountcalc",
       "cardamountcalculation",
       "card amount calculation",
+      "cac",
       ""
     ]
   },
   {
     "title": "チェックリスト",
-    "url": "https://highmetal.github.io/old/checkList",
+    "url": "https://highmetal.github.io/src/checkList",
     "tags": [
       "チェックリスト",
       "ちぇっくりすと",
