@@ -19,7 +19,7 @@ highmetalの自己紹介サイト。
 
 * [HTMLPreview](
 https://highmetal.github.io/src/htmlPreview)
-ブラウザでHTMLを試すことができるサイト。スマートフォンでも簡単に入力できる補完機能があり、外出中でもコーディングできる。
+ブラウザでHTMLを試すことができるサイト。スマートフォンでも簡単に入力できる補完機能があり、外出中でもコーディングできる。近日補完追加予定。
 
 * [ルーレット](https://highmetal.github.io/src/roulette)
 シンプルなルーレットアプリ。
