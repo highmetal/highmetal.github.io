@@ -34,6 +34,27 @@ main .element {
   }
 }
 
+/* パンくずリスト --------------------*/
+.breadcrumb {
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+  margin-top: 1%;
+}
+
+.breadcrumb li {
+  white-space: nowrap;
+}
+
+.breadcrumb li::after {
+  content: "＞";
+  margin-left: 8px;
+}
+
+.breadcrumb li:last-child::after {
+  content: "";
+}
+
 /* ヘッダー部分 --------------------*/
 header {
   background-color: #ff0066;

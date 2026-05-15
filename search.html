@@ -1,45 +1,50 @@
 <!doctype html>
 <html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>highmetal -サイト内検索-</title>
 
-    <!-- icon -->
-    <link rel="apple-touch-icon" href="" />
-    <link rel="icon" href="image/high.ico" />
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>highmetal -サイト内検索-</title>
 
-    <!-- リセットCSS -->
-    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/all.css" />
-    <link rel="stylesheet" href="css/search.css" />
-  </head>
+  <!-- icon -->
+  <link rel="apple-touch-icon" href="" />
+  <link rel="icon" href="image/high.ico" />
 
-  <body>
-    <!-- ヘッダー要素 -->
-    <header id="header"></header>
+  <!-- リセットCSS -->
+  <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/all.css" />
+  <link rel="stylesheet" href="css/search.css" />
+</head>
 
-    <!-- メイン要素 -->
-    <main>
-      <h1>サイト内検索</h1>
-      <input
-        type="text"
-        class="search-input"
-        id="searchInput"
-        placeholder="検索ワードを入力..."
-      />
-      <!-- <div class="category">
+<body>
+  <!-- ヘッダー要素 -->
+  <header id="header"></header>
+
+  <!-- パンくずリスト -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li><a href="/">トップページ</a></li>
+      <li>サイト内検索</li>
+    </ol>
+  </nav>
+
+  <!-- メイン要素 -->
+  <main>
+    <h1>サイト内検索</h1>
+    <input type="text" class="search-input" id="searchInput" placeholder="検索ワードを入力..." />
+    <!-- <div class="category">
         <h4>カテゴリから探す</h4>
         <span>カテゴリ名</span>
       </div> -->
-      <p class="search-result-num" id="searchResultNum"></p>
-      <div class="search-result" id="searchResult"></div>
-    </main>
+    <p class="search-result-num" id="searchResultNum"></p>
+    <div class="search-result" id="searchResult"></div>
+  </main>
 
-    <!-- フッター要素 -->
-    <footer id="footer"></footer>
-    <script src="js/all.js"></script>
-    <script src="js/search.js"></script>
-  </body>
+  <!-- フッター要素 -->
+  <footer id="footer"></footer>
+  <script src="js/all.js"></script>
+  <script src="js/search.js"></script>
+</body>
+
 </html>
