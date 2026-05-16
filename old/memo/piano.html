@@ -1,217 +1,347 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Piano</title>
-  </head>
-  <body>
-    <div>
-      音量
-      <input id="vol" type="range" min="0" max="1" step="0.01" value="0.5" />
-      音色
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piano</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      user-select: none;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .keyboard {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .row {
+      display: flex;
+      gap: 4px;
+      align-items: flex-start;
+    }
+
+    button {
+      width: 64px;
+      height: 64px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .black {
+      height: 48px;
+    }
+
+    .code-row button {
+      width: 92px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="controls">
+    <label>
+      Volume
+      <input type="range" id="volume" min="0" max="1" step="0.01" value="0.3">
+    </label>
+
+    <label>
+      Wave
       <select id="wave">
+        <option value="triangle">triangle</option>
         <option value="sine">sine</option>
         <option value="square">square</option>
-        <option value="triangle">triangle</option>
         <option value="sawtooth">sawtooth</option>
       </select>
-    </div>
+    </label>
 
-    <div id="blackRow"></div>
-    <div id="whiteRow"></div>
-    <div id="chordRow"></div>
+    <label>
+      Octave Shift
+      <span id="octaveLabel">1</span>
+    </label>
+  </div>
 
-    <script>
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  <div class="keyboard">
 
-      const vol = document.getElementById("vol");
-      const wave = document.getElementById("wave");
+    <div class="row" id="blackRow"></div>
 
-      const freq = {
-        F3: 174.61,
-        "F#3": 185.0,
-        G3: 196.0,
-        "G#3": 207.65,
-        A3: 220.0,
-        Bb3: 233.08,
-        B3: 246.94,
-        C4: 261.63,
-        "C#4": 277.18,
-        D4: 293.66,
-        Eb4: 311.13,
-        E4: 329.63,
-        F4: 349.23,
-        "F#4": 369.99,
-        G4: 392.0,
-        "G#4": 415.3,
-        A4: 440.0,
-        Bb4: 466.16,
-        B4: 493.88,
-        C5: 523.25,
-        D5: 587.33,
-        E5: 659.25,
-      };
+    <div class="row" id="whiteRow"></div>
 
-      // keyboard mapping (変更禁止)
-      const keyMap = {
-        a: "F3",
-        s: "G3",
-        d: "A3",
-        f: "B3",
-        g: "C4",
-        h: "D4",
-        j: "E4",
-        k: "F4",
-        l: "G4",
-        ";": "A4",
-        ":": "B4",
-        "]": "C5",
-        w: "F#3",
-        e: "G#3",
-        r: "Bb3",
-        y: "C#4",
-        u: "Eb4",
-        o: "F#4",
-        p: "G#4",
-        "@": "Bb4",
-      };
+    <div class="row code-row" id="codeRow"></div>
 
-      const chordMap = {
-        z: ["C4", "E4", "G4"],
-        x: ["D4", "F4", "A4"],
-        c: ["E4", "G4", "B4"],
-        v: ["F4", "A4", "C5"],
-        b: ["G4", "B4", "D5"],
-        n: ["A4", "C5", "E5"],
-        m: ["B4", "D5", "F5"],
-        ",": ["C5", "E5", "G5"],
-        ".": ["D5", "F5", "A5"],
-        "/": ["E5", "G5", "B5"],
-      };
+  </div>
 
-      const active = new Map();
+  <script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-      function play(note, id) {
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
+    const volumeInput = document.getElementById('volume');
+    const waveSelect = document.getElementById('wave');
+    const octaveLabel = document.getElementById('octaveLabel');
 
-        o.type = wave.value;
-        o.frequency.value = freq[note];
+    let baseShift = 0;
 
-        g.gain.value = vol.value;
+    const activeNotes = new Map();
+    const activeCodes = new Map();
 
-        o.connect(g);
-        g.connect(ctx.destination);
+    const NOTES = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'G#', 'A', 'Bb', 'B'];
 
-        o.start();
+    function noteToMidi(note) {
+      const m = note.match(/^([A-G])(#|b)?(\d)$/);
+      const n = m[1] + (m[2] || '');
+      const oct = parseInt(m[3]);
+      return (oct + 1) * 12 + NOTES.indexOf(n);
+    }
 
-        active.set(id, { o, g });
+    function midiToNote(midi) {
+      const note = NOTES[midi % 12];
+      const oct = Math.floor(midi / 12) - 1;
+      return note + oct;
+    }
+
+    function freqFromNote(note) {
+      const midi = noteToMidi(note);
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function shiftNote(note, semitone) {
+      return midiToNote(noteToMidi(note) + semitone);
+    }
+
+    const whiteKeys = [
+      ['a', 'F3'],
+      ['s', 'G3'],
+      ['d', 'A3'],
+      ['f', 'B3'],
+      ['g', 'C4'],
+      ['h', 'D4'],
+      ['j', 'E4'],
+      ['k', 'F4'],
+      ['l', 'G4'],
+      [';', 'A4'],
+      [':', 'B4'],
+      [']', 'C5']
+    ];
+
+    const blackKeys = [
+      ['w', 'F#3'],
+      ['e', 'G#3'],
+      ['r', 'Bb3'],
+      ['y', 'C#4'],
+      ['u', 'Eb4'],
+      ['o', 'F#4'],
+      ['p', 'G#4'],
+      ['@', 'Bb4']
+    ];
+
+    const codeKeys = {
+      z: ['C4', 'E4', 'G4'],
+      x: ['D4', 'F4', 'A4'],
+      c: ['E4', 'G4', 'B4'],
+      v: ['F4', 'A4', 'C5'],
+      b: ['G4', 'B4', 'D5'],
+      n: ['A4', 'C5', 'E5'],
+      m: ['B4', 'D5', 'F5'],
+      ',': ['C5', 'E5', 'G5'],
+      '.': ['D5', 'F5', 'A5'],
+      '/': ['E5', 'G5', 'B5']
+    };
+
+    function currentWhite() {
+      return whiteKeys.map(([k, n]) => [k, shiftNote(n, baseShift)]);
+    }
+
+    function currentBlack() {
+      return blackKeys.map(([k, n]) => [k, shiftNote(n, baseShift)]);
+    }
+
+    function currentCodes() {
+      const out = {};
+      for (const k in codeKeys) {
+        out[k] = codeKeys[k].map(n => shiftNote(n, baseShift));
       }
+      return out;
+    }
 
-      function stop(id) {
-        const a = active.get(id);
-        if (!a) return;
-        a.g.gain.setTargetAtTime(0, ctx.currentTime, 0.02);
-        a.o.stop(ctx.currentTime + 0.05);
-        active.delete(id);
-      }
+    function startNote(id, note) {
+      if (activeNotes.has(id)) return;
 
-      // keyboard
-      document.addEventListener("keydown", (e) => {
-        if (e.repeat) return;
-        const k = e.key;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
 
-        if (chordMap[k]) {
-          chordMap[k].forEach((n) => play(n, k + n));
-        } else if (keyMap[k]) {
-          play(keyMap[k], k);
-        }
+      osc.type = waveSelect.value;
+      osc.frequency.value = freqFromNote(note);
+
+      gain.gain.value = parseFloat(volumeInput.value);
+
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.start();
+
+      activeNotes.set(id, { osc, gain });
+    }
+
+    function stopNote(id) {
+      const data = activeNotes.get(id);
+      if (!data) return;
+
+      data.gain.gain.cancelScheduledValues(audioCtx.currentTime);
+      data.gain.gain.setValueAtTime(data.gain.gain.value, audioCtx.currentTime);
+      data.gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+
+      data.osc.stop(audioCtx.currentTime + 0.03);
+
+      activeNotes.delete(id);
+    }
+
+    function startChord(key, notes) {
+      if (activeCodes.has(key)) return;
+
+      const ids = [];
+
+      notes.forEach((note, i) => {
+        const id = key + '_' + i;
+        ids.push(id);
+        startNote(id, note);
       });
 
-      document.addEventListener("keyup", (e) => {
-        const k = e.key;
+      activeCodes.set(key, ids);
+    }
 
-        if (chordMap[k]) {
-          chordMap[k].forEach((n) => stop(k + n));
-        } else stop(k);
-      });
+    function stopChord(key) {
+      const ids = activeCodes.get(key);
+      if (!ids) return;
 
-      function makeKey(label, note, key) {
-        const b = document.createElement("button");
-        b.textContent = label;
+      ids.forEach(stopNote);
+      activeCodes.delete(key);
+    }
 
-        b.onmousedown = () => play(note, key);
-        b.onmouseup = () => stop(key);
-        b.onmouseleave = () => stop(key);
+    function createButton(text, cls = '') {
+      const b = document.createElement('button');
+      b.textContent = text;
+      if (cls) b.className = cls;
+      return b;
+    }
 
-        b.ontouchstart = (e) => {
+    function render() {
+      const blackRow = document.getElementById('blackRow');
+      const whiteRow = document.getElementById('whiteRow');
+      const codeRow = document.getElementById('codeRow');
+
+      blackRow.innerHTML = '';
+      whiteRow.innerHTML = '';
+      codeRow.innerHTML = '';
+
+      currentBlack().forEach(([key, note]) => {
+        const btn = createButton(note, 'black');
+
+        btn.onmousedown = () => startNote('mouse_' + key, note);
+        btn.onmouseup = () => stopNote('mouse_' + key);
+        btn.onmouseleave = () => stopNote('mouse_' + key);
+        btn.ontouchstart = (e) => {
           e.preventDefault();
-          play(note, key);
+          startNote('mouse_' + key, note);
         };
-        b.ontouchend = () => stop(key);
+        btn.ontouchend = () => stopNote('mouse_' + key);
 
-        return b;
+        blackRow.appendChild(btn);
+      });
+
+      currentWhite().forEach(([key, note]) => {
+        const btn = createButton(note);
+
+        btn.onmousedown = () => startNote('mouse_' + key, note);
+        btn.onmouseup = () => stopNote('mouse_' + key);
+        btn.onmouseleave = () => stopNote('mouse_' + key);
+        btn.ontouchstart = (e) => {
+          e.preventDefault();
+          startNote('mouse_' + key, note);
+        };
+        btn.ontouchend = () => stopNote('mouse_' + key);
+
+        whiteRow.appendChild(btn);
+      });
+
+      const codes = currentCodes();
+
+      Object.keys(codes).forEach(key => {
+        const btn = createButton(codes[key].join(' '));
+
+        btn.onmousedown = () => startChord('mouse_' + key, codes[key]);
+        btn.onmouseup = () => stopChord('mouse_' + key);
+        btn.onmouseleave = () => stopChord('mouse_' + key);
+        btn.ontouchstart = (e) => {
+          e.preventDefault();
+          startChord('mouse_' + key, codes[key]);
+        };
+        btn.ontouchend = () => stopChord('mouse_' + key);
+
+        codeRow.appendChild(btn);
+      });
+
+      octaveLabel.textContent = (baseShift / 2) + 1;
+    }
+
+    render();
+
+    const pressed = new Set();
+
+    window.addEventListener('keydown', async (e) => {
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
       }
 
-      // BLACK KEYS
-      const blackRow = document.getElementById("blackRow");
-      [
-        ["F#3", "w"],
-        ["G#3", "e"],
-        ["Bb3", "r"],
-        ["C#4", "y"],
-        ["Eb4", "u"],
-        ["F#4", "o"],
-        ["G#4", "p"],
-        ["Bb4", "@"],
-      ].forEach(([n, k]) => {
-        blackRow.appendChild(makeKey(n, n, k));
-      });
+      const key = e.key;
 
-      // WHITE KEYS
-      const whiteRow = document.getElementById("whiteRow");
-      [
-        ["F3", "a"],
-        ["G3", "s"],
-        ["A3", "d"],
-        ["B3", "f"],
-        ["C4", "g"],
-        ["D4", "h"],
-        ["E4", "j"],
-        ["F4", "k"],
-        ["G4", "l"],
-        ["A4", ";"],
-        ["B4", ":"],
-        ["C5", "]"],
-      ].forEach(([n, k]) => {
-        whiteRow.appendChild(makeKey(n, n, k));
-      });
+      if (pressed.has(key)) return;
+      pressed.add(key);
 
-      // CHORDS
-      const chordRow = document.getElementById("chordRow");
-      Object.entries(chordMap).forEach(([k, notes]) => {
-        const label = notes.join("-");
-        const b = document.createElement("button");
+      if (/[1-9]/.test(key)) {
+        baseShift = (parseInt(key) - 1) * 2;
+        render();
+        return;
+      }
 
-        b.textContent = label;
+      const white = currentWhite().find(v => v[0] === key);
+      if (white) {
+        startNote('kbd_' + key, white[1]);
+        return;
+      }
 
-        b.onmousedown = () => notes.forEach((n) => play(n, k + n));
-        b.onmouseup = () => notes.forEach((n) => stop(k + n));
-        b.onmouseleave = () => notes.forEach((n) => stop(k + n));
+      const black = currentBlack().find(v => v[0] === key);
+      if (black) {
+        startNote('kbd_' + key, black[1]);
+        return;
+      }
 
-        b.ontouchstart = (e) => {
-          e.preventDefault();
-          notes.forEach((n) => play(n, k + n));
-        };
-        b.ontouchend = () => notes.forEach((n) => stop(k + n));
+      const codes = currentCodes();
+      if (codes[key]) {
+        startChord('kbd_' + key, codes[key]);
+      }
+    });
 
-        chordRow.appendChild(b);
-      });
-    </script>
-  </body>
+    window.addEventListener('keyup', (e) => {
+      const key = e.key;
+
+      pressed.delete(key);
+
+      stopNote('kbd_' + key);
+      stopChord('kbd_' + key);
+    });
+  </script>
+
+</body>
+
 </html>
-
-<!--
-プロンプト
-ブラウザで動くピアノを作ってください。 仕様： - キーボード入力とクリックで音を鳴らす - 長押ししている間、音が鳴り続ける - 音量はinput type rangeで調整 - 音色はselectから選ぶ - 同時発音可能 キー対応： | キー | 音名 | 内容 | | -- | -- | -- | | a | F3 | 白鍵 | | s | G3 | 白鍵 | | d | A3 | 白鍵 | | f | B3 | 白鍵 | | g | C4 | 白鍵 | | h | D4 | 白鍵 | | j | E4 | 白鍵 | | k | F4 | 白鍵 | | l | G4 | 白鍵 | | ; | A4 | 白鍵 | | : | B4 | 白鍵 | | ] | C5 | 白鍵 | | -- | --- | -- | | w | F#3 | 黒鍵 | | e | G#3 | 黒鍵 | | r | Bb3 | 黒鍵 | | y | C#4 | 黒鍵 | | u | Eb4 | 黒鍵 | | o | F#4 | 黒鍵 | | p | G#4 | 黒鍵 | | @ | Bb4 | 黒鍵 | - z〜/ は「3和音コード」 - コード内容は固定すること： z = C4 E4 G4 x = D4 F4 A4 c = E4 G4 B4 v = F4 A4 C5 b = G4 B4 D5 n = A4 C5 E5 m = B4 D5 F5 , = C5 E5 G5 . = D5 F5 A5 / = E5 G5 B5 制約： - キー配列は変更禁止 - HTMLCSSJSはHTMLにまとめて出力 - 完全動作コードのみ出力（説明不要）- 曖昧指示はすべて追加するものとする - ボタンはキーボードの文字ではなく鳴る音のみを記載し、黒鍵は一番上の列、白鍵は二番目の列、コードは一番下の列に配置し、キーボードの配置と同じにすること - 色のCSSは付けないこと 
--->
