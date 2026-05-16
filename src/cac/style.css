@@ -92,6 +92,17 @@ textarea {
     margin: 3% 0;
 }
 
+/* エラーメッセージ */
+#message {
+    color: #ff0066;
+    background-color: #ffff00;
+    font-weight: bold;
+    margin-bottom: 1%;
+    border-radius: 3px;
+    text-align: center;
+    padding: 1%;
+}
+
 /* 表部分 */
 #table,
 tr,
@@ -113,18 +124,34 @@ td {
     background-color: #eee;
 }
 
-td:nth-child(1) input[type="checkbox"] {
-    transform: scale(1.5);
+td:nth-child(1),
+td:nth-child(6) {
+    text-align: center;
 }
+
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5) {
+    text-align: right;
+}
+
+td:nth-child(1) input[type="checkbox"] {
+    transform: scale(2);
+    accent-color: #00aaff;
+}
+
+
 
 td:nth-child(6) button {
     background-color: #00cc00;
     color: #eee;
     border-radius: 50%;
     font-size: 14px;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
+    margin: 3% 0;
 }
+
 
 /* 合計部分 */
 #sum {
