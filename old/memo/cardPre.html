@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>cardPre</title>
+
+<style>
+html,body{
+ margin:0;
+ padding:10px;
+ background:#ccc;
+ font-family:sans-serif;
+ overflow-x:hidden;
+}
+h3{margin:10px 0}
+
+#board{
+ position:relative;
+ width:100%;
+ height:320px;
+ background:#eee;
+ border:2px solid #444;
+ overflow:hidden;
+ touch-action:none;
+}
+
+.card{
+ position:absolute;
+ width:50px;
+ height:70px;
+ border:2px solid #000;
+ background:#fff;
+ box-sizing:border-box;
+ overflow:hidden;
+ user-select:none;
+ touch-action:none;
+ cursor:grab;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ white-space:pre-wrap;
+ font-size:8px;
+ line-height:1.1;
+ padding:2px;
+}
+
+.card.selected{border-color:orange}
+
+.controls{
+ margin-top:10px;
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ gap:6px;
+}
+
+.controls button{
+ width:100%;
+ min-height:44px;
+ font-size:13px;
+ padding:6px 2px;
+}
+
+@media(max-width:700px){
+ .controls button{
+  font-size:11px;
+  min-height:42px;
+  padding:4px 1px;
+ }
+}
+
+#table{
+ position:relative;
+ overflow:hidden;
+}
+
+.sortable-fallback{
+ max-width:100%!important;
+ left:0!important;
+ right:0!important;
+ box-sizing:border-box;
+}
+
+button{
+ background:#dbdbdb;
+ border:1px solid #000;
+ border-radius:4px;
+}
+
+input[type="text"],
+input[type="number"]{
+ width:100%;
+ max-width:100%;
+ box-sizing:border-box;
+ font-size:20px;
+ padding:10px;
+ margin-bottom:10px;
+}
+
+table{
+ width:100%;
+ border-collapse:collapse;
+ background:#fff;
+ margin-top:10px;
+}
+
+th,td{
+ border:1px solid #333;
+ padding:10px;
+ text-align:center;
+ font-size:18px;
+}
+
+td[contenteditable]{background:#f9f9f9}
+
+.handle{
+ cursor:grab;
+ user-select:none;
+ touch-action:pan-y;
+ font-size:26px;
+ display:inline-block;
+}
+
+.total{
+ margin-top:10px;
+ font-size:22px;
+ font-weight:bold;
+}
+
+.modal{
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.4);
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ z-index:9999;
+}
+
+.hidden{display:none}
+
+.modal-content{
+ background:#fff;
+ width:90%;
+ max-width:900px;
+ max-height:80%;
+ border-radius:8px;
+ display:flex;
+ flex-direction:column;
+}
+
+.modal-header{
+ display:flex;
+ justify-content:space-between;
+ padding:10px;
+ border-bottom:1px solid #ccc;
+}
+
+.grid{
+ padding:10px;
+ overflow:auto;
+ display:grid;
+ grid-template-columns:repeat(8,1fr);
+ gap:6px;
+}
+
+.deck-card{
+ width:70/2px;
+ height:98/2px;
+ border:1px solid #000;
+ background:#fff;
+ aspect-ratio:63/88;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+ font-size:10px;
+ padding:2px;
+}
+
+.sortable-ghost{opacity:.4}
+</style>
+</head>
+
+<body>
+
+
+
+<!--
+<div>デッキ名</div>
+<input type="text" id="deckName">
+-->
+
+<div>名</div>
+<input type="text" id="cardName">
+
+<div>枚</div>
+<input type="number" id="cardCount" value="1" min="0" max="4">
+
+<button onclick="addCard()">追加</button>
+<button id="allDeleteBtn">一括削除</button>
+
+<table id="table">
+<thead>
+<tr>
+<th>名</th>
+<th>枚</th>
+<th>削除</th>
+<th>並び替え</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<div class="total">
+合計：
+<span id="totalCount">0</span>
+/ 40
+</div>
+
+
+
+
+<div id="board"></div>
+
+<div class="controls">
+<button onclick="rotateSelected(180)">+180°</button>
+<button onclick="rotateSelected(90)">+90°</button>
+<button onclick="rotateSelected(-90)">-90°</button>
+<button onclick="toggleFace()">表裏</button>
+<button onclick="bringFront()">最前面</button>
+<button onclick="sendBack()">最背面</button>
+<button onclick="deselect()">解除</button>
+<button onclick="confirmShuffle()">シャッフル</button>
+<button onclick="createBoard()">盤面作成</button>
+<button onclick="openDeckList()">一覧</button>
+</div>
+
+<div id="deckModal" class="modal hidden">
+<div class="modal-content">
+
+<div class="modal-header">
+<span>デッキ一覧</span>
+<button onclick="closeDeckList()">✕</button>
+</div>
+
+<div id="deckGrid" class="grid"></div>
+
+</div>
+</div>
+
+<br>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+
+<script>
+const $=id=>document.getElementById(id);
+
+const board=$("board");
+const tableBody=document.querySelector("#table tbody");
+const totalCountEl=$("totalCount");
+const deckGrid=$("deckGrid");
+const deckModal=$("deckModal");
+const cardNameInput=$("cardName");
+const cardCountInput=$("cardCount");
+
+let cards=[];
+let selectedCard=null;
+let dragOffset={x:0,y:0};
+let deckOrder=[];
+
+const normalizeCount=v=>{
+ v=Math.floor(Number(v)||0);
+ return Math.max(0,Math.min(4,v));
+};
+
+const updateCardView=card=>{
+ card.el.textContent=card.isFaceUp?card.text:"";
+ card.el.style.transform=
+ `translate(${card.x}px,${card.y}px) rotate(${card.rotation}deg)`;
+};
+
+function deselect(){
+ if(!selectedCard)return;
+ selectedCard.el.classList.remove("selected");
+ selectedCard=null;
+}
+
+function selectCard(card){
+ deselect();
+ selectedCard=card;
+ card.el.classList.add("selected");
+}
+
+function createCard(text){
+ const el=document.createElement("div");
+
+ el.className="card";
+
+ const card={
+  id:crypto.randomUUID(),
+  el,
+  text,
+  isFaceUp:false,
+  rotation:0,
+  x:20,
+  y:20
+ };
+
+ updateCardView(card);
+
+ el.addEventListener("click",e=>{
+  e.preventDefault();
+  selectCard(card);
+ });
+
+ el.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+
+  selectCard(card);
+
+  dragOffset.x=e.pageX-card.x-board.offsetLeft;
+  dragOffset.y=e.pageY-card.y-board.offsetTop;
+
+  const move=ev=>{
+   if(selectedCard!==card)return;
+
+   card.x=ev.pageX-board.offsetLeft-dragOffset.x;
+   card.y=ev.pageY-board.offsetTop-dragOffset.y;
+
+   updateCardView(card);
+  };
+
+  const up=()=>{
+   document.removeEventListener("pointermove",move);
+   document.removeEventListener("pointerup",up);
+  };
+
+  document.addEventListener("pointermove",move);
+  document.addEventListener("pointerup",up);
+ });
+
+ board.appendChild(el);
+ cards.push(card);
+
+ return card;
+}
+
+function rotateSelected(v){
+ if(!selectedCard)return;
+ selectedCard.rotation+=v;
+ updateCardView(selectedCard);
+}
+
+function toggleFace(){
+ if(!selectedCard)return;
+ selectedCard.isFaceUp=!selectedCard.isFaceUp;
+ updateCardView(selectedCard);
+ bringFront();
+}
+
+function bringFront(){
+ if(selectedCard)board.appendChild(selectedCard.el);
+}
+
+function sendBack(){
+ if(selectedCard)board.prepend(selectedCard.el);
+}
+
+function shuffleCards(){
+ for(let i=cards.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [cards[i],cards[j]]=[cards[j],cards[i]];
+ }
+
+ cards.forEach(c=>board.appendChild(c.el));
+
+ deselect();
+}
+
+function confirmShuffle(){
+ if(confirm("シャッフルしますか？"))shuffleCards();
+}
+
+function openDeckList(){
+ deckGrid.innerHTML="";
+
+ deckOrder.forEach(({name,count})=>{
+  for(let i=0;i<count;i++){
+   const div=document.createElement("div");
+   div.className="deck-card";
+   div.textContent=name;
+   deckGrid.appendChild(div);
+  }
+ });
+
+ deckModal.classList.remove("hidden");
+}
+
+function closeDeckList(){
+ deckModal.classList.add("hidden");
+}
+
+function getDeck(){
+ return [...tableBody.rows].map(row=>({
+  name:row.cells[0].textContent.trim(),
+  count:normalizeCount(row.cells[1].textContent)
+ }));
+}
+
+function updateTotal(){
+ totalCountEl.textContent=
+ getDeck().reduce((a,c)=>a+c.count,0);
+}
+
+function createRow(name,count){
+ const row=tableBody.insertRow();
+
+ const nameCell=row.insertCell();
+ nameCell.textContent=name;
+ nameCell.contentEditable=true;
+
+ const countCell=row.insertCell();
+ countCell.textContent=normalizeCount(count);
+ countCell.contentEditable=true;
+
+ countCell.addEventListener("blur",()=>{
+  countCell.textContent=
+  normalizeCount(countCell.textContent);
+
+  updateTotal();
+ });
+
+ const del=row.insertCell();
+ del.innerHTML=`<button>削除</button>`;
+
+ del.firstChild.onclick=()=>{
+  row.remove();
+  updateTotal();
+ };
+
+ const handle=row.insertCell();
+ handle.innerHTML=`<span class="handle">☰</span>`;
+}
+
+function addCard(){
+ const name=cardNameInput.value.trim();
+ const count=normalizeCount(cardCountInput.value);
+
+ if(!name)return;
+
+ for(const row of tableBody.rows){
+
+  if(row.cells[0].textContent.trim()!==name)continue;
+
+  const current=
+  normalizeCount(row.cells[1].textContent);
+
+  if(current+count>4){
+   alert("同じカードは4枚まで");
+   return;
+  }
+
+  row.cells[1].textContent=current+count;
+
+  updateTotal();
+  return;
+ }
+
+ createRow(name,count);
+
+ updateTotal();
+
+ cardNameInput.value="";
+ cardCountInput.value=1;
+}
+
+function createBoard(){
+
+ board.innerHTML="";
+ cards=[];
+ deckOrder=[];
+
+ getDeck().forEach(entry=>{
+
+  deckOrder.push(entry);
+
+  for(let i=0;i<entry.count;i++){
+
+   const card=createCard(entry.name);
+
+   card.x=300;
+   card.y=110;
+
+   updateCardView(card);
+  }
+ });
+
+ shuffleCards();
+}
+
+$("allDeleteBtn").addEventListener("click",()=>{
+
+ if(!confirm("すべて削除しますか？"))return;
+
+ tableBody.innerHTML="";
+ board.innerHTML="";
+ cards=[];
+ deckOrder=[];
+
+ updateTotal();
+});
+
+new Sortable(tableBody,{
+ animation:150,
+ handle:".handle",
+ direction:"vertical",
+ forceFallback:true,
+ fallbackOnBody:false,
+ swapThreshold:.65,
+ touchStartThreshold:10,
+ fallbackTolerance:3,
+ scroll:true,
+ scrollSensitivity:30,
+ scrollSpeed:10,
+ ghostClass:"sortable-ghost",
+
+ onMove(evt){
+  const d=evt.dragged;
+
+  if(d){
+   d.style.left="0";
+   d.style.right="0";
+   d.style.transform="translateX(0)";
+  }
+
+  return true;
+ },
+
+ onStart(evt){
+  document.body.style.overflowX="hidden";
+  evt.item.style.width=
+  evt.item.offsetWidth+"px";
+ },
+
+ onEnd(evt){
+  document.body.style.overflowX="hidden";
+
+  Object.assign(evt.item.style,{
+   left:"",
+   right:"",
+   transform:"",
+   width:""
+  });
+ }
+});
+
+updateTotal();
+</script>
+
+</body>
+</html>
