@@ -108,5 +108,10 @@
     "title": "markdownPreview",
     "url": "https://highmetal.github.io/old/markdownPreview/index.html",
     "tags": ["md", ""]
+  },
+  {
+    "title": "cardPre",
+    "url": "https://highmetal.github.io/old/memo/cardPre.html",
+    "tags": ["card", "cardpre", ""]
   }
 ]
