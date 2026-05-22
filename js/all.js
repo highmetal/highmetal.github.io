@@ -42,6 +42,13 @@ window.addEventListener("DOMContentLoaded", function () {
   searchInput.className = "header-search-input";
   searchInput.id = "headerSearchInput";
 
+  searchInput.addEventListener("keydown", function () {
+    if (event.key === "Enter") {
+      const word = headerSearchInput.value;
+      window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
+    }
+  });
+
   const searchButton = document.createElement("button");
   searchButton.className = "search-button";
   searchButton.id = "searchButton";
@@ -75,7 +82,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
   search2Span.appendChild(searchLink);
 
-/*
+  /*
   //自己紹介リンク
   const aboutMeSpan = document.createElement("span");
   aboutMeSpan.className = "header-link";
