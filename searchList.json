@@ -113,5 +113,10 @@
     "title": "cardPre",
     "url": "https://highmetal.github.io/old/memo/cardPre.html",
     "tags": ["card", "cardpre", ""]
+  },
+  {
+    "title": "作曲",
+    "url": "https://highmetal.github.io/old/memo/createSongs.html",
+    "tags": ["作曲", "createsongs", "ai"]
   }
 ]
