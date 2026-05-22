@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", function () {
   searchInput.className = "header-search-input";
   searchInput.id = "headerSearchInput";
 
-  searchInput.addEventListener("keydown", function () {
+  searchInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       const word = headerSearchInput.value;
       window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
