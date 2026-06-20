@@ -45,7 +45,7 @@ window.addEventListener("DOMContentLoaded", function () {
   searchInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       const word = headerSearchInput.value;
-      window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
+      window.location.href = `/appList.html?q=${encodeURIComponent(word)}`;
     }
   });
 
