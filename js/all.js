@@ -74,13 +74,13 @@ window.addEventListener("DOMContentLoaded", function () {
   topSpan.appendChild(topLink);
 
   //一覧のリンク
-  const search2Span = document.createElement("span");
-  search2Span.className = "header-link";
-  const searchLink = document.createElement("a");
-  searchLink.href = "/search.html";
-  searchLink.textContent = "一覧";
+  const appListSpan = document.createElement("span");
+  appListSpan.className = "header-link";
+  const appListLink = document.createElement("a");
+  appListLink.href = "/appList.html";
+  appListLink.textContent = "アプリ一覧";
 
-  search2Span.appendChild(searchLink);
+  appListSpan.appendChild(appListLink);
 
   /*
   //自己紹介リンク
@@ -103,7 +103,7 @@ window.addEventListener("DOMContentLoaded", function () {
   aboutSpan.appendChild(aboutLink);
 
   headerLinks.appendChild(topSpan);
-  headerLinks.appendChild(search2Span);
+  headerLinks.appendChild(appListSpan);
   //headerLinks.appendChild(aboutMeSpan);
   headerLinks.appendChild(aboutSpan);
 
@@ -158,7 +158,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const menuUl = document.createElement("ul");
   const menuList = [
     ["トップ", "/"],
-    ["アプリ一覧", "/search.html"],
+    ["アプリ一覧", "/appList.html"],
     //["自己紹介", "/src/aboutMe/index.html"],
     ["このサイトについて", "/about.html"],
   ];
@@ -191,7 +191,7 @@ window.addEventListener("DOMContentLoaded", function () {
     headerSearchButton.addEventListener("click", function () {
       //検索文字列を取得
       const word = headerSearchInput.value;
-      window.location.href = `/search.html?q=${encodeURIComponent(word)}`;
+      window.location.href = `/appList.html?q=${encodeURIComponent(word)}`;
     });
   }
 
