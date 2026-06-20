@@ -13,7 +13,7 @@ let word = parms.get("q") || "";
 searchInput.value = word;
 
 //検索結果のjson読み込み
-fetch("searchList.json")
+fetch("appList.json")
   .then(function (response) {
     return response.json();
   })
