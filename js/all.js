@@ -73,12 +73,12 @@ window.addEventListener("DOMContentLoaded", function () {
 
   topSpan.appendChild(topLink);
 
-  //検索のリンク
+  //一覧のリンク
   const search2Span = document.createElement("span");
   search2Span.className = "header-link";
   const searchLink = document.createElement("a");
   searchLink.href = "/search.html";
-  searchLink.textContent = "検索";
+  searchLink.textContent = "一覧";
 
   search2Span.appendChild(searchLink);
 
@@ -158,7 +158,7 @@ window.addEventListener("DOMContentLoaded", function () {
   const menuUl = document.createElement("ul");
   const menuList = [
     ["トップ", "/"],
-    ["サイト内検索", "/search.html"],
+    ["アプリ一覧", "/search.html"],
     //["自己紹介", "/src/aboutMe/index.html"],
     ["このサイトについて", "/about.html"],
   ];
