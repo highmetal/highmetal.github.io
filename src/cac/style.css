@@ -253,3 +253,9 @@ td:nth-child(6) button {
     display: flex;
     justify-content: space-between;
 }
+
+@media (max-width: 768px) {
+    td:nth-child(1) input[type="checkbox"] {
+        transform: scale(1.3);
+    }
+}
