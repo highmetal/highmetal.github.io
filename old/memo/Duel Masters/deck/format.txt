@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>デッキ --</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <h1 id="deckName">について</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li><a href="../index.html">トップページ</a></li>
+            <li><a href="../deck.html">デッキ一覧</a></li>
+            <li></li>
+        </ol>
+    </nav>
+    <div id="image-button">
+        <img src="" width="65%" alt="デッキリストコスト順" id="deckImage" />
+
+        <div class="topButtons">
+            <button id="deckChange" class="buttonStyle">枚数順にする</button>
+
+            <button id="deckCopy" class="buttonStyle">
+                <img src="../image/favicon.ico" width="18px" height="18px" />Deck
+                makerにコピー
+            </button>
+        </div>
+    </div>
+    <p></p>
+    <section>
+        <h2>立ち回り</h2>
+    </section>
+    <section id="cardComment">
+        <h2>採用カード<del>とコメント（適当）</del></h2>
+
+        <div id="index">
+            <h4>目次</h4>
+            <ul>
+                <h3 id="1cost">1コスト</h3>
+                <ul>
+                    <li>《》枚</li>
+                    <div class="card-ol">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="cost ao">1</div>
+                                <div class="name"></div>
+                            </div>
+
+                            <div class="type ao">呪文</div>
+
+                            <div class="effect">
+                                <p></p>
+                                <br />
+                            </div>
+                            <div class="card-bottom-number ao">1</div>
+                        </div>
+                    </div>
+                    <p></p>
+                </ul>
+                <br />
+    </section>
+    <a href="../card/「祝え!この物語の終幕を!」.html">《「祝え!この物語の終幕を!」》カード説明へ戻る</a>
+    <a href="../index.html">トップページへ戻る</a>
+
+    <button id="topBack">トップへ戻る</button>
+</body>

@@ -1,0 +1,365 @@
+@charset "utf-8";
+
+body {
+    font-family: "メイリオ", sans-serif;
+    font-size: 18px;
+}
+
+img {
+    display: block;
+    margin: 0 auto;
+    border: solid 1px black;
+    max-width: 700px;
+}
+
+.move {
+    font-size: 16px;
+    padding: 2%;
+}
+
+#image-button {
+    display: flex;
+}
+
+.buttonStyle {
+    color: rgb(255, 255, 255);
+    border-radius: 5%;
+    width: 200px;
+    height: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    margin: 0 auto;
+}
+
+.buttonStyle:hover {
+    transform: scale(1.01);
+}
+
+#deckChange {
+    background-color: rgb(255, 93, 93);
+}
+
+#deckCopy {
+    background-color: rgb(55, 55, 55);
+    display: flex;
+    align-items: center;
+}
+
+.topButtons {
+    display: grid;
+}
+
+#cardComment p {
+    font-size: 14px;
+}
+
+#cardComment h3 {
+    border-bottom: solid 0.5px #c1c1c1;
+}
+
+#cardComment img {
+    width: 50%;
+    border: none;
+    padding: 3%;
+}
+
+#topBack {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    visibility: hidden;
+    color: rgb(255, 255, 255);
+    background-color: rgb(119, 205, 73);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+#index {
+    background-color: rgb(230, 230, 230);
+    padding: 1%;
+}
+
+#index a {
+    color: #000;
+}
+
+#index a:hover {
+    color: #878787;
+}
+
+#index ul {
+    list-style-type: circle;
+}
+
+.breadcrumb {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.breadcrumb li {
+    white-space: nowrap;
+}
+
+.breadcrumb li::after {
+    content: ">";
+    margin-left: 8px;
+}
+
+.breadcrumb li:last-child::after {
+    content: "";
+}
+
+/* カード全体 */
+.card {
+    margin-left: 2%;
+    width: 260px;
+    aspect-ratio: 63/88;
+    background: white;
+    border: 3px solid black;
+    border-radius: 12px;
+    padding: 8px;
+    position: relative;
+}
+
+/* 上部 */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cost {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(45deg,
+            #439cd8 0%,
+            #439cd8 50%,
+            #c3122f 50%,
+            #c3122f 100%);
+    color: white;
+    border: 2px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.vividro {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+/* ビビッドロー文字 */
+.vividro-title {
+    background-color: #000;
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    font-weight: bold;
+    letter-spacing: -0.05em;
+}
+
+/* 三角共通 */
+.vividro-arrow {
+    width: 0;
+    height: 0;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+}
+
+/* 左三角 */
+.vividro-arrow.left {
+    border-right: 8px solid black;
+}
+
+/* 右三角 */
+.vividro-arrow.right {
+    border-left: 8px solid black;
+}
+
+/* コスト */
+.vividro-cost {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(45deg,
+            #439cd8 0%,
+            #439cd8 50%,
+            #c3122f 50%,
+            #c3122f 100%);
+    color: white;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+.name {
+    font-weight: bold;
+    font-size: 13px;
+}
+
+/* 文明 */
+.race {
+    text-align: center;
+    font-size: 10px;
+    margin: 4px 0;
+}
+
+/* 画像*/
+/*.image {
+        height: 40%;
+        background: aqua;
+        border: 2px solid black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        margin-bottom: 6px;
+      } */
+
+/* 種類 */
+.type {
+    width: 32%;
+    padding: 2px 8px;
+    font-size: 10px;
+    color: rgb(0, 0, 0);
+    background: linear-gradient(45deg,
+            #439cd8 0%,
+            #439cd8 50%,
+            #c3122f 50%,
+            #c3122f 100%);
+    border: 1px solid black;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 効果 */
+.effect {
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.card-bottom-number {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffffff;
+    background: linear-gradient(45deg,
+            #c3122f 0%,
+            #c3122f 50%,
+            #439cd8 50%,
+            #439cd8 100%);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid black;
+}
+
+.card-name {
+    font-weight: bold;
+}
+
+.power {
+    position: absolute;
+    bottom: 4px;
+}
+
+.aosiro {
+    background: linear-gradient(45deg,
+            #ffff2d 0%,
+            #ffff2d 50%,
+            #439cd8 50%,
+            #439cd8 100%);
+}
+
+.ao {
+    background: linear-gradient(45deg,
+            #439cd8 0%,
+            #439cd8 50%,
+            #439cd8 50%,
+            #439cd8 100%);
+}
+
+.aka {
+    background: linear-gradient(45deg,
+            #c3122f 0%,
+            #c3122f 50%,
+            #c3122f 50%,
+            #c3122f 100%);
+}
+
+@media (max-width: 768px) {
+    img {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 20px;
+        border-bottom: solid #c1c1c1;
+    }
+
+    .topButtons {
+        display: flex;
+    }
+
+    #deckCopy img {
+        display: none;
+    }
+
+    #image-button {
+        display: block;
+    }
+
+    .buttonStyle {
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+    }
+
+    #deckChange {
+        display: block;
+        margin: 0 auto;
+    }
+
+    #cardComment img {
+        width: 90%;
+    }
+
+    #index {
+        padding: 0%;
+    }
+
+    .breadcrumb {
+        font-size: 12px;
+        gap: 4px;
+    }
+
+    .breadcrumb li::after {
+        margin-left: 4px;
+    }
+}
