@@ -118,5 +118,10 @@
     "title": "作曲",
     "url": "https://highmetal.github.io/old/memo/createSongs.html",
     "tags": ["作曲", "createsongs", "ai"]
+  },
+  {
+    "title": "文字列比較",
+    "url": "https://highmetal.github.io/old/memo/textComparison.html",
+    "tags": ["文字列比較", ""]
   }
 ]
