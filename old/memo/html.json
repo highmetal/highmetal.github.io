@@ -1,0 +1,37 @@
+{
+  "html5": {
+    "prefix": "!hi",
+    "body": [
+      "<!DOCTYPE html>",
+      "<html lang=\"ja\">",
+      "<head>",
+      "    <meta charset=\"UTF-8\">",
+      "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">",
+      "    <title>${1:Document}</title>",
+      "",
+      "    <!-- icon -->",
+      "    <link rel=\"apple-touch-icon\" href=\"\">",
+      "    <link rel=\"icon\" href=\"\">",
+      "    <!-- CSS -->",
+      "    <link rel=\"stylesheet\" href=\"\">",
+      "",
+      "    <style>",
+      "        html {",
+      "            font-family: \"Zen Maru Gothic\", sans-serif;",
+      "        }",
+      "    </style>",
+      "</head>",
+      "<body>",
+      "    $0",
+      "    <script></script>",
+      "</body>",
+      "</html>"
+    ],
+    "description": "HTMLテンプレート"
+  },
+  "angleBracketsJP": {
+    "prefix": "ca",
+    "body": ["《$1》"],
+    "description": "全角山括弧（カーソル内に）"
+  }
+}
