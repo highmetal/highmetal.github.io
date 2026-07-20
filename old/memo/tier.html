@@ -30,13 +30,18 @@
         color: white;
       }
 
-      .area {
+      .tier-area {
+        border: 1px solid #333;
         flex: 1;
         min-height: 116.3px;
-        border: 1px solid #333;
         display: flex;
         flex-wrap: wrap;
         align-content: flex-start;
+      }
+
+      .area {
+        display: flex;
+        flex-wrap: wrap;
       }
 
       .card {
@@ -51,13 +56,74 @@
         object-fit: cover;
       }
 
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-content {
+        background: #fff;
+        padding: 5px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+      }
+
+      .modal-card-grid {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .modal-card {
+        width: 64px;
+        height: 95px;
+        position: relative;
+      }
+
+      .modal-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .modal-card.selected {
+        opacity: 0.3;
+      }
+
+      #pool-container {
+        position: sticky;
+        bottom: 0;
+        background-color: rgb(213, 213, 213);
+        z-index: 100;
+      }
+
+      #pool-container .area {
+        max-height: 200px;
+        overflow-y: auto;
+        background-color: rgb(213, 213, 213);
+      }
+
       @media (max-width: 600px) {
         .label {
           width: 16px;
           min-width: 16px;
           font-size: 14px;
         }
-        .area {
+        .tier-area {
           min-height: 88.5px;
         }
         .card {
@@ -65,19 +131,37 @@
           height: 83.5px;
           margin: 1px;
         }
+        #pool-container .area {
+          max-height: 100px;
+        }
       }
     </style>
   </head>
 
   <body>
     <input type="file" id="upload" accept="image/*" multiple />
-    <button id="reset">全削除</button>
-    <button id="capture">リストのダウンロード</button>
+    <button id="open-manage-modal">特定カード削除</button>
+    <button id="reset">全カード削除</button>
+    <button id="capture">画像ダウンロード</button>
+    <button id="export-json">JSON出力</button>
+    <button id="import-json-btn">JSON読み込み</button>
+    <input type="file" id="import-json" accept=".json" style="display: none" />
     <div id="target">
       <div id="tiers"></div>
     </div>
-    <h3>未配置</h3>
-    <div id="pool" class="area"></div>
+    <div id="pool-container">
+      <h3>未配置</h3>
+      <div id="pool" class="area"></div>
+    </div>
+    <div id="manage-modal" class="modal-overlay" style="display: none">
+      <div class="modal-content">
+        <div class="modal-actions">
+          <button id="modal-cancel" class="btn-cancel">やめる</button>
+          <button id="modal-save" class="btn-save">選択したカードを削除</button>
+        </div>
+        <div id="modal-card-list" class="modal-card-grid"></div>
+      </div>
+    </div>
 
     <script>
       let db;
@@ -119,7 +203,7 @@
           label.style.background = color;
           label.textContent = name;
           const area = document.createElement("div");
-          area.className = "area";
+          area.className = "tier-area";
           area.id = "tier-" + name;
           row.append(label, area);
           tiers.append(row);
@@ -226,6 +310,198 @@
             link.click();
           });
         }
+      });
+
+      let isDeleteMode = false;
+
+      // モーダル要素
+      const modal = document.getElementById("manage-modal");
+      const openModalBtn = document.getElementById("open-manage-modal");
+      const cancelBtn = document.getElementById("modal-cancel");
+      const saveBtn = document.getElementById("modal-save");
+      const modalCardList = document.getElementById("modal-card-list");
+
+      // 削除候補のIDを保持するSet
+      let pendingDeleteIds = new Set();
+
+      //モーダルを開く
+      openModalBtn.addEventListener("click", () => {
+        pendingDeleteIds.clear();
+        modalCardList.innerHTML = "";
+
+        // IndexedDBから全カード画像を取得してモーダル内に表示
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+
+        store.getAll().onsuccess = (e) => {
+          const images = e.target.result;
+
+          if (images.length === 0) {
+            modalCardList.innerHTML =
+              "<p style='color:#888; margin:auto;'>カードがありません</p>";
+          } else {
+            images.forEach((data) => {
+              const item = document.createElement("div");
+              item.className = "modal-card";
+              item.dataset.id = data.id;
+
+              const img = document.createElement("img");
+              img.src = URL.createObjectURL(data.blob);
+
+              item.appendChild(img);
+
+              // クリックで選択状態
+              item.addEventListener("click", () => {
+                const id = Number(data.id);
+                if (pendingDeleteIds.has(id)) {
+                  pendingDeleteIds.delete(id);
+                  item.classList.remove("selected");
+                } else {
+                  pendingDeleteIds.add(id);
+                  item.classList.add("selected");
+                }
+              });
+
+              modalCardList.appendChild(item);
+            });
+          }
+
+          modal.style.display = "flex";
+        };
+      });
+
+      //変更せずにモーダルを閉じる
+      cancelBtn.addEventListener("click", () => {
+        pendingDeleteIds.clear();
+        modal.style.display = "none";
+      });
+
+      //選択されたカードをデータベースからまとめて削除
+      saveBtn.addEventListener("click", () => {
+        if (pendingDeleteIds.size === 0) {
+          modal.style.display = "none";
+          return;
+        }
+
+        if (confirm(`${pendingDeleteIds.size}枚のカードを削除しますか？`)) {
+          const tx = db.transaction("images", "readwrite");
+          const store = tx.objectStore("images");
+
+          // 選択されたIDをひとつずつ削除
+          pendingDeleteIds.forEach((id) => {
+            store.delete(id);
+          });
+
+          tx.oncomplete = () => {
+            modal.style.display = "none";
+            pendingDeleteIds.clear();
+            // Tier表の表示を最新状態に更新
+            loadImages();
+          };
+        }
+      });
+
+      // BlobをBase64文字列に変換するヘルパー関数
+      const blobToBase64 = (blob) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+
+      // Base64文字列をBlobオブジェクトに復元するヘルパー関数
+      const base64ToBlob = (base64) => {
+        const parts = base64.split(";base64,");
+        const contentType = parts[0].split(":")[1];
+        const raw = window.atob(parts[1]);
+        const uInt8Array = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; ++i) {
+          uInt8Array[i] = raw.charCodeAt(i);
+        }
+        return new Blob([uInt8Array], { type: contentType });
+      };
+
+      // データをJSON化してダウンロード
+      document
+        .getElementById("export-json")
+        .addEventListener("click", async () => {
+          const tx = db.transaction("images", "readonly");
+          const store = tx.objectStore("images");
+
+          store.getAll().onsuccess = async (e) => {
+            const items = e.target.result;
+            if (items.length === 0) {
+              alert("出力するデータがありません");
+              return;
+            }
+
+            // 画像Blobを全てBase64形式の文字列に変換
+            const exportData = await Promise.all(
+              items.map(async (item) => ({
+                area: item.area,
+                order: item.order,
+                base64: await blobToBase64(item.blob),
+              })),
+            );
+
+            // JSONファイルとして保存
+            const jsonString = JSON.stringify(exportData);
+            const jsonBlob = new Blob([jsonString], {
+              type: "application/json",
+            });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(jsonBlob);
+            link.download = `tier_data_${Date.now()}.json`;
+            link.click();
+          };
+        });
+
+      // データ読み込み
+      const importInput = document.getElementById("import-json");
+      document
+        .getElementById("import-json-btn")
+        .addEventListener("click", () => {
+          importInput.click();
+        });
+
+      importInput.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          try {
+            const importedData = JSON.parse(event.target.result);
+            if (!Array.isArray(importedData)) {
+              alert("無効なファイル形式です");
+              return;
+            }
+
+            if (confirm("本当？")) {
+              const tx = db.transaction("images", "readwrite");
+              const store = tx.objectStore("images");
+
+              importedData.forEach((item) => {
+                const blob = base64ToBlob(item.base64);
+                store.add({
+                  blob: blob,
+                  area: item.area,
+                  order: item.order,
+                });
+              });
+
+              tx.oncomplete = () => {
+                loadImages();
+                importInput.value = "";
+              };
+            }
+          } catch (err) {
+            alert("JSONファイルの読み込みに失敗しました");
+            console.error(err);
+          }
+        };
+        reader.readAsText(file);
       });
     </script>
   </body>
