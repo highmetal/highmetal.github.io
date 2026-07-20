@@ -1,225 +1,232 @@
 <!doctype html>
 <html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tier表</title>
 
-  <title>Tier表</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-  <style>
-    html {
-      font-family: "Zen MaruGothic";
-    }
-
-    .tier {
-      display: flex;
-      width: 100%;
-    }
-
-    .label {
-      width: 40px;
-      min-width: 40px;
-      font-size: 22px;
-      font-weight: bold;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-    }
-
-    .area {
-      flex: 1;
-      min-height: 150px;
-      border: 1px solid #333;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-    }
-
-    .card {
-      width: 130px;
-      height: 130px;
-      margin: 2px;
-    }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    @media (max-width: 600px) {
-      .card {
-        width: 65px;
-        height: 65px;
+    <style>
+      html {
+        font-family: "Zen MaruGothic";
       }
-    }
-  </style>
-</head>
 
-<body>
-  <input type="file" id="upload" accept="image/*" multiple />
-  <button id="reset">全削除</button>
-  <button id="capture">リストのダウンロード</button>
-  <div id="target">
-    <div id="tiers"></div>
-  </div>
-  <h3>未配置</h3>
-  <div id="pool" class="area"></div>
+      .tier {
+        display: flex;
+        width: 100%;
+      }
 
-  <script>
-    let db;
+      .label {
+        width: 40px;
+        min-width: 40px;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
 
-    // IndexedDB
-    const request = indexedDB.open("TierDB", 1);
+      .area {
+        flex: 1;
+        min-height: 116.3px;
+        border: 1px solid #333;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: flex-start;
+      }
 
-    request.onupgradeneeded = (e) => {
-      db = e.target.result;
-      db.createObjectStore("images", {
-        keyPath: "id",
-        autoIncrement: true,
-      });
-    };
+      .card {
+        width: 75.3px;
+        height: 111.3px;
+        margin: 2px;
+      }
 
-    request.onsuccess = (e) => {
-      db = e.target.result;
-      createTiers();
-      loadImages();
-    };
+      .card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
 
-    // Tier作成
-    const tierData = [
-      ["S", "#ff4d4d"],
-      ["A", "#ff9933"],
-      ["B", "#ffd633"],
-      ["C", "#66cc66"],
-      ["D", "#66a3ff"],
-    ];
+      @media (max-width: 600px) {
+        .label {
+          width: 16px;
+          min-width: 16px;
+          font-size: 14px;
+        }
+        .area {
+          min-height: 88.5px;
+        }
+        .card {
+          width: 56.5px;
+          height: 83.5px;
+          margin: 1px;
+        }
+      }
+    </style>
+  </head>
 
-    function createTiers() {
-      const tiers = document.getElementById("tiers");
+  <body>
+    <input type="file" id="upload" accept="image/*" multiple />
+    <button id="reset">全削除</button>
+    <button id="capture">リストのダウンロード</button>
+    <div id="target">
+      <div id="tiers"></div>
+    </div>
+    <h3>未配置</h3>
+    <div id="pool" class="area"></div>
 
-      tierData.forEach(([name, color]) => {
-        const row = document.createElement("div");
-        row.className = "tier";
-        const label = document.createElement("div");
-        label.className = "label";
-        label.style.background = color;
-        label.textContent = name;
-        const area = document.createElement("div");
-        area.className = "area";
-        area.id = "tier-" + name;
-        row.append(label, area);
-        tiers.append(row);
-        setupSort(area);
-      });
-      setupSort(document.getElementById("pool"));
-    }
+    <script>
+      let db;
 
-    // Sortable設定
-    function setupSort(area) {
-      new Sortable(area, {
-        animation: 10,
-        group: "tier",
-        ghostClass: "sortable-ghost",
-        onEnd() {
-          saveOrder();
-        },
-      });
-    }
+      // IndexedDB
+      const request = indexedDB.open("TierDB", 1);
 
-    // アップロード
-    document.getElementById("upload").addEventListener("change", (e) => {
-      [...e.target.files].forEach((file) => {
-        const tx = db.transaction("images", "readwrite");
-        tx.objectStore("images").add({
-          blob: file,
-          area: "pool",
-          order: Date.now(),
+      request.onupgradeneeded = (e) => {
+        db = e.target.result;
+        db.createObjectStore("images", {
+          keyPath: "id",
+          autoIncrement: true,
         });
-
-        tx.oncomplete = () => {
-          loadImages();
-        };
-      });
-    });
-
-    // カード作成
-    function createCard(data) {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.dataset.id = data.id;
-      const img = document.createElement("img");
-      img.src = URL.createObjectURL(data.blob);
-      card.append(img);
-      return card;
-    }
-
-    // 読み込み
-    function loadImages() {
-      const tx = db.transaction("images", "readonly");
-      const store = tx.objectStore("images");
-      store.getAll().onsuccess = (e) => {
-        document.querySelectorAll(".card").forEach((c) => c.remove());
-        e.target.result
-          .sort((a, b) => a.order - b.order)
-          .forEach((data) => {
-            const area = document.getElementById(data.area);
-            if (area) {
-              area.append(createCard(data));
-            }
-          });
       };
-    }
 
-    // 並び順保存
-    function saveOrder() {
-      const tx = db.transaction("images", "readwrite");
-      const store = tx.objectStore("images");
-      document.querySelectorAll(".area").forEach((area) => {
-        [...area.children].forEach((card, index) => {
-          const req = store.get(Number(card.dataset.id));
+      request.onsuccess = (e) => {
+        db = e.target.result;
+        createTiers();
+        loadImages();
+      };
 
-          req.onsuccess = () => {
-            const data = req.result;
-            data.area = area.id;
-            data.order = index;
-            store.put(data);
+      // Tier作成
+      const tierData = [
+        ["S", "#ff4d4d"],
+        ["A", "#ff9933"],
+        ["B", "#ffd633"],
+        ["C", "#66cc66"],
+        ["D", "#66a3ff"],
+      ];
+
+      function createTiers() {
+        const tiers = document.getElementById("tiers");
+
+        tierData.forEach(([name, color]) => {
+          const row = document.createElement("div");
+          row.className = "tier";
+          const label = document.createElement("div");
+          label.className = "label";
+          label.style.background = color;
+          label.textContent = name;
+          const area = document.createElement("div");
+          area.className = "area";
+          area.id = "tier-" + name;
+          row.append(label, area);
+          tiers.append(row);
+          setupSort(area);
+        });
+        setupSort(document.getElementById("pool"));
+      }
+
+      // Sortable設定
+      function setupSort(area) {
+        new Sortable(area, {
+          animation: 10,
+          group: "tier",
+          ghostClass: "sortable-ghost",
+          onEnd() {
+            saveOrder();
+          },
+        });
+      }
+
+      // アップロード
+      document.getElementById("upload").addEventListener("change", (e) => {
+        [...e.target.files].forEach((file) => {
+          const tx = db.transaction("images", "readwrite");
+          tx.objectStore("images").add({
+            blob: file,
+            area: "pool",
+            order: Date.now(),
+          });
+
+          tx.oncomplete = () => {
+            loadImages();
           };
         });
       });
-    }
 
-    // 全削除
-    document.getElementById("reset").addEventListener("click", () => {
-      if (confirm("本当？")) {
-        const tx = db.transaction("images", "readwrite");
-        tx.objectStore("images").clear();
-        tx.oncomplete = () => {
-          location.reload();
+      // カード作成
+      function createCard(data) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.dataset.id = data.id;
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(data.blob);
+        card.append(img);
+        return card;
+      }
+
+      // 読み込み
+      function loadImages() {
+        const tx = db.transaction("images", "readonly");
+        const store = tx.objectStore("images");
+        store.getAll().onsuccess = (e) => {
+          document.querySelectorAll(".card").forEach((c) => c.remove());
+          e.target.result
+            .sort((a, b) => a.order - b.order)
+            .forEach((data) => {
+              const area = document.getElementById(data.area);
+              if (area) {
+                area.append(createCard(data));
+              }
+            });
         };
       }
-    });
 
-    //スクリーンショット
-    capture.addEventListener("click", () => {
-      if (window.confirm(`リストをダウンロードしますか？(png)`)) {
-        const fileName =
-          prompt("ファイル名を入力してください", "list") || "list";
-        const target = document.getElementById("target");
-        html2canvas(target).then((canvas) => {
-          const link = document.createElement("a");
-          link.download = `${fileName}.png`;
-          link.href = canvas.toDataURL();
-          link.click();
+      // 並び順保存
+      function saveOrder() {
+        const tx = db.transaction("images", "readwrite");
+        const store = tx.objectStore("images");
+        document.querySelectorAll(".area").forEach((area) => {
+          [...area.children].forEach((card, index) => {
+            const req = store.get(Number(card.dataset.id));
+
+            req.onsuccess = () => {
+              const data = req.result;
+              data.area = area.id;
+              data.order = index;
+              store.put(data);
+            };
+          });
         });
       }
-    });
-  </script>
-</body>
 
+      // 全削除
+      document.getElementById("reset").addEventListener("click", () => {
+        if (confirm("本当？")) {
+          const tx = db.transaction("images", "readwrite");
+          tx.objectStore("images").clear();
+          tx.oncomplete = () => {
+            location.reload();
+          };
+        }
+      });
+
+      //スクリーンショット
+      capture.addEventListener("click", () => {
+        if (window.confirm(`リストをダウンロードしますか？(png)`)) {
+          const fileName =
+            prompt("ファイル名を入力してください", "list") || "list";
+          const target = document.getElementById("target");
+          html2canvas(target).then((canvas) => {
+            const link = document.createElement("a");
+            link.download = `${fileName}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+          });
+        }
+      });
+    </script>
+  </body>
 </html>
