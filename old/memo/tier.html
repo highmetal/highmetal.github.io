@@ -475,6 +475,7 @@
             const importedData = JSON.parse(event.target.result);
             if (!Array.isArray(importedData)) {
               alert("無効なファイル形式です");
+              importInput.value = "";
               return;
             }
 
@@ -482,22 +483,65 @@
               const tx = db.transaction("images", "readwrite");
               const store = tx.objectStore("images");
 
-              importedData.forEach((item) => {
-                const blob = base64ToBlob(item.base64);
-                store.add({
-                  blob: blob,
-                  area: item.area,
-                  order: item.order,
-                });
-              });
+              let isHandled = false;
 
+              const handleError = (message) => {
+                if (isHandled) return;
+                isHandled = true;
+
+                try {
+                  tx.abort();
+                } catch (e) {
+                  // すでに中断されている場合は無視
+                }
+
+                alert(message);
+                importInput.value = "";
+              };
+
+              // トランザクション全体のエラーハンドラ
+              tx.onerror = (err) => {
+                if (err.target.error && err.target.error.name === "AbortError")
+                  return;
+                handleError("データの取り込みに失敗しました。");
+              };
+
+              // 成功時の処理
               tx.oncomplete = () => {
+                if (isHandled) return;
                 loadImages();
                 importInput.value = "";
               };
+
+              // データの登録ループ
+              for (const item of importedData) {
+                if (isHandled) break; // エラーが起きていたら処理を中断
+
+                try {
+                  if (!item.base64) throw new Error("画像データがありません");
+                  const blob = base64ToBlob(item.base64);
+                  const req = store.add({
+                    blob: blob,
+                    area: item.area,
+                    order: item.order,
+                  });
+
+                  // 個別の追加失敗を検知
+                  req.onerror = (reqErr) => {
+                    reqErr.stopPropagation(); // tx.onerrorへのバブリングを防止
+                    handleError("データの追加に失敗しました。");
+                  };
+                } catch (conversionErr) {
+                  handleError("ファイルの変換に失敗しました。");
+                  break;
+                }
+              }
+            } else {
+              importInput.value = "";
             }
           } catch (err) {
             alert("JSONファイルの読み込みに失敗しました");
+            importInput.value = "";
             console.error(err);
           }
         };
