@@ -203,7 +203,7 @@
           label.style.background = color;
           label.textContent = name;
           const area = document.createElement("div");
-          area.className = "tier-area";
+          area.className = "tier-area area"; // ★「area」クラスを追加してsaveOrderが取得できるように変更
           area.id = "tier-" + name;
           row.append(label, area);
           tiers.append(row);
@@ -268,21 +268,30 @@
         };
       }
 
-      // 並び順保存
+      // 並び順保存（確実な非同期保存処理）
       function saveOrder() {
-        const tx = db.transaction("images", "readwrite");
-        const store = tx.objectStore("images");
-        document.querySelectorAll(".area").forEach((area) => {
-          [...area.children].forEach((card, index) => {
-            const req = store.get(Number(card.dataset.id));
+        return new Promise((resolve, reject) => {
+          const tx = db.transaction("images", "readwrite");
+          const store = tx.objectStore("images");
 
-            req.onsuccess = () => {
-              const data = req.result;
-              data.area = area.id;
-              data.order = index;
-              store.put(data);
-            };
+          document.querySelectorAll(".area").forEach((area) => {
+            [...area.children].forEach((card, index) => {
+              const id = Number(card.dataset.id);
+              const req = store.get(id);
+
+              req.onsuccess = () => {
+                const data = req.result;
+                if (data) {
+                  data.area = area.id;
+                  data.order = index;
+                  store.put(data);
+                }
+              };
+            });
           });
+
+          tx.oncomplete = () => resolve();
+          tx.onerror = (e) => reject(e);
         });
       }
 
@@ -312,8 +321,6 @@
         }
       });
 
-      let isDeleteMode = false;
-
       // モーダル要素
       const modal = document.getElementById("manage-modal");
       const openModalBtn = document.getElementById("open-manage-modal");
@@ -321,7 +328,6 @@
       const saveBtn = document.getElementById("modal-save");
       const modalCardList = document.getElementById("modal-card-list");
 
-      // 削除候補のIDを保持するSet
       let pendingDeleteIds = new Set();
 
       //モーダルを開く
@@ -329,7 +335,6 @@
         pendingDeleteIds.clear();
         modalCardList.innerHTML = "";
 
-        // IndexedDBから全カード画像を取得してモーダル内に表示
         const tx = db.transaction("images", "readonly");
         const store = tx.objectStore("images");
 
@@ -350,7 +355,6 @@
 
               item.appendChild(img);
 
-              // クリックで選択状態
               item.addEventListener("click", () => {
                 const id = Number(data.id);
                 if (pendingDeleteIds.has(id)) {
@@ -370,13 +374,11 @@
         };
       });
 
-      //変更せずにモーダルを閉じる
       cancelBtn.addEventListener("click", () => {
         pendingDeleteIds.clear();
         modal.style.display = "none";
       });
 
-      //選択されたカードをデータベースからまとめて削除
       saveBtn.addEventListener("click", () => {
         if (pendingDeleteIds.size === 0) {
           modal.style.display = "none";
@@ -387,7 +389,6 @@
           const tx = db.transaction("images", "readwrite");
           const store = tx.objectStore("images");
 
-          // 選択されたIDをひとつずつ削除
           pendingDeleteIds.forEach((id) => {
             store.delete(id);
           });
@@ -395,13 +396,12 @@
           tx.oncomplete = () => {
             modal.style.display = "none";
             pendingDeleteIds.clear();
-            // Tier表の表示を最新状態に更新
             loadImages();
           };
         }
       });
 
-      // BlobをBase64文字列に変換するヘルパー関数
+      // Helper関数
       const blobToBase64 = (blob) =>
         new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -410,7 +410,6 @@
           reader.readAsDataURL(blob);
         });
 
-      // Base64文字列をBlobオブジェクトに復元するヘルパー関数
       const base64ToBlob = (base64) => {
         const parts = base64.split(";base64,");
         const contentType = parts[0].split(":")[1];
@@ -426,6 +425,9 @@
       document
         .getElementById("export-json")
         .addEventListener("click", async () => {
+          // ★JSON出力前に画面の最新並び順を確実にDBへ反映する
+          await saveOrder();
+
           const tx = db.transaction("images", "readonly");
           const store = tx.objectStore("images");
 
@@ -436,7 +438,6 @@
               return;
             }
 
-            // 画像Blobを全てBase64形式の文字列に変換
             const exportData = await Promise.all(
               items.map(async (item) => ({
                 area: item.area,
@@ -445,7 +446,6 @@
               })),
             );
 
-            // JSONファイルとして保存
             const jsonString = JSON.stringify(exportData);
             const jsonBlob = new Blob([jsonString], {
               type: "application/json",
@@ -491,31 +491,26 @@
 
                 try {
                   tx.abort();
-                } catch (e) {
-                  // すでに中断されている場合は無視
-                }
+                } catch (e) {}
 
                 alert(message);
                 importInput.value = "";
               };
 
-              // トランザクション全体のエラーハンドラ
               tx.onerror = (err) => {
                 if (err.target.error && err.target.error.name === "AbortError")
                   return;
                 handleError("データの取り込みに失敗しました。");
               };
 
-              // 成功時の処理
               tx.oncomplete = () => {
                 if (isHandled) return;
                 loadImages();
                 importInput.value = "";
               };
 
-              // データの登録ループ
               for (const item of importedData) {
-                if (isHandled) break; // エラーが起きていたら処理を中断
+                if (isHandled) break;
 
                 try {
                   if (!item.base64) throw new Error("画像データがありません");
@@ -526,9 +521,8 @@
                     order: item.order,
                   });
 
-                  // 個別の追加失敗を検知
                   req.onerror = (reqErr) => {
-                    reqErr.stopPropagation(); // tx.onerrorへのバブリングを防止
+                    reqErr.stopPropagation();
                     handleError("データの追加に失敗しました。");
                   };
                 } catch (conversionErr) {
