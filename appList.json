@@ -37,14 +37,8 @@
       "check list",
       "check",
       "list",
-      "to",
-      "do",
-      "to do",
       "todo",
       "shop",
-      "shopping",
-      "shoppinglist",
-      "shopping list",
       "self",
       ""
     ]
@@ -80,12 +74,7 @@
     "tags": ["自己紹介", "highmetal", "self", ""]
   },
   {
-    "title": "旧トップページ",
-    "url": "https://highmetal.github.io/old",
-    "tags": ["old", "highmetal"]
-  },
-  {
-    "title": "デュエマメモ",
+    "title": "dm",
     "url": "https://highmetal.github.io/old/memo/Duel%20Masters/index.html",
     "tags": ["dm"]
   },
@@ -108,11 +97,6 @@
     "title": "markdownPreview",
     "url": "https://highmetal.github.io/old/markdownPreview/index.html",
     "tags": ["md", ""]
-  },
-  {
-    "title": "cardPre",
-    "url": "https://highmetal.github.io/old/memo/cardPre.html",
-    "tags": ["card", "cardpre", ""]
   },
   {
     "title": "作曲",
