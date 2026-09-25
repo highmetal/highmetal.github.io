@@ -3,7 +3,8 @@
 html {
     font-family: "Zen Maru Gothic", sans-serif;
     text-align: center;
-    background-color: #eee
+    background-color: #eee;
+    touch-action: manipulation;
 }
 
 form {
