@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>買い物メモ</title>
+    <link rel="apple-touch-icon" href="buyMemo.png" />
+    <link rel="icon" href="/image/high.ico" />
+    <!-- リセットCSS -->
+    <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>買い物メモ</h1>
+
+    <form onsubmit="return false;">
+        <input type="text" id=input-item placeholder="ここに追加したい商品名を入力..." /><br>
+        <button type="button" id="paste-button">クリップボードから追加</button>
+        <button type="button" id="all-delete-button">オールデリート</button>
+        <button type="submit" id="add-button">追加</button>
+    </form>
+
+    <!-- 追加される要素のリスト部分 -->
+    <div id="list"></div>
+
+    <footer id="footer"></footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
