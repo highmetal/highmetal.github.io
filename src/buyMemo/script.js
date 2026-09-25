@@ -71,6 +71,7 @@ function createItemData(itemName) {
     check: false,
     null: false,
   };
+  lists = JSON.parse(localStorage.getItem("buymemo") || "[]");
   //配列に追加
   lists.push(item);
   //localStorageに追加
