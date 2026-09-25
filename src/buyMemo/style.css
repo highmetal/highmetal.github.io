@@ -1,0 +1,108 @@
+@charset "utf-8";
+
+html {
+    font-family: "Zen Maru Gothic", sans-serif;
+    text-align: center;
+    background-color: #eee
+}
+
+form {
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+/* 商品名入力欄 */
+#input-item {
+    border: solid 1px #333;
+    border-radius: 5px;
+    font-size: 20px;
+    width: 320px;
+    margin-bottom: 5px;
+}
+
+/* クリップボードから追加ボタン */
+#paste-button {
+    border: solid 1px #333;
+    border-radius: 5px;
+    background-color: #007aff;
+    color: #eee;
+    padding: 6px;
+}
+
+/* オールデリートボタン */
+#all-delete-button {
+    border: solid 1px #333;
+    border-radius: 5px;
+    background-color: #C10C48;
+    color: #eee;
+    padding: 6px;
+}
+
+/* 追加ボタン */
+#add-button {
+    display: none;
+}
+
+/* 要素 */
+.items {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    margin-bottom: 5px;
+    height: 33px;
+}
+
+/* チェックボックス */
+.new-checkbox {
+    margin-left: 3.5px;
+    transform: scale(1.45);
+}
+
+/* 除外（除）ボタン */
+.null-button {
+    border-radius: 8px;
+    background-color: #b59c00;
+    color: #eee;
+    width: 24px;
+    margin-right: -3px;
+    font-weight: 600;
+}
+
+/* 追加した要素名の入力欄 */
+.new-item-input {
+    border: solid 0.75px #333;
+    font-size: 12px;
+    width: 265px;
+    height: 24px;
+}
+
+/* 削除（×）ボタン */
+.delete-button {
+    border-radius: 8px;
+    width: 24px;
+    background-color: #C10C48;
+    color: #eee;
+    margin-left: -3px;
+    font-weight: bold;
+}
+
+/* 除外された時のやつ */
+.null {
+    background-color: #afafaf;
+    border-radius: 8px;
+    filter: grayscale(1);
+    width: fit-content;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    background-color: #eee;
+    z-index: 1;
+    width: 100%;
+    text-align: center;
+    border-top: 1.5px solid #333;
+    border-bottom: 1.5px solid #333;
+    color: #333;
+}

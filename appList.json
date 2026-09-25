@@ -25,6 +25,11 @@
     ]
   },
   {
+    "title": "買い物メモ",
+    "url": "https://highmetal.github.io/src/buyMemo/buyMemo.html",
+    "tags": ["買い物メモ", "buymemo", "self",""]
+  },
+  {
     "title": "文字数カウンター",
     "url": "https://highmetal.github.io/src/textCounter",
     "tags": ["文字数カウンター", "カウンター", ""]
