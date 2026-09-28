@@ -7,11 +7,12 @@ html {
     touch-action: manipulation;
 }
 
-main {
+body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
 }
+
 
 form {
     gap: 5px;
