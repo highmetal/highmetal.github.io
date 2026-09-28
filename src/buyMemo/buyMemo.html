@@ -13,19 +13,21 @@
 </head>
 
 <body>
-    <h1>買い物メモ</h1>
+    <main>
+        <h1>買い物メモ</h1>
 
-    <form onsubmit="return false;">
-        <input type="text" id=input-item placeholder="ここに追加したい商品名を入力..." /><br>
-        <button type="button" id="paste-button">クリップボードから追加</button>
-        <button type="button" id="all-delete-button">オールデリート</button>
-        <button type="submit" id="add-button">追加</button>
-    </form>
+        <form onsubmit="return false;">
+            <input type="text" id=input-item placeholder="ここに追加したい商品名を入力..." /><br>
+            <button type="button" id="paste-button">クリップボードから追加</button>
+            <button type="button" id="all-delete-button">オールデリート</button>
+            <button type="submit" id="add-button">追加</button>
+        </form>
 
-    <!-- 追加される要素のリスト部分 -->
-    <div id="list"></div>
-
-    <div id="count"></div>
+        <!-- 追加される要素のリスト部分 -->
+        <div id="list"></div>
+        <!-- 要素数カウント部分 -->
+        <div id="count"></div>
+    </main>
 
     <footer id="footer"></footer>
 
