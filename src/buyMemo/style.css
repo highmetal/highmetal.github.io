@@ -57,6 +57,7 @@ form {
 .new-checkbox {
     margin-left: 3.5px;
     transform: scale(1.45);
+    accent-color: #4ed13f;
 }
 
 /* 除外（除）ボタン */
@@ -93,6 +94,17 @@ form {
     border-radius: 8px;
     filter: grayscale(1);
     width: fit-content;
+}
+
+/* 除外したチェックボックスはチェック不可 */
+.null input[type="checkbox"] {
+    pointer-events: none;
+}
+
+#count {
+    color: tomato;
+    font-weight: 600;
+    font-size: 14px;
 }
 
 footer {

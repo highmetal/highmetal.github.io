@@ -19,6 +19,7 @@ let lists = [];
 window.addEventListener("load", function () {
   lists = JSON.parse(localStorage.getItem("buymemo") || "[]");
   renderList();
+  renderCount();
 });
 
 //クリップボードから追加ボタンが押された時の処理
@@ -31,6 +32,7 @@ pasteButton.addEventListener("click", function () {
     lines.forEach(function (e) {
       createItemData(e);
     });
+    renderCount();
   });
 });
 
@@ -49,6 +51,7 @@ allDelete.addEventListener("click", function () {
   localStorage.removeItem("buymemo");
   lists = null;
   renderList();
+  renderCount();
 });
 
 //追加ボタンを押した時の処理（追加ボタンは非表示でフォームのEnterから実行される）
@@ -61,6 +64,7 @@ addButton.addEventListener("click", function () {
   createItemData(inputText.value);
   //入力欄初期化
   inputText.value = "";
+  renderCount();
 });
 
 //データとして要素を作成する関数
@@ -94,6 +98,8 @@ function addItem(uuid, isCheck, isNull, itemName) {
   newCheckbox.addEventListener("click", function () {
     //localStorage側更新
     changeList(uuid, "check", newCheckbox.checked);
+    //カウント表示変更
+    renderCount();
   });
   //isCheckがtrueなら初期値チェックつける
   if (isCheck) {
@@ -108,8 +114,14 @@ function addItem(uuid, isCheck, isNull, itemName) {
   newNullButton.addEventListener("click", function () {
     //クラス名をトグルで変更
     newDiv.classList.toggle("null");
+    //チェック済みは外す
+    newCheckbox.checked = false;
+    //チェック部分更新
+    changeList(uuid, "check", newCheckbox.checked);
     //localStorage側更新
     changeList(uuid, "null", newDiv.classList.contains("null"));
+    //カウント表示変更
+    renderCount();
   });
   //isNullがtrueなら要素に初期値で除外クラスをつける
   if (isNull) {
@@ -148,6 +160,7 @@ function addItem(uuid, isCheck, isNull, itemName) {
     localStorage.setItem("buymemo", JSON.stringify(newlist));
     //変更後の新しいlistに上書き
     lists = newlist;
+    renderCount();
   });
 
   //各要素を親要素に追加
@@ -183,6 +196,51 @@ function renderList() {
   lists.forEach(function (e) {
     addItem(e.uuid, e.check, e.null, e.name);
   });
+}
+
+//個数表示
+const count = document.getElementById("count");
+
+const icount = document.getElementById("i");
+const ccount = document.getElementById("c");
+const ncount = document.getElementById("n");
+
+//要素数、チェック数、除外数を計算し残り数を表示する関数
+function renderCount() {
+  //各要素を全て取得
+  const itemElements = document.querySelectorAll(".items");
+  const checkElements = document.querySelectorAll(".new-checkbox");
+  const nullElements = document.querySelectorAll(".null");
+
+  //各要素数を取得
+  let itemCount = itemElements.length;
+  let checkCount = 0;
+  checkElements.forEach((_, index) => {
+    if (checkElements[index].checked) checkCount++;
+  });
+  let nullCount = nullElements.length;
+
+  //残り数を表示
+  let text = "";
+  text = `残り：${itemCount - checkCount}/${itemCount}`;
+  count.style.color = "tomato";
+
+  //除外された場合は除外分を減らす
+  if (nullCount > 0) {
+    text = `残り：${itemCount - checkCount - nullCount}/${itemCount - nullCount}（除外中：${nullCount}）`;
+  }
+
+  //除外を除いて全てチェックされたとき
+  if (checkCount === itemCount || checkCount === itemCount - nullCount) {
+    text = `すべてチェック済み`;
+    count.style.color = "forestgreen";
+  }
+  //要素がないとき
+  if (itemCount === 0) {
+    text = "";
+  }
+  //表示
+  count.textContent = text;
 }
 
 //フッター作成
