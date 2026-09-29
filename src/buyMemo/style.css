@@ -41,7 +41,7 @@ form {
 #all-delete-button {
     border: solid 1px #333;
     border-radius: 5px;
-    background-color: #C10C48;
+    background-color: #A92525;
     color: #eee;
     padding: 6px;
 }
@@ -89,7 +89,7 @@ form {
 .delete-button {
     border-radius: 8px;
     width: 24px;
-    background-color: #C10C48;
+    background-color: #A92525;
     color: #eee;
     margin-left: -3px;
     font-weight: bold;
