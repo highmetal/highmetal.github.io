@@ -24,7 +24,7 @@ form {
     border: solid 1px #333;
     border-radius: 5px;
     font-size: 20px;
-    width: 320px;
+    width: 377px;
     margin-bottom: 5px;
 }
 
@@ -42,6 +42,15 @@ form {
     border: solid 1px #333;
     border-radius: 5px;
     background-color: #A92525;
+    color: #eee;
+    padding: 6px;
+}
+
+/* LINE共有ボタン */
+#line-shere-button {
+    border: solid 1px #333;
+    border-radius: 5px;
+    background-color: #06C755;
     color: #eee;
     padding: 6px;
 }

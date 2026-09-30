@@ -243,6 +243,19 @@ function renderCount() {
   count.textContent = text;
 }
 
+//lineにリストの内容を共有する
+const lineShereButton = document.getElementById("line-shere-button");
+
+lineShereButton.addEventListener("click", function () {
+  let shereText = "";
+  // 要素の名前を改行で分けて取得
+  lists.forEach(function (e) {
+    shereText += e.name + "%0A";
+  });
+  //LINEの共有
+  window.open(`https://line.me/R/share?text=${shereText}`, "_blank", "nopener");
+});
+
 //フッター作成
 const footer = document.getElementById("footer");
 //コピーライト記号部分
