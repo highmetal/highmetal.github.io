@@ -252,6 +252,8 @@ lineShereButton.addEventListener("click", function () {
   lists.forEach(function (e) {
     shereText += e.name + "%0A";
   });
+  //最後の改行を消す修正（仮）
+  shereText = shereText.replace(/%0A$/, "");
   //LINEの共有
   window.open(`https://line.me/R/share?text=${shereText}`, "_blank", "nopener");
 });
