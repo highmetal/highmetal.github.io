@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MusicCodeCreate</title>
+  <style>
+    :root {
+      --bg: #f6f4ef;
+      --surface: #ffffff;
+      --surface-alt: #efece4;
+      --ink: #1f2421;
+      --muted: #656d66;
+      --accent: #2b6cb0;
+      --accent-soft: #eBF4ff;
+      --active-bar: #d97706;
+      --active-bar-soft: #fef3c7;
+      --border: #dcd7cc;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    /* 上部固定ドック */
+    .sticky-dock {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .dock-inner {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .top-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-weight: 600;
+      transition: transform 0.06s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button.playing {
+      background: #c53030;
+      border-color: #c53030;
+      color: #fff;
+    }
+
+    select {
+      font: inherit;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .mode-switch {
+      margin-left: auto;
+      display: inline-flex;
+      background: var(--surface-alt);
+      padding: 2px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .mode-switch button {
+      border: none;
+      background: transparent;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .mode-switch button.active {
+      background: var(--surface);
+      color: var(--accent);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    /* 4x2 グリッド（基本モード） */
+    .chord-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .chord-btn {
+      padding: 10px 6px;
+      font-size: 1rem;
+      text-align: center;
+      background: var(--surface);
+      border-color: var(--border);
+    }
+
+    .chord-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .chord-btn.rest-btn {
+      color: var(--muted);
+      background: var(--surface-alt);
+      font-size: 0.9rem;
+    }
+
+    /* カスタムモード */
+    .custom-panel {
+      display: none;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+    }
+
+    .custom-panel.open {
+      display: block;
+    }
+
+    .custom-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 8px;
+    }
+
+    .custom-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .chip-btn {
+      padding: 6px 9px;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+
+    .chip-btn.selected {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .custom-apply-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border);
+    }
+
+    .custom-preview {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    /* メイン領域 */
+    .main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 14px 12px 48px;
+    }
+
+    .sub-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 0.9rem;
+    }
+
+    .bpm-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="range"] {
+      width: 110px;
+      accent-color: var(--accent);
+    }
+
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .presets button {
+      font-size: 0.8rem;
+      padding: 5px 9px;
+      background: var(--surface);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 520px) {
+      .timeline {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .bar-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      cursor: pointer;
+      position: relative;
+      min-height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .bar-card.selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .bar-card.now-playing {
+      border-color: var(--active-bar);
+      background: var(--active-bar-soft);
+    }
+
+    .bar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .bar-num {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .oct-group {
+      display: inline-flex;
+      gap: 3px;
+    }
+
+    .oct-btn {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .oct-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .bar-chord {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .voicing-box {
+      border-top: 1px dashed var(--border);
+      padding-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .voicing-top-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .voicing-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .note-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .note-move-btn {
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      padding: 3px 7px;
+      min-width: 24px;
+      min-height: 24px;
+      font-size: 0.85rem;
+      line-height: 1;
+      color: var(--ink);
+      border-radius: 5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .note-move-btn:hover {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .bar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header class="sticky-dock">
+    <div class="dock-inner">
+      <div class="top-controls">
+        <button id="playBtn" class="primary">▶ ループ再生</button>
+        <select id="timbreSelect" aria-label="ピアノ音色">
+          <option value="piano">グランドピアノ</option>
+          <option value="epiano">エレクトリックピアノ</option>
+        </select>
+        <div class="mode-switch" role="tablist">
+          <button id="tabBasic" class="active" type="button">基本</button>
+          <button id="tabCustom" type="button">カスタム</button>
+        </div>
+      </div>
+
+      <div id="basicPalette" class="chord-grid"></div>
+
+      <div id="customPanel" class="custom-panel">
+        <div id="rootChips" class="custom-row"></div>
+        <div id="typeChips" class="custom-row"></div>
+        <div class="custom-apply-bar">
+          <span id="customPreview" class="custom-preview">C</span>
+          <button id="applyCustomBtn" class="primary" type="button">このコードを小節に入れる</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="sub-bar">
+      <div class="bpm-control">
+        <label for="bpmRange">BPM: <strong id="bpmValue">120</strong></label>
+        <input id="bpmRange" type="range" min="50" max="200" value="120" />
+      </div>
+      <label style="display:flex;align-items:center;gap:5px;cursor:pointer;">
+        <input id="autoAdvance" type="checkbox" checked />
+        自動で次の小節へ進む
+      </label>
+      <div class="bar-actions">
+        <button id="addBarBtn" type="button">＋ 1小節</button>
+        <button id="removeBarBtn" type="button">－ 1小節</button>
+      </div>
+    </div>
+
+    <div class="presets">
+      <button type="button" data-preset="royal">王道進行</button>
+      <button type="button" data-preset="canon">カノン進行</button>
+      <button type="button" data-preset="komuro">小室進行</button>
+      <button type="button" data-preset="justTwoFive">ツーファイブ風</button>
+    </div>
+
+    <div id="timeline" class="timeline"></div>
+    <p class="hint">小節をタップして選択すると、構成音の順番（← / → で並び替え、右端が一番上の音）を調整できます。「-1」「+1」でオクターブを上下でき、もう一度押すと通常に戻ります。変更内容は自動保存されます。</p>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "piano_chord_maker_autosave_v1";
+    const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const CHORD_TYPES = [
+      { id: "maj", suffix: "", buttonLabel: "Major (普通)", intervals: [0, 4, 7] },
+      { id: "m", suffix: "m", buttonLabel: "m", intervals: [0, 3, 7] },
+      { id: "7", suffix: "7", buttonLabel: "7", intervals: [0, 4, 7, 10] },
+      { id: "maj7", suffix: "maj7", buttonLabel: "maj7", intervals: [0, 4, 7, 11] },
+      { id: "m7", suffix: "m7", buttonLabel: "m7", intervals: [0, 3, 7, 10] },
+      { id: "sus4", suffix: "sus4", buttonLabel: "sus4", intervals: [0, 5, 7] },
+      { id: "7sus4", suffix: "7sus4", buttonLabel: "7sus4", intervals: [0, 5, 7, 10] },
+      { id: "add9", suffix: "add9", buttonLabel: "add9", intervals: [0, 4, 7, 14] },
+      { id: "dim", suffix: "dim", buttonLabel: "dim", intervals: [0, 3, 6] },
+      { id: "aug", suffix: "aug", buttonLabel: "aug", intervals: [0, 4, 8] },
+      { id: "6", suffix: "6", buttonLabel: "6", intervals: [0, 4, 7, 9] }
+    ];
+
+    const BASE_CHORDS = ["C", "Dm", "Em", "F", "G", "Am", "Bdim"];
+
+    function getDefaultOrder(chordStr) {
+      if (!chordStr || chordStr === "REST") return [];
+      const match = chordStr.match(/^([A-G]#?)(.*)$/);
+      if (!match) return [];
+      const rootIdx = NOTES.indexOf(match[1]);
+      if (rootIdx === -1) return [];
+      const suffix = match[2];
+      const foundType = CHORD_TYPES.find((t) => t.suffix === suffix) || CHORD_TYPES[0];
+      return foundType.intervals.map((iv) => iv);
+    }
+
+    function intervalToNoteName(rootIdx, interval) {
+      const midi = 60 + rootIdx + interval;
+      return NOTES[((midi % 12) + 12) % 12];
+    }
+
+    // octaveOffset: -1, 0, 1
+    function makeBar(chordStr, octaveOffset = 0) {
+      return {
+        chord: chordStr,
+        octaveOffset,
+        order: getDefaultOrder(chordStr)
+      };
+    }
+
+    function getDefaultState() {
+      return {
+        timbre: "piano",
+        bpm: 120,
+        selectedBar: 0,
+        playingBar: -1,
+        isPlaying: false,
+        bars: [
+          makeBar("F", 0),
+          makeBar("G", 0),
+          makeBar("Em", 0),
+          makeBar("Am", 0)
+        ],
+        customRoot: 0,
+        customType: "maj"
+      };
+    }
+
+    function saveState() {
+      try {
+        const payload = {
+          timbre: state.timbre,
+          bpm: state.bpm,
+          selectedBar: state.selectedBar,
+          bars: state.bars,
+          customRoot: state.customRoot,
+          customType: state.customType
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (err) {
+        // ストレージ利用不可環境では無視
+      }
+    }
+
+    function loadState() {
+      const fallback = getDefaultState();
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return fallback;
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.bars) || parsed.bars.length === 0) {
+          return fallback;
+        }
+        const restoredBars = parsed.bars.map((b) => {
+          const chord = typeof b.chord === "string" ? b.chord : "F";
+          const defaultOrder = getDefaultOrder(chord);
+          const validOrder =
+            Array.isArray(b.order) && b.order.length === defaultOrder.length
+              ? b.order
+              : defaultOrder;
+          let octaveOffset = 0;
+          if (b.octaveOffset === -1 || b.octaveOffset === 1 || b.octaveOffset === 0) {
+            octaveOffset = b.octaveOffset;
+          } else if (b.octaveUp) {
+            octaveOffset = 1;
+          }
+          return {
+            chord,
+            octaveOffset,
+            order: validOrder
+          };
+        });
+        const bpm = Number(parsed.bpm);
+        const validBpm = Number.isFinite(bpm) && bpm >= 50 && bpm <= 200 ? bpm : fallback.bpm;
+        const selBar =
+          Number.isInteger(parsed.selectedBar) &&
+          parsed.selectedBar >= 0 &&
+          parsed.selectedBar < restoredBars.length
+            ? parsed.selectedBar
+            : 0;
+
+        return {
+          ...fallback,
+          timbre: parsed.timbre === "epiano" ? "epiano" : "piano",
+          bpm: validBpm,
+          selectedBar: selBar,
+          bars: restoredBars,
+          customRoot:
+            Number.isInteger(parsed.customRoot) && parsed.customRoot >= 0 && parsed.customRoot < 12
+              ? parsed.customRoot
+              : 0,
+          customType: CHORD_TYPES.some((t) => t.id === parsed.customType) ? parsed.customType : "maj"
+        };
+      } catch (err) {
+        return fallback;
+      }
+    }
+
+    let state = loadState();
+    let audioCtx = null;
+    let reverbNode = null;
+    let loopTimer = null;
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        reverbNode = createWarmReverb(audioCtx);
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+    }
+
+    function createWarmReverb(ctx) {
+      const rate = ctx.sampleRate;
+      const length = Math.floor(rate * 1.6);
+      const impulse = ctx.createBuffer(2, length, rate);
+      for (let ch = 0; ch < 2; ch++) {
+        const data = impulse.getChannelData(ch);
+        for (let i = 0; i < length; i++) {
+          const decay = Math.pow(1 - i / length, 2.6);
+          data[i] = (Math.random() * 2 - 1) * decay * 0.28;
+        }
+      }
+      const convolver = ctx.createConvolver();
+      convolver.buffer = impulse;
+      const wetGain = ctx.createGain();
+      wetGain.gain.value = 0.28;
+      convolver.connect(wetGain);
+      wetGain.connect(ctx.destination);
+      return convolver;
+    }
+
+    function midiToFreq(midi) {
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function parseChordToMidis(chordStr, octaveOffset = 0, customOrder = null) {
+      if (!chordStr || chordStr === "REST") return [];
+      const match = chordStr.match(/^([A-G]#?)(.*)$/);
+      if (!match) return [];
+      const rootIdx = NOTES.indexOf(match[1]);
+      if (rootIdx === -1) return [];
+      const suffix = match[2];
+      const foundType = CHORD_TYPES.find((t) => t.suffix === suffix) || CHORD_TYPES[0];
+      const octaveShift = (octaveOffset || 0) * 12;
+      const bassMidi = 48 + rootIdx + octaveShift;
+      const baseMidi = 60 + rootIdx + octaveShift;
+
+      const intervals =
+        Array.isArray(customOrder) && customOrder.length === foundType.intervals.length
+          ? customOrder
+          : foundType.intervals;
+
+      let prevMidi = baseMidi - 1;
+      const chordMidis = intervals.map((iv) => {
+        let m = baseMidi + ((iv % 12) + 12) % 12;
+        if (iv >= 12) m += Math.floor(iv / 12) * 12;
+        while (m <= prevMidi) {
+          m += 12;
+        }
+        prevMidi = m;
+        return m;
+      });
+
+      return [bassMidi, ...chordMidis];
+    }
+
+    function playBarSound(barObj, durationSec = 1.6) {
+      if (!barObj || !barObj.chord || barObj.chord === "REST") return;
+      const midis = parseChordToMidis(barObj.chord, barObj.octaveOffset, barObj.order);
+      if (!midis.length) return;
+      ensureAudio();
+
+      const now = audioCtx.currentTime;
+      const isEpiano = state.timbre === "epiano";
+
+      midis.forEach((midi, idx) => {
+        const start = now + idx * 0.022;
+        const freq = midiToFreq(midi);
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.Q.value = isEpiano ? 1.2 : 0.7;
+        const startCutoff = isEpiano ? 2200 : Math.min(3400, freq * 6.5);
+        const endCutoff = isEpiano ? 420 : Math.max(280, freq * 1.4);
+        filter.frequency.setValueAtTime(startCutoff, start);
+        filter.frequency.exponentialRampToValueAtTime(endCutoff, start + durationSec * 0.85);
+
+        const env = audioCtx.createGain();
+        const isBass = idx === 0;
+        const peak = (isBass ? 0.16 : 0.13) / Math.sqrt(midis.length * 0.7);
+        env.gain.setValueAtTime(0.0001, start);
+        env.gain.linearRampToValueAtTime(peak, start + 0.012);
+        env.gain.exponentialRampToValueAtTime(peak * 0.45, start + 0.28);
+        env.gain.exponentialRampToValueAtTime(0.0001, start + durationSec);
+
+        const partials = isEpiano
+          ? [
+              { ratio: 1, type: "sine", gain: 1.0 },
+              { ratio: 2, type: "sine", gain: 0.35 },
+              { ratio: 3, type: "triangle", gain: 0.12 }
+            ]
+          : [
+              { ratio: 1, type: "triangle", gain: 0.85 },
+              { ratio: 2, type: "sine", gain: 0.32 },
+              { ratio: 3, type: "sine", gain: 0.14 },
+              { ratio: 4, type: "sine", gain: 0.06 }
+            ];
+
+        partials.forEach((p) => {
+          const osc = audioCtx.createOscillator();
+          const pGain = audioCtx.createGain();
+          osc.type = p.type;
+          osc.frequency.setValueAtTime(freq * p.ratio, start);
+          if (p.ratio > 1) {
+            osc.detune.setValueAtTime((idx % 2 === 0 ? 1 : -1) * 2.5, start);
+          }
+          pGain.gain.setValueAtTime(p.gain, start);
+          osc.connect(pGain);
+          pGain.connect(filter);
+          osc.start(start);
+          osc.stop(start + durationSec + 0.08);
+        });
+
+        filter.connect(env);
+        env.connect(audioCtx.destination);
+        if (reverbNode) {
+          env.connect(reverbNode);
+        }
+      });
+    }
+
+    function playPreviewChord(chordStr, durationSec = 1.3, octaveOffset = 0) {
+      playBarSound(makeBar(chordStr, octaveOffset), durationSec);
+    }
+
+    function setChordAtSelected(chordStr) {
+      const currentOctaveOffset = state.bars[state.selectedBar].octaveOffset || 0;
+      const nextBar = makeBar(chordStr, currentOctaveOffset);
+      playBarSound(nextBar, 1.4);
+      state.bars[state.selectedBar] = nextBar;
+      if (document.getElementById("autoAdvance").checked && !state.isPlaying) {
+        state.selectedBar = (state.selectedBar + 1) % state.bars.length;
+      }
+      saveState();
+      renderTimeline();
+    }
+
+    function renderBasicPalette() {
+      const container = document.getElementById("basicPalette");
+      container.innerHTML = "";
+      BASE_CHORDS.forEach((c) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chord-btn";
+        btn.textContent = c;
+        btn.addEventListener("click", () => setChordAtSelected(c));
+        container.appendChild(btn);
+      });
+
+      const restBtn = document.createElement("button");
+      restBtn.type = "button";
+      restBtn.className = "chord-btn rest-btn";
+      restBtn.textContent = "休み";
+      restBtn.addEventListener("click", () => setChordAtSelected("REST"));
+      container.appendChild(restBtn);
+    }
+
+    function renderCustomPanel() {
+      const rootRow = document.getElementById("rootChips");
+      const typeRow = document.getElementById("typeChips");
+      rootRow.innerHTML = "";
+      typeRow.innerHTML = "";
+
+      NOTES.forEach((n, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-btn" + (state.customRoot === idx ? " selected" : "");
+        btn.textContent = n;
+        btn.addEventListener("click", () => {
+          state.customRoot = idx;
+          updateCustomPreview();
+          renderCustomPanel();
+          saveState();
+          const currentOctaveOffset = state.bars[state.selectedBar]?.octaveOffset || 0;
+          playPreviewChord(getCustomChordString(), 1.3, currentOctaveOffset);
+        });
+        rootRow.appendChild(btn);
+      });
+
+      CHORD_TYPES.forEach((t) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "chip-btn" + (state.customType === t.id ? " selected" : "");
+        btn.textContent = t.buttonLabel;
+        btn.addEventListener("click", () => {
+          state.customType = t.id;
+          updateCustomPreview();
+          renderCustomPanel();
+          saveState();
+          const currentOctaveOffset = state.bars[state.selectedBar]?.octaveOffset || 0;
+          playPreviewChord(getCustomChordString(), 1.3, currentOctaveOffset);
+        });
+        typeRow.appendChild(btn);
+      });
+
+      updateCustomPreview();
+    }
+
+    function getCustomChordString() {
+      const tObj = CHORD_TYPES.find((t) => t.id === state.customType) || CHORD_TYPES[0];
+      return NOTES[state.customRoot] + tObj.suffix;
+    }
+
+    function updateCustomPreview() {
+      const tObj = CHORD_TYPES.find((t) => t.id === state.customType) || CHORD_TYPES[0];
+      const str = NOTES[state.customRoot] + tObj.suffix;
+      document.getElementById("customPreview").textContent =
+        tObj.id === "maj" ? `${str}（普通のメジャーコード）` : str;
+    }
+
+    function swapNoteOrder(barIdx, noteIdx, delta) {
+      const barObj = state.bars[barIdx];
+      if (!barObj || !Array.isArray(barObj.order)) return;
+      const targetIdx = noteIdx + delta;
+      if (targetIdx < 0 || targetIdx >= barObj.order.length) return;
+      const temp = barObj.order[noteIdx];
+      barObj.order[noteIdx] = barObj.order[targetIdx];
+      barObj.order[targetIdx] = temp;
+      state.selectedBar = barIdx;
+      saveState();
+      renderTimeline();
+      playBarSound(barObj, 1.2);
+    }
+
+    function toggleOctave(barIdx, targetOffset) {
+      const barObj = state.bars[barIdx];
+      if (!barObj) return;
+      barObj.octaveOffset = barObj.octaveOffset === targetOffset ? 0 : targetOffset;
+      state.selectedBar = barIdx;
+      saveState();
+      renderTimeline();
+      if (barObj.chord !== "REST") {
+        playBarSound(barObj, 1.2);
+      }
+    }
+
+    function renderTimeline() {
+      const el = document.getElementById("timeline");
+      el.innerHTML = "";
+      state.bars.forEach((barObj, idx) => {
+        const isSelected = idx === state.selectedBar;
+        const card = document.createElement("div");
+        card.className =
+          "bar-card" +
+          (idx === state.selectedBar ? " selected" : "") +
+          (state.isPlaying && idx === state.playingBar ? " now-playing" : "");
+
+        const header = document.createElement("div");
+        header.className = "bar-header";
+
+        const numSpan = document.createElement("span");
+        numSpan.className = "bar-num";
+        numSpan.textContent = `${idx + 1}小節目`;
+
+        const octGroup = document.createElement("div");
+        octGroup.className = "oct-group";
+
+        const downBtn = document.createElement("button");
+        downBtn.type = "button";
+        downBtn.className = "oct-btn" + (barObj.octaveOffset === -1 ? " active" : "");
+        downBtn.textContent = "-1";
+        downBtn.title = "1オクターブ下げる（もう一度押すと通常）";
+        downBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleOctave(idx, -1);
+        });
+
+        const upBtn = document.createElement("button");
+        upBtn.type = "button";
+        upBtn.className = "oct-btn" + (barObj.octaveOffset === 1 ? " active" : "");
+        upBtn.textContent = "+1";
+        upBtn.title = "1オクターブ上げる（もう一度押すと通常）";
+        upBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleOctave(idx, 1);
+        });
+
+        octGroup.appendChild(downBtn);
+        octGroup.appendChild(upBtn);
+
+        header.appendChild(numSpan);
+        header.appendChild(octGroup);
+
+        const chordSpan = document.createElement("span");
+        chordSpan.className = "bar-chord";
+        chordSpan.textContent = barObj.chord === "REST" ? "（休み）" : barObj.chord;
+
+        card.appendChild(header);
+        card.appendChild(chordSpan);
+
+        if (isSelected && barObj.chord !== "REST" && Array.isArray(barObj.order) && barObj.order.length > 0) {
+          const match = barObj.chord.match(/^([A-G]#?)/);
+          const rootIdx = match ? NOTES.indexOf(match[1]) : 0;
+          const topIv = barObj.order[barObj.order.length - 1];
+          const topNoteName = intervalToNoteName(rootIdx, topIv);
+
+          const voicingBox = document.createElement("div");
+          voicingBox.className = "voicing-box";
+          voicingBox.addEventListener("click", (e) => e.stopPropagation());
+
+          const topLabel = document.createElement("div");
+          topLabel.className = "voicing-top-label";
+          topLabel.textContent = `一番上の音: ${topNoteName}`;
+          voicingBox.appendChild(topLabel);
+
+          const listEl = document.createElement("div");
+          listEl.className = "voicing-list";
+
+          barObj.order.forEach((iv, nIdx) => {
+            const pill = document.createElement("span");
+            pill.className = "note-pill";
+
+            const noteText = document.createElement("span");
+            noteText.textContent = intervalToNoteName(rootIdx, iv);
+            pill.appendChild(noteText);
+
+            if (nIdx > 0) {
+              const leftBtn = document.createElement("button");
+              leftBtn.type = "button";
+              leftBtn.className = "note-move-btn";
+              leftBtn.textContent = "←";
+              leftBtn.title = "下側へ移動";
+              leftBtn.addEventListener("click", () => swapNoteOrder(idx, nIdx, -1));
+              pill.appendChild(leftBtn);
+            }
+
+            if (nIdx < barObj.order.length - 1) {
+              const rightBtn = document.createElement("button");
+              rightBtn.type = "button";
+              rightBtn.className = "note-move-btn";
+              rightBtn.textContent = "→";
+              rightBtn.title = "上側へ移動";
+              rightBtn.addEventListener("click", () => swapNoteOrder(idx, nIdx, 1));
+              pill.appendChild(rightBtn);
+            }
+
+            listEl.appendChild(pill);
+          });
+
+          voicingBox.appendChild(listEl);
+          card.appendChild(voicingBox);
+        }
+
+        card.addEventListener("click", () => {
+          state.selectedBar = idx;
+          saveState();
+          renderTimeline();
+          if (barObj.chord !== "REST") {
+            playBarSound(barObj, 1.2);
+          }
+        });
+        el.appendChild(card);
+      });
+    }
+
+    function stopLoop() {
+      state.isPlaying = false;
+      state.playingBar = -1;
+      clearInterval(loopTimer);
+      loopTimer = null;
+      const playBtn = document.getElementById("playBtn");
+      playBtn.textContent = "▶ ループ再生";
+      playBtn.classList.remove("playing");
+      renderTimeline();
+    }
+
+    function startLoop() {
+      ensureAudio();
+      stopLoop();
+      state.isPlaying = true;
+      const playBtn = document.getElementById("playBtn");
+      playBtn.textContent = "■ 停止";
+      playBtn.classList.add("playing");
+
+      let step = state.selectedBar;
+      const barDurationMs = (60 / state.bpm) * 1000 * 4;
+
+      const tick = () => {
+        state.playingBar = step % state.bars.length;
+        const barObj = state.bars[state.playingBar];
+        playBarSound(barObj, Math.min(2.6, (barDurationMs / 1000) * 0.98));
+        renderTimeline();
+        step++;
+      };
+
+      tick();
+      loopTimer = setInterval(tick, barDurationMs);
+    }
+
+    document.getElementById("playBtn").addEventListener("click", () => {
+      if (state.isPlaying) {
+        stopLoop();
+      } else {
+        startLoop();
+      }
+    });
+
+    document.getElementById("timbreSelect").addEventListener("change", (e) => {
+      state.timbre = e.target.value;
+      saveState();
+    });
+
+    document.getElementById("bpmRange").addEventListener("input", (e) => {
+      state.bpm = Number(e.target.value);
+      document.getElementById("bpmValue").textContent = state.bpm;
+      saveState();
+      if (state.isPlaying) {
+        startLoop();
+      }
+    });
+
+    document.getElementById("addBarBtn").addEventListener("click", () => {
+      if (state.bars.length < 32) {
+        state.bars.push(makeBar(BASE_CHORDS[0], 0));
+        saveState();
+        renderTimeline();
+      }
+    });
+
+    document.getElementById("removeBarBtn").addEventListener("click", () => {
+      if (state.bars.length > 1) {
+        state.bars.pop();
+        if (state.selectedBar >= state.bars.length) {
+          state.selectedBar = state.bars.length - 1;
+        }
+        saveState();
+        renderTimeline();
+      }
+    });
+
+    document.getElementById("tabBasic").addEventListener("click", () => {
+      document.getElementById("tabBasic").classList.add("active");
+      document.getElementById("tabCustom").classList.remove("active");
+      document.getElementById("basicPalette").style.display = "grid";
+      document.getElementById("customPanel").classList.remove("open");
+    });
+
+    document.getElementById("tabCustom").addEventListener("click", () => {
+      document.getElementById("tabCustom").classList.add("active");
+      document.getElementById("tabBasic").classList.remove("active");
+      document.getElementById("basicPalette").style.display = "none";
+      document.getElementById("customPanel").classList.add("open");
+    });
+
+    document.getElementById("applyCustomBtn").addEventListener("click", () => {
+      setChordAtSelected(getCustomChordString());
+    });
+
+    document.querySelectorAll(".presets button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const type = btn.dataset.preset;
+        let list = [];
+        if (type === "royal") list = ["F", "G", "Em", "Am"];
+        else if (type === "canon") list = ["C", "G", "Am", "Em", "F", "C", "F", "G"];
+        else if (type === "komuro") list = ["Am", "F", "G", "C"];
+        else if (type === "justTwoFive") list = ["Dm7", "G7", "Cmaj7", "Cmaj7"];
+        state.bars = list.map((c) => makeBar(c, 0));
+        state.selectedBar = 0;
+        saveState();
+        renderTimeline();
+        if (!state.isPlaying) {
+          playBarSound(state.bars[0], 1.3);
+        }
+      });
+    });
+
+    document.getElementById("timbreSelect").value = state.timbre;
+    document.getElementById("bpmRange").value = state.bpm;
+    document.getElementById("bpmValue").textContent = state.bpm;
+
+    renderBasicPalette();
+    renderCustomPanel();
+    renderTimeline();
+  </script>
+</body>
+</html>
